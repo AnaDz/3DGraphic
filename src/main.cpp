@@ -11,13 +11,13 @@ void initialize_practical_04_scene(Viewer& viewer);
 void initialize_practical_05_scene(Viewer& viewer);
 void initialize_practical_06_scene(Viewer& viewer);
 void initialize_practical_07_scene(Viewer& viewer, unsigned int scene_to_load = 71);
-
+void initialize_project_skyrim_2(Viewer& viewer);
 
 int main(int argc, char* argv[])
 {
     Viewer viewer(1280, 720);   // window size in pixels
 
-    unsigned int scene_to_load = 1;
+    unsigned int scene_to_load = 0;
 
     for (unsigned int i = 1; i < argc; ++i) {
         std::istringstream tokenizer(std::string(argv[i]));
@@ -29,6 +29,9 @@ int main(int argc, char* argv[])
     }
 
     switch (scene_to_load) {
+        case 0:
+            initialize_project_skyrim_2(viewer);
+            break;
         case 1:
             initialize_practical_01_scene(viewer);
             break;
