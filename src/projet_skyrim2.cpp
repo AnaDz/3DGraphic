@@ -48,6 +48,7 @@
 
 /* NOS PROPRES CLASSES A INCLUDE ICI */
 #include "../include/students/BasicCubicTreeRenderable.hpp"
+#include "../include/students/BasicCylindTreeRenderable.hpp"
 
 void initialize_project_skyrim_2(Viewer& viewer) {
 
@@ -80,7 +81,15 @@ void initialize_project_skyrim_2(Viewer& viewer) {
 
   std::shared_ptr<BasicCubicTreeRenderable> tree = std::make_shared<BasicCubicTreeRenderable>(flatShader);
   tree->setParentTransform(glm::mat4(1.0));
+
+  std::shared_ptr<BasicCylindTreeRenderable> treeC = std::make_shared<BasicCylindTreeRenderable>(flatShader);
+  treeC->setParentTransform(glm::translate(glm::mat4(1.0),glm::vec3(3,0,0)));
+
+
+  HierarchicalRenderable::addChild(tree,treeC);
   viewer.addRenderable(tree);
+
+
   // Run the animation
   /*
   viewer.setAnimationLoop(true, 6.0);
