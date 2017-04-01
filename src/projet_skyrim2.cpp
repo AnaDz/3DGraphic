@@ -47,6 +47,7 @@
 #include "../teachers/Geometries.hpp"
 
 /* NOS PROPRES CLASSES A INCLUDE ICI */
+#include "../include/students/BasicCubicTreeRenderable.hpp"
 
 void initialize_project_skyrim_2(Viewer& viewer) {
 
@@ -77,8 +78,11 @@ void initialize_project_skyrim_2(Viewer& viewer) {
       glm::vec3(0, 0, 0),
       glm::vec3( 0, 0, 1 ) ) );
 
-
+  std::shared_ptr<BasicCubicTreeRenderable> tree = std::make_shared<BasicCubicTreeRenderable>(flatShader);
+  tree->setParentTransform(glm::mat4(1.0));
+  viewer.addRenderable(tree);
   // Run the animation
+  /*
   viewer.setAnimationLoop(true, 6.0);
-  viewer.startAnimation();
+  viewer.startAnimation();*/
 }
