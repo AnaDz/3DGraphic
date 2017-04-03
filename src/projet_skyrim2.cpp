@@ -89,6 +89,39 @@ void initialize_project_skyrim_2(Viewer& viewer) {
   HierarchicalRenderable::addChild(tree,treeC);
   viewer.addRenderable(tree);
 
+  bool Olivier = true;
+  if (Olivier){
+	  ShaderProgramPtr flatShader= std::make_shared<ShaderProgram>("../shaders/flatVertex.glsl",
+			  "../shaders/flatFragment.glsl");
+	  viewer.addShaderProgram(flatShader);
+
+	  ShaderProgramPtr phongShader= std::make_shared<ShaderProgram>("../shaders/phongVertex.glsl",
+			  "../shaders/phongFragment.glsl");
+	  viewer.addShaderProgram(phongShader);
+
+
+	  // add a 3D frame to the viewer
+	  viewer.addRenderable(std::make_shared<FrameRenderable>(flatShader));
+
+
+	  glm::mat4 parentTransformation, localTransformation;
+	  GroundRenderablePtr groundR ;
+
+	  //possible de faire tout ça en une seule classe si besoin :) comme ça une texture "globale"
+	  int n = 10;
+	  for (int x=0; x<10; x++){
+		  for (int y=0; y<10; y++){
+			  groundR = std::make_shared<GroundRenderable>(flatShader,x,y,n);
+			  //parentTransformation=glm::rotate(glm::translate(glm::mat4(1.0), glm::vec3(x,y,0)), (float)3.14/6, glm::vec3(1,0,0));
+			  parentTransformation=glm::translate(glm::rotate(glm::mat4(1.0), -(float)3.14/12, glm::vec3(1,0,0)), glm::vec3(x,y,0));
+			  groundR->setParentTransform(parentTransformation);
+			  localTransformation = glm::mat4(1.0);
+			  groundR->setLocalTransform(localTransformation);
+
+			  viewer.addRenderable(groundR);
+		  }
+	  }
+  }
 
   // Run the animation
   /*
