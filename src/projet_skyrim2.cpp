@@ -79,8 +79,29 @@ void initialize_project_skyrim_2(Viewer& viewer) {
       glm::vec3(0, 0, 0),
       glm::vec3( 0, 0, 1 ) ) );
 
-  std::shared_ptr<BasicCubicTreeRenderable> tree = std::make_shared<BasicCubicTreeRenderable>(flatShader);
+
+  glm::mat4 parentTransformation(1.0), localTransformation(1.0);
+  std::string filename;
+
+  //Define a directional light for the whole scene
+  glm::vec3 d_direction = glm::normalize(glm::vec3(0.0,0.0,-1.0));
+  glm::vec3 d_ambient(1.0,1.0,1.0), d_diffuse(1.0,1.0,0.8), d_specular(1.0,1.0,1.0);
+  DirectionalLightPtr directionalLight = std::make_shared<DirectionalLight>(d_direction, d_ambient, d_diffuse, d_specular);
+  //Add a renderable to display the light and control it via mouse/key event
+  glm::vec3 lightPosition(0.0,0.0,5.0);
+  DirectionalLightRenderablePtr directionalLightRenderable = std::make_shared<DirectionalLightRenderable>(flatShader, directionalLight, lightPosition);
+  localTransformation = glm::scale(glm::mat4(1.0), glm::vec3(0.5,0.5,0.5));
+  directionalLightRenderable->setLocalTransform(localTransformation);
+  viewer.setDirectionalLight(directionalLight);
+  viewer.addRenderable(directionalLightRenderable);
+
+
+  MaterialPtr pearl = Material::Pearl();
+
+  filename = "../textures/bark.jpg";
+  std::shared_ptr<BasicCubicTreeRenderable> tree = std::make_shared<BasicCubicTreeRenderable>(texShader,filename);
   tree->setParentTransform(glm::mat4(1.0));
+  tree->setMaterial(pearl);
 
   std::shared_ptr<BasicCylindTreeRenderable> treeC = std::make_shared<BasicCylindTreeRenderable>(flatShader);
   treeC->setParentTransform(glm::translate(glm::mat4(1.0),glm::vec3(3,0,0)));
