@@ -49,6 +49,7 @@
 /* NOS PROPRES CLASSES A INCLUDE ICI */
 #include "../include/students/BasicCubicTreeRenderable.hpp"
 #include "../include/students/BasicCylindTreeRenderable.hpp"
+#include "../include/students/GroundRenderable.hpp"
 
 void initialize_project_skyrim_2(Viewer& viewer) {
 
@@ -111,7 +112,7 @@ void initialize_project_skyrim_2(Viewer& viewer) {
 	  int n = 10;
 	  for (int x=0; x<10; x++){
 		  for (int y=0; y<10; y++){
-			  groundR = std::make_shared<GroundRenderable>(flatShader,x,y,n);
+			  groundR = std::make_shared<GroundRenderable>(flatShader,x,y,n, &viewer);
 			  //parentTransformation=glm::rotate(glm::translate(glm::mat4(1.0), glm::vec3(x,y,0)), (float)3.14/6, glm::vec3(1,0,0));
 			  parentTransformation=glm::translate(glm::rotate(glm::mat4(1.0), -(float)3.14/12, glm::vec3(1,0,0)), glm::vec3(x,y,0));
 			  groundR->setParentTransform(parentTransformation);
@@ -123,8 +124,10 @@ void initialize_project_skyrim_2(Viewer& viewer) {
 	  }
   }
 
+  //viewer.getCamera().setPosition(glm::vec3(5,-2,2));
   // Run the animation
-  /*
+
   viewer.setAnimationLoop(true, 6.0);
-  viewer.startAnimation();*/
+  viewer.startAnimation();
+
 }
