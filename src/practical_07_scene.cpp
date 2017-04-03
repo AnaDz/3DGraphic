@@ -208,7 +208,7 @@ void practical07_springs(Viewer& viewer, DynamicSystemPtr& system, DynamicSystem
     system->addForceField(gravityForceField);
 
     //Initialize a force field that apply to all the particles of the system to simulate vicosity (air friction)
-    float dampingCoefficient = 0.0;
+    float dampingCoefficient = 10.0;
     DampingForceFieldPtr dampingForceField = std::make_shared<DampingForceField>(system->getParticles(), dampingCoefficient);
     system->addForceField(dampingForceField);
 
@@ -239,7 +239,7 @@ void practical07_collisions(Viewer& viewer, DynamicSystemPtr& system, DynamicSys
     viewer.addShaderProgram(flatShader);
 
     //Activate collision detection
-    system->setCollisionsDetection(false);
+    system->setCollisionsDetection(true);
 
     //Initialize the restitution coefficient for collision
     //1.0 = full elastic response

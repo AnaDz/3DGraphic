@@ -20,7 +20,16 @@ void SpringForceField::do_addForce()
     //
     //Nb:   Compute force ONLY IF the displacement length is above std::numeric_limits<float>::epsilon()
     //      Otherwise the computation is useless
-
+    ParticlePtr p1 = this->getParticle1();
+    ParticlePtr p2 = this->getParticle2();
+    glm::vec3 ecart = p2->getPosition() - p1->getPosition();
+    if (std::numeric_limits<float>::epsilon() > glm::length(ecart)) {
+      return;
+    }
+    glm::vec3 fk = -this->m_stiffness * (glm::length(ecart) - this->m_equilibriumLength) * glm::normalize(ecart);
+    glm::vec3 fkc = -this->m_damping * glm::dot(p2->getVelocity() - p1->getVelocity(), glm::normalize(ecart))*glm::normalize(ecart);
+    p1->setForce(p1->getForce() + -fk-fkc);
+    p2->setForce(p2->getForce() + fk+fkc);
 }
 
 ParticlePtr SpringForceField::getParticle1() const

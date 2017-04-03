@@ -49,6 +49,7 @@
 /* NOS PROPRES CLASSES A INCLUDE ICI */
 #include "../include/students/BasicCubicTreeRenderable.hpp"
 #include "../include/students/BasicCylindTreeRenderable.hpp"
+#include "../include/students/BonhommeDeNeige.hpp"
 
 void initialize_project_skyrim_2(Viewer& viewer) {
 
@@ -73,13 +74,13 @@ void initialize_project_skyrim_2(Viewer& viewer) {
   viewer.addRenderable(frame);
 
   //Position the camera
-  viewer.getCamera().setViewMatrix(
+  /*viewer.getCamera().setViewMatrix(
     glm::lookAt(
       glm::vec3(0, -8, 8 ),
       glm::vec3(0, 0, 0),
-      glm::vec3( 0, 0, 1 ) ) );
+      glm::vec3( 0, 0, 1 ) ) );*/
 
-  std::shared_ptr<BasicCubicTreeRenderable> tree = std::make_shared<BasicCubicTreeRenderable>(flatShader);
+  /*std::shared_ptr<BasicCubicTreeRenderable> tree = std::make_shared<BasicCubicTreeRenderable>(flatShader);
   tree->setParentTransform(glm::mat4(1.0));
 
   std::shared_ptr<BasicCylindTreeRenderable> treeC = std::make_shared<BasicCylindTreeRenderable>(flatShader);
@@ -87,8 +88,11 @@ void initialize_project_skyrim_2(Viewer& viewer) {
 
 
   HierarchicalRenderable::addChild(tree,treeC);
-  viewer.addRenderable(tree);
+  viewer.addRenderable(tree);*/
 
+  /* Création d'un bonhomme de neige */
+  BonhommeDeNeigePtr bonhomme = std::make_shared<BonhommeDeNeige>(flatShader);
+  viewer.addRenderable(bonhomme->base);
 
   // Run the animation
   /*
