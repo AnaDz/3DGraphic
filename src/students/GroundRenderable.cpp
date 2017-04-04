@@ -58,7 +58,7 @@ GroundRenderable::GroundRenderable(ShaderProgramPtr shaderProgram, int x, int y,
 	    glcheck(glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_indices.size()*sizeof(glm::ivec3), m_indices.data(), GL_STATIC_DRAW));
 }
 
-void GroundRenderable::GroundRenderable::do_animate(float time)
+void GroundRenderable::do_animate(float time)
 {
 	//viewer->getCamera().setPosition(viewer->getCamera().getPosition()+glm::vec3(0,time,0));
 	viewer->getCamera().setPosition(glm::vec3(5,-2+time,2));
