@@ -61,7 +61,7 @@ GroundRenderable::GroundRenderable(ShaderProgramPtr shaderProgram, int x, int y,
 void GroundRenderable::do_animate(float time)
 {
 	//viewer->getCamera().setPosition(viewer->getCamera().getPosition()+glm::vec3(0,time,0));
-	viewer->getCamera().setPosition(glm::vec3(5,-2+time,2));
+	//viewer->getCamera().setPosition(glm::vec3(5,-2+time,2));
 }
 
 void GroundRenderable::do_draw()

@@ -26,7 +26,7 @@ class ParticleRenderable : public HierarchicalRenderable
 
         ~ParticleRenderable();
 
-    private:
+    protected:
         void do_draw();
         void do_animate(float time);
 

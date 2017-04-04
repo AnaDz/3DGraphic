@@ -50,7 +50,7 @@
 #include "../include/students/BasicCubicTreeRenderable.hpp"
 #include "../include/students/BasicCylindTreeRenderable.hpp"
 #include "../include/students/GroundRenderable.hpp"
-
+#include "../include/students/SnowballRenderable.hpp"
 void initialize_project_skyrim_2(Viewer& viewer) {
 
   // Shaders
@@ -79,6 +79,22 @@ void initialize_project_skyrim_2(Viewer& viewer) {
       glm::vec3(0, -8, 8 ),
       glm::vec3(0, 0, 0),
       glm::vec3( 0, 0, 1 ) ) );
+
+  //Initialize a dynamic system (Solver, Time step, Restitution coefficient)
+  DynamicSystemPtr system = std::make_shared<DynamicSystem>();
+  EulerExplicitSolverPtr solver = std::make_shared<EulerExplicitSolver>();
+  system->setSolver(solver);
+  system->setDt(0.01);
+
+  //Create a renderable associated to the dynamic system
+  //This renderable is responsible for calling DynamicSystem::computeSimulationStep()in the animate() function
+  //It also handles some of the key/mouse events
+  DynamicSystemRenderablePtr systemRenderable = std::make_shared<DynamicSystemRenderable>(system);
+  viewer.addRenderable(systemRenderable);
+  system->setCollisionsDetection(true);
+
+
+
 
 
   glm::mat4 parentTransformation(1.0), localTransformation(1.0);
@@ -130,6 +146,7 @@ void initialize_project_skyrim_2(Viewer& viewer) {
 	  GroundRenderablePtr groundR ;
 
 	  //possible de faire tout ça en une seule classe si besoin :) comme ça une texture "globale"
+	  //voire à faire dans le but d'en faire un plane renderable. Ou alors mettre un plan transparent au même niveau
 	  int n = 10;
 	  for (int x=0; x<10; x++){
 		  for (int y=0; y<10; y++){
@@ -139,16 +156,49 @@ void initialize_project_skyrim_2(Viewer& viewer) {
 			  groundR->setParentTransform(parentTransformation);
 			  localTransformation = glm::mat4(1.0);
 			  groundR->setLocalTransform(localTransformation);
-
 			  viewer.addRenderable(groundR);
 		  }
 	  }
-  }
 
-  //viewer.getCamera().setPosition(glm::vec3(5,-2,2));
+	  //modèle de plan invisible (à bien tout mettre ensemble dans la même classe je pense)
+	  glm::vec3 p1(0.0, 0.0, 0.0);
+	  glm::vec3 p2(n, 0.0, 0.0);
+	  glm::vec3 p3(n, 1.0, 0.0);
+	  glm::vec3 p4(-1.0, 1.0, 0.0);
+	  PlanePtr plane = std::make_shared<Plane>(p1, p2, p3);
+	  system->addPlaneObstacle(plane);
+
+	  //Create a plane renderable to display the obstacle
+	  PlaneRenderablePtr planeRenderable = std::make_shared<QuadRenderable>(flatShader, p1,p2,p3,p4);
+	  HierarchicalRenderable::addChild( systemRenderable, planeRenderable );
+
+
+	  glm::vec3 px,pv;
+	  float pm, pr;
+	  px = glm::vec3(0.0, 0.0, 0.0);
+	  pv = glm::vec3(0.0, 1.0, 0.0);
+	  pr = 0.5;
+	  pm = 1.0;
+	  ParticlePtr particle = std::make_shared<Particle>(px, pv, pm, pr);
+	  system->addParticle(particle);
+
+	  //std::shared_ptr<SnowballRenderable> sb = std::make_shared<SnowballRenderable>(phongShader,  pearl, &viewer, particle);
+
+	  //  viewer.addRenderable(sb);
+
+	  SnowballRenderablePtr sb = std::make_shared<SnowballRenderable>(phongShader, pearl, &viewer, particle);
+	  parentTransformation=glm::translate(glm::mat4(1.0), glm::vec3(5,1,0));
+	  sb->setParentTransform(parentTransformation);
+	  (sb)->setMaterial(pearl);
+	  HierarchicalRenderable::addChild(systemRenderable, sb);
+
+	  ConstantForceFieldPtr gravityForceField = std::make_shared<ConstantForceField>(system->getParticles(), glm::vec3{0,0,-10} );
+	  system->addForceField(gravityForceField);
+	  //viewer.getCamera().setPosition(glm::vec3(5,-2,2));
+  }
   // Run the animation
 
-  viewer.setAnimationLoop(true, 6.0);
+//  viewer.setAnimationLoop(true, 6.0);
   viewer.startAnimation();
 
 }
