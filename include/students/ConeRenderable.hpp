@@ -2,14 +2,16 @@
 #define CONE_RENDERABLE_HPP
 
 #include "../../include/HierarchicalRenderable.hpp"
+#include "./../lighting/Materiable.hpp"
 
 #include <vector>
 #include <glm/glm.hpp>
 
-class ConeRenderable : public HierarchicalRenderable {
+class ConeRenderable : public HierarchicalRenderable, public Materiable {
 public:
   ~ConeRenderable();
-  ConeRenderable(ShaderProgramPtr program, glm::vec4 couleur);
+  ConeRenderable(ShaderProgramPtr program, glm::vec4 couleur,
+                    const MaterialPtr& material = Material::Snow());
   void do_draw();
 
 private:

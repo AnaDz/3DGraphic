@@ -40,7 +40,7 @@ void initialize_practical_06_scene(Viewer& viewer)
         = std::make_shared<DirectionalLightRenderable>(flatShader, directionalLight, lightPosition);
     glm::mat4 localTransformation = glm::scale(glm::mat4(1.0), glm::vec3(0.5, 0.5, 0.5));
     directionalLightRenderable->setLocalTransform(localTransformation);
-    viewer.addRenderable(directionalLightRenderable);
+    //viewer.addRenderable(directionalLightRenderable);
 
     // Position the camera
     viewer.getCamera().setViewMatrix(

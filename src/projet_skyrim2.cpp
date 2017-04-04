@@ -73,12 +73,22 @@ void initialize_project_skyrim_2(Viewer& viewer) {
   FrameRenderablePtr frame = std::make_shared<FrameRenderable>(flatShader);
   viewer.addRenderable(frame);
 
+  // Dynamic System (Solver, Time step, Restitution coefficient)
+  DynamicSystemPtr system = std::make_shared<DynamicSystem>();
+  EulerExplicitSolverPtr solver = std::make_shared<EulerExplicitSolver>();
+  system->setSolver(solver);
+  system->setDt(0.01);
+
+  // Renderable associated to the dynamic system (computeSimulationStep() in animate() and key/mouse events)
+  DynamicSystemRenderablePtr systemRenderable = std::make_shared<DynamicSystemRenderable>(system);
+  viewer.addRenderable(systemRenderable);
+
   //Position the camera
   /*viewer.getCamera().setViewMatrix(
     glm::lookAt(
-      glm::vec3(0, -8, 8 ),
+      glm::vec3(0, 0, 8),
       glm::vec3(0, 0, 0),
-      glm::vec3( 0, 0, 1 ) ) );*/
+      glm::vec3(1, 0, 1)));*/
 
   /*std::shared_ptr<BasicCubicTreeRenderable> tree = std::make_shared<BasicCubicTreeRenderable>(flatShader);
   tree->setParentTransform(glm::mat4(1.0));
@@ -91,11 +101,25 @@ void initialize_project_skyrim_2(Viewer& viewer) {
   viewer.addRenderable(tree);*/
 
   /* Création d'un bonhomme de neige */
-  BonhommeDeNeigePtr bonhomme = std::make_shared<BonhommeDeNeige>(flatShader);
+  BonhommeDeNeigePtr bonhomme = std::make_shared<BonhommeDeNeige>(phongShader);
   viewer.addRenderable(bonhomme->base);
+  bonhomme->setParentTransform(glm::mat4(1.0));
+
+  // Define a directional light for the whole scene
+  glm::vec3 lightDirection = glm::normalize(glm::vec3(0.0, -1.0, -1.0));
+  glm::vec3 ghostWhite(248.0/255, 248.0/255, 248.0/255);
+  DirectionalLightPtr directionalLight =
+      std::make_shared<DirectionalLight>(lightDirection, ghostWhite, ghostWhite, ghostWhite);
+  viewer.setDirectionalLight(directionalLight);
+  // Add a renderable to display the light and control it via mouse/key event
+  glm::vec3 lightPosition(0.0, 5.0, 8.0);
+  DirectionalLightRenderablePtr directionalLightRenderable
+      = std::make_shared<DirectionalLightRenderable>(flatShader, directionalLight, lightPosition);
+  glm::mat4 localTransformation = glm::scale(glm::mat4(1.0), glm::vec3(0.5, 0.5, 0.5));
+  directionalLightRenderable->setLocalTransform(localTransformation);
+  viewer.addRenderable(directionalLightRenderable);
 
   // Run the animation
-  /*
-  viewer.setAnimationLoop(true, 6.0);
+  /*viewer.setAnimationLoop(true, 6.0);
   viewer.startAnimation();*/
 }

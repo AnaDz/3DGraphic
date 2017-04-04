@@ -2,14 +2,16 @@
 #define CYLINDER_RENDERABLE_HPP
 
 #include "../../include/HierarchicalRenderable.hpp"
+#include "./../lighting/Materiable.hpp"
 
 #include <vector>
 #include <glm/glm.hpp>
 
-class CylinderRenderable : public HierarchicalRenderable {
+class CylinderRenderable : public HierarchicalRenderable, public Materiable {
 public:
   ~CylinderRenderable();
-  CylinderRenderable(ShaderProgramPtr program, glm::vec4 couleur);
+  CylinderRenderable(ShaderProgramPtr program, glm::vec4 couleur,
+                    const MaterialPtr& material = Material::Snow());
   void do_draw();
 
 private:

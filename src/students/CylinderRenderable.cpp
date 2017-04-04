@@ -7,8 +7,10 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <GL/glew.h>
 
-CylinderRenderable::CylinderRenderable(ShaderProgramPtr shaderProgram, glm::vec4 couleur) :
-  HierarchicalRenderable(shaderProgram),
+CylinderRenderable::CylinderRenderable(ShaderProgramPtr shaderProgram,
+                                      glm::vec4 couleur,
+                                      const MaterialPtr& material) :
+  HierarchicalRenderable(shaderProgram), Materiable(material),
   m_pBuffer(0), m_cBuffer(0), m_nBuffer(0)
 {
   std::vector<glm::vec3> positions;
@@ -89,6 +91,9 @@ void CylinderRenderable::do_draw()
     {
         glcheck(glDisableVertexAttribArray(normalLocation));
     }
+
+    //Send material to GPU as uniform
+    Material::sendToGPU(m_shaderProgram, getMaterial());
 }
 
 void CylinderRenderable::do_animate(float time) {}

@@ -130,4 +130,6 @@ void BonhommeDeNeige::do_draw() {
   base->do_draw();
 }
 
-void BonhommeDeNeige::do_animate(float time) {}
+void BonhommeDeNeige::do_animate(float time) {
+  
+}

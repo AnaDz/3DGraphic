@@ -17,7 +17,6 @@ public:
 private:
   void do_draw();
   void do_animate(float time);
-
 };
 
 typedef std::shared_ptr<BonhommeDeNeige> BonhommeDeNeigePtr;
