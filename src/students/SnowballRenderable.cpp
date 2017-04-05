@@ -49,6 +49,7 @@ void SnowballRenderable::do_animate(float time)
 	//ça la fait rouler mais du coup ça fait pas prendre en compte les collisions :) mais c'est déjà ça !
 	//viewer->getCamera().setPosition(glm::vec3(5,-2+time,2));
 	//ça la fait grossir aussi :D
+	//l'idée c'est d'adapter ça dans le do draw en fonction de la position et non du temps
 //	setParentTransform(glm::translate(glm::mat4(1.0), glm::vec3(2*time,0,0)));
 //	setParentTransform(glm::scale(getParentTransform(), glm::vec3(1+time/5,1+time/5,1+time/5)));
 //	setLocalTransform(glm::rotate(glm::mat4(1.0), (float)(2*time*3.14), glm::vec3(0,1,0)));
@@ -64,6 +65,7 @@ void SnowballRenderable::do_draw()
 //		std::cout << k;
 //
 //	}
+
 //	//Location
 //	    int positionLocation = m_shaderProgram->getAttributeLocation("vPosition");
 //	    int colorLocation = m_shaderProgram->getAttributeLocation("vColor");

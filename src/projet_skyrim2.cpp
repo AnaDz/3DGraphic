@@ -197,6 +197,7 @@ void initialize_project_skyrim_2(Viewer& viewer) {
 
 	  //  viewer.addRenderable(sb);
 
+	  //faut rendre la snowball plus jolie
 	  SnowballRenderablePtr sb = std::make_shared<SnowballRenderable>(phongShader, pearl, &viewer, particle);
 	  parentTransformation=glm::translate(glm::mat4(1.0), glm::vec3(5,1,0));
 	  sb->setParentTransform(parentTransformation);
