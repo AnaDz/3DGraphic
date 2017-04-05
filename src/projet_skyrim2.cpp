@@ -1,3 +1,5 @@
+#include <cmath>
+
 #include "../include/ShaderProgram.hpp"
 #include "../include/Viewer.hpp"
 
@@ -144,15 +146,34 @@ void initialize_project_skyrim_2(Viewer& viewer) {
 
 	  glm::mat4 parentTransformation, localTransformation;
 	  GroundRenderablePtr groundR ;
+	  int nx = 10;
+	  int ny = 10;
+	  int n = 10; //nb de points par dalle
+	  float angle = (float)3.14/12;
+
+	  //cf memo : plan invisible. il n'est même pas tracé. Normalement ça fonctionne
+	  glm::vec3 p1(0.0, 0.0, 0.0);
+	  glm::vec3 p2(nx, 0.0, 0.0);
+	  glm::vec3 p3(nx, ny, 0 );
+	  glm::vec3 p4(0, ny, 0);
+	  PlanePtr plane = std::make_shared<Plane>(p1, p2, p3);
+	  system->addPlaneObstacle(plane);
+
+	  //Create a plane renderable to display the obstacle
+//	  PlaneRenderablePtr planeRenderable = std::make_shared<QuadRenderable>(flatShader, p1,p2,p3,p4, glm::vec4(0,0,0,0));
+//	  parentTransformation=glm::rotate(glm::mat4(1.0), -angle, glm::vec3(1,0,0));
+//	  planeRenderable->setParentTransform(parentTransformation);
+//	  HierarchicalRenderable::addChild( systemRenderable, planeRenderable );
+
 
 	  //possible de faire tout ça en une seule classe si besoin :) comme ça une texture "globale"
 	  //voire à faire dans le but d'en faire un plane renderable. Ou alors mettre un plan transparent au même niveau
-	  int n = 10;
-	  for (int x=0; x<10; x++){
-		  for (int y=0; y<10; y++){
+
+	  for (int x=0; x<nx; x++){
+		  for (int y=0; y<ny; y++){
 			  groundR = std::make_shared<GroundRenderable>(flatShader,x,y,n, &viewer);
 			  //parentTransformation=glm::rotate(glm::translate(glm::mat4(1.0), glm::vec3(x,y,0)), (float)3.14/6, glm::vec3(1,0,0));
-			  parentTransformation=glm::translate(glm::rotate(glm::mat4(1.0), -(float)3.14/12, glm::vec3(1,0,0)), glm::vec3(x,y,0));
+			  parentTransformation=glm::translate(glm::rotate(glm::mat4(1.0), -angle, glm::vec3(1,0,0)), glm::vec3(x,y,0));
 			  groundR->setParentTransform(parentTransformation);
 			  localTransformation = glm::mat4(1.0);
 			  groundR->setLocalTransform(localTransformation);
@@ -160,17 +181,7 @@ void initialize_project_skyrim_2(Viewer& viewer) {
 		  }
 	  }
 
-	  //modèle de plan invisible (à bien tout mettre ensemble dans la même classe je pense)
-	  glm::vec3 p1(0.0, 0.0, 0.0);
-	  glm::vec3 p2(n, 0.0, 0.0);
-	  glm::vec3 p3(n, 1.0, 0.0);
-	  glm::vec3 p4(-1.0, 1.0, 0.0);
-	  PlanePtr plane = std::make_shared<Plane>(p1, p2, p3);
-	  system->addPlaneObstacle(plane);
 
-	  //Create a plane renderable to display the obstacle
-	  PlaneRenderablePtr planeRenderable = std::make_shared<QuadRenderable>(flatShader, p1,p2,p3,p4);
-	  HierarchicalRenderable::addChild( systemRenderable, planeRenderable );
 
 
 	  glm::vec3 px,pv;
