@@ -25,6 +25,17 @@ void ParticlePlaneCollision::do_solveCollision()
     //Plane::normal(): Return the normal of the plane
     //Particle::getRadius(), Particle::getPosition(), Particle::getVelocity(), Particle::setPosition(), Particle::setVelocity()
 
+    // Detection
+    glm::vec3 projectionPosition = m_plane->projectOnPlane(m_particle->getPosition());
+    float d2Plane = glm::distance(m_particle->getPosition(), projectionPosition);
+
+    glm::vec3 normal = m_plane->normal();
+
+    // Correction of position
+    m_particle->setPosition(m_particle->getPosition() - (d2Plane-m_particle->getRadius())*normal);
+
+    // Correction of velocity
+    m_particle->setVelocity(m_particle->getVelocity() - (1+m_restitution)*glm::dot(m_particle->getVelocity(), normal)*normal);
 }
 
 
@@ -55,5 +66,9 @@ bool testParticlePlane(const ParticlePtr &particle, const PlanePtr &plane)
     //Plane::normal(): Return the normal of the plane
     //Particle::getRadius(), Particle::getPosition()
 
-    return false;
+    glm::vec3 projectionPosition = plane->projectOnPlane(particle->getPosition());
+    float d2Plane = glm::distance(particle->getPosition(), projectionPosition);
+    float penetration = particle->getRadius() - d2Plane;
+
+    return penetration>0;
 }
