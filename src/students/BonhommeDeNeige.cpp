@@ -13,10 +13,10 @@ BonhommeDeNeige::BonhommeDeNeige(ShaderProgramPtr shaderProgram) :
   glm::mat4 scaleM(1.0);
   glm::mat4 translationM(1.0);
   glm::mat4 rotationM(1.0);
-  glm::vec4 blanc = glm::vec4(1,1,1,0);
-  glm::vec4 noir = glm::vec4(0.15, 0.15, 0.15, 0);
-  glm::vec4 bleu = glm::vec4(0, 0.5, 0.9, 0);
-  glm::vec4 orange = glm::vec4(0.8, 0.4, 0.4, 0);
+  const MaterialPtr& blanc = Material::Neige();
+  const MaterialPtr& noir = Material::TissuNoir();
+  const MaterialPtr& bleu = Material::TissuBleu();
+  const MaterialPtr& orange = Material::Carotte();
   double taille_tete = 1.25;
   double taille_buste = 2.0;
   double taille_base = 3.0;
@@ -131,5 +131,5 @@ void BonhommeDeNeige::do_draw() {
 }
 
 void BonhommeDeNeige::do_animate(float time) {
-  
+
 }

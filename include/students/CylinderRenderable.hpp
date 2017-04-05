@@ -10,8 +10,7 @@
 class CylinderRenderable : public HierarchicalRenderable, public Materiable {
 public:
   ~CylinderRenderable();
-  CylinderRenderable(ShaderProgramPtr program, glm::vec4 couleur,
-                    const MaterialPtr& material = Material::Snow());
+  CylinderRenderable(ShaderProgramPtr program, const MaterialPtr& material = Material::TissuNoir());
   void do_draw();
 
 private:

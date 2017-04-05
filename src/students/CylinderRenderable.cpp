@@ -8,7 +8,6 @@
 #include <GL/glew.h>
 
 CylinderRenderable::CylinderRenderable(ShaderProgramPtr shaderProgram,
-                                      glm::vec4 couleur,
                                       const MaterialPtr& material) :
   HierarchicalRenderable(shaderProgram), Materiable(material),
   m_pBuffer(0), m_cBuffer(0), m_nBuffer(0)
@@ -19,9 +18,6 @@ CylinderRenderable::CylinderRenderable(ShaderProgramPtr shaderProgram,
   teachers::getUnitCylinder(positions, normals, slices);
   m_positions.insert(m_positions.end(), positions.begin(), positions.end());
   m_normals.insert(m_normals.end(), normals.begin(), normals.end());
-  for (int i = 0; i < m_positions.size(); i++) {
-    m_colors.push_back(couleur);
-  }
 
   //Create buffers
   glGenBuffers(1, &m_pBuffer); //vertices
@@ -40,6 +36,9 @@ CylinderRenderable::CylinderRenderable(ShaderProgramPtr shaderProgram,
 
 void CylinderRenderable::do_draw()
 {
+    //Send material to GPU as uniform
+    Material::sendToGPU(m_shaderProgram, getMaterial());
+
     //Location
     int positionLocation = m_shaderProgram->getAttributeLocation("vPosition");
     int colorLocation = m_shaderProgram->getAttributeLocation("vColor");
@@ -91,9 +90,6 @@ void CylinderRenderable::do_draw()
     {
         glcheck(glDisableVertexAttribArray(normalLocation));
     }
-
-    //Send material to GPU as uniform
-    Material::sendToGPU(m_shaderProgram, getMaterial());
 }
 
 void CylinderRenderable::do_animate(float time) {}

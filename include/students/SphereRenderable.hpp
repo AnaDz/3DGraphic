@@ -10,8 +10,7 @@
 class SphereRenderable : public HierarchicalRenderable, public Materiable {
 public:
   ~SphereRenderable();
-  SphereRenderable(ShaderProgramPtr program, glm::vec4 couleur,
-                    const MaterialPtr& material = Material::Snow());
+  SphereRenderable(ShaderProgramPtr program, const MaterialPtr& material = Material::Neige());
   void do_draw();
 
 private:

@@ -8,7 +8,6 @@
 #include <GL/glew.h>
 
 SphereRenderable::SphereRenderable(ShaderProgramPtr shaderProgram,
-                                      glm::vec4 couleur,
                                       const MaterialPtr& material) :
   HierarchicalRenderable(shaderProgram), Materiable(material),
   m_pBuffer(0), m_cBuffer(0), m_nBuffer(0)
@@ -20,9 +19,6 @@ SphereRenderable::SphereRenderable(ShaderProgramPtr shaderProgram,
   teachers::getUnitSphere(positions, normals, strips, slices);
   m_positions.insert(m_positions.end(), positions.begin(), positions.end());
   m_normals.insert(m_normals.end(), normals.begin(), normals.end());
-  for (int i = 0; i < m_positions.size(); i++) {
-    m_colors.push_back(couleur);
-  }
 
   //Create buffers
   glGenBuffers(1, &m_pBuffer); //vertices
@@ -41,6 +37,9 @@ SphereRenderable::SphereRenderable(ShaderProgramPtr shaderProgram,
 
 void SphereRenderable::do_draw()
 {
+    //Send material to GPU as uniform
+    Material::sendToGPU(m_shaderProgram, getMaterial());
+
     //Location
     int positionLocation = m_shaderProgram->getAttributeLocation("vPosition");
     int colorLocation = m_shaderProgram->getAttributeLocation("vColor");
@@ -93,8 +92,6 @@ void SphereRenderable::do_draw()
         glcheck(glDisableVertexAttribArray(normalLocation));
     }
 
-    //Send material to GPU as uniform
-    Material::sendToGPU(m_shaderProgram, getMaterial());
 }
 
 void SphereRenderable::do_animate(float time) {}

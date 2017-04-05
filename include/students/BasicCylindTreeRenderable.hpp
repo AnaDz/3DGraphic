@@ -17,10 +17,8 @@ class BasicCylindTreeRenderable : public HierarchicalRenderable
 
         std::vector<glm::vec3> m_positions;
         std::vector<glm::vec4> m_colors;
-//        std::vector<glm::vec3> m_normals;
 
         unsigned int m_pBuffer;
-  //      unsigned int m_nBuffer;
         unsigned int m_cBuffer;
 };
 

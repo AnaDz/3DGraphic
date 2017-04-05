@@ -142,12 +142,42 @@ MaterialPtr Material::Bronze()
     return std::make_shared<Material>(ambient, diffuse, specular, shininess);
 }
 
-MaterialPtr Material::Snow()
+MaterialPtr Material::Neige()
 {
     float openGLFactor=128.0;
     glm::vec3 ambient(0.6, 0.6, 0.6);
     glm::vec3 diffuse(0.2, 0.2, 0.2);
-    glm::vec3 specular(0.1, 0.1, 0.1);
+    glm::vec3 specular(0.2, 0.2, 0.2);
     float shininess = openGLFactor*0.9;
     return std::make_shared<Material>(ambient, diffuse, specular, shininess);
+}
+
+MaterialPtr Material::Carotte()
+{
+  float openGLFactor=128.0;
+  glm::vec3 ambient((float)244/255, (float)102/255, (float)27/255);
+  glm::vec3 diffuse(0.2, 0.2, 0.2);
+  glm::vec3 specular(0.0, 0.0, 0.0);
+  float shininess = openGLFactor*0.1;
+  return std::make_shared<Material>(ambient, diffuse, specular, shininess);
+}
+
+MaterialPtr Material::TissuNoir()
+{
+  float openGLFactor=128.0;
+  glm::vec3 ambient(0.15, 0.15, 0.15);
+  glm::vec3 diffuse(0.2, 0.2, 0.2);
+  glm::vec3 specular(0.0, 0.0, 0.0);
+  float shininess = openGLFactor*0.3;
+  return std::make_shared<Material>(ambient, diffuse, specular, shininess);
+}
+
+MaterialPtr Material::TissuBleu()
+{
+  float openGLFactor=128.0;
+  glm::vec3 ambient(0.15, 0.45, 0.75);
+  glm::vec3 diffuse(0.2, 0.2, 0.2);
+  glm::vec3 specular(0.0, 0.0, 0.0);
+  float shininess = openGLFactor*0.3;
+  return std::make_shared<Material>(ambient, diffuse, specular, shininess);
 }

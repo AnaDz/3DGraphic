@@ -135,7 +135,13 @@ public:
      */
     static MaterialPtr Bronze();
 
-    static MaterialPtr Snow();
+    static MaterialPtr Neige();
+
+    static MaterialPtr Carotte();
+
+    static MaterialPtr TissuNoir();
+
+    static MaterialPtr TissuBleu();
 
 private:
     glm::vec3 m_ambient; /*!< The ambient material vector defines what color this object reflects under ambient lighting. */

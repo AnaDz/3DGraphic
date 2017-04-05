@@ -65,6 +65,8 @@ void QuadRenderable::do_draw()
     int colorLocation = m_shaderProgram->getAttributeLocation("vColor");
     int normalLocation = m_shaderProgram->getAttributeLocation("vNormal");
     int modelLocation = m_shaderProgram->getUniformLocation("modelMat");
+    glEnable(GL_BLEND) ;
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA) ;
 
     if (modelLocation != ShaderProgram::null_location) {
         glcheck(glUniformMatrix4fv(modelLocation, 1, GL_FALSE, glm::value_ptr(getModelMatrix())));
@@ -100,6 +102,7 @@ void QuadRenderable::do_draw()
     if (normalLocation != ShaderProgram::null_location) {
         glcheck(glDisableVertexAttribArray(normalLocation));
     }
+    glDisable(GL_BLEND);
 }
 
 void QuadRenderable::do_animate(float time)
