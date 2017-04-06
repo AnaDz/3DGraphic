@@ -1,26 +1,26 @@
-#ifndef BASIC_CUBIC_TREE_RENDERABLE_HPP
-#define BASIC_CUBIC_TREE_RENDERABLE_HPP
+#ifndef TRUNCTEX_HPP
+#define TRUNCTEX_HPP
 
 #include "../HierarchicalRenderable.hpp"
 #include "./../lighting/Material.hpp"
 #include <vector>
 #include <glm/glm.hpp>
 
-class BasicCubicTreeRenderable : public HierarchicalRenderable
+class TruncTex : public HierarchicalRenderable
 {
     public:
-        ~BasicCubicTreeRenderable();
-        BasicCubicTreeRenderable( ShaderProgramPtr program , const std::string& textureFilename);
-
-        void setMaterial(const MaterialPtr& material);
-    private:
+        ~TruncTex();
+        TruncTex( ShaderProgramPtr program , const std::string& textureFilename);
         void do_draw();
         void do_animate(float time);
+        void setMaterial(const MaterialPtr& material);
+    private:
+
 
         std::vector<glm::vec3> m_positions;
         std::vector<glm::vec3> m_normals;
         std::vector<glm::vec2> m_texCoords;
-        
+
 
         unsigned int m_pBuffer;
         unsigned int m_nBuffer;
@@ -30,6 +30,6 @@ class BasicCubicTreeRenderable : public HierarchicalRenderable
         MaterialPtr m_material;
 };
 
-typedef std::shared_ptr<BasicCubicTreeRenderable> BasicCubicTreeRenderablePtr;
+typedef std::shared_ptr<TruncTex> TruncTexPtr;
 
 #endif
