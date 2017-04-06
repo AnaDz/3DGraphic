@@ -49,6 +49,10 @@
 /* NOS PROPRES CLASSES A INCLUDE ICI */
 #include "../include/students/BasicCubicTreeRenderable.hpp"
 #include "../include/students/BasicCylindTreeRenderable.hpp"
+#include "../include/students/PineCylin.hpp"
+#include "../include/students/PineCubic.hpp"
+#include "../include/students/TruncTex.hpp"
+#include "../include/students/TruncSimple.hpp"
 
 void initialize_project_skyrim_2(Viewer& viewer) {
 
@@ -88,7 +92,7 @@ void initialize_project_skyrim_2(Viewer& viewer) {
   glm::vec3 d_ambient(1.0,1.0,1.0), d_diffuse(1.0,1.0,0.8), d_specular(1.0,1.0,1.0);
   DirectionalLightPtr directionalLight = std::make_shared<DirectionalLight>(d_direction, d_ambient, d_diffuse, d_specular);
   //Add a renderable to display the light and control it via mouse/key event
-  glm::vec3 lightPosition(0.0,0.0,5.0);
+  glm::vec3 lightPosition(0.0,0.0,10.0);
   DirectionalLightRenderablePtr directionalLightRenderable = std::make_shared<DirectionalLightRenderable>(flatShader, directionalLight, lightPosition);
   localTransformation = glm::scale(glm::mat4(1.0), glm::vec3(0.5,0.5,0.5));
   directionalLightRenderable->setLocalTransform(localTransformation);
@@ -99,7 +103,7 @@ void initialize_project_skyrim_2(Viewer& viewer) {
   MaterialPtr pearl = Material::Pearl();
 
   filename = "../textures/bark.jpg";
-  std::shared_ptr<BasicCubicTreeRenderable> tree = std::make_shared<BasicCubicTreeRenderable>(texShader,filename);
+/*  std::shared_ptr<BasicCubicTreeRenderable> tree = std::make_shared<BasicCubicTreeRenderable>(texShader,filename);
   tree->setParentTransform(glm::mat4(1.0));
   tree->setMaterial(pearl);
 
@@ -109,8 +113,20 @@ void initialize_project_skyrim_2(Viewer& viewer) {
 
   HierarchicalRenderable::addChild(tree,treeC);
   viewer.addRenderable(tree);
+*/
 
-  bool Olivier = true;
+  bool Ana = true;
+  if(Ana){
+    std::shared_ptr<TruncSimple> tronc = std::make_shared<TruncSimple>(flatShader);
+    tronc->setParentTransform(glm::mat4(1.0));
+    tronc->setMaterial(pearl);
+    std::shared_ptr<PineCylin> pine = std::make_shared<PineCylin>(flatShader);
+    HierarchicalRenderable::addChild(tronc, pine);
+    viewer.addRenderable(tronc);
+
+  }
+
+/*  bool Olivier = false;
   if (Olivier){
 	  ShaderProgramPtr flatShader= std::make_shared<ShaderProgram>("../shaders/flatVertex.glsl",
 			  "../shaders/flatFragment.glsl");
@@ -142,7 +158,7 @@ void initialize_project_skyrim_2(Viewer& viewer) {
 			  viewer.addRenderable(groundR);
 		  }
 	  }
-  }
+  }*/
 
   // Run the animation
   /*
