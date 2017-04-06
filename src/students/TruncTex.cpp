@@ -16,17 +16,12 @@ TruncTex::TruncTex(ShaderProgramPtr shaderProgram, const std::string& textureFil
   int prec = 10;
   float pi = atan(1) * 4;
   float step = 2*pi/prec;
-/*  glm::vec4 myColor;
-  myColor = glm::vec4(102.0/255.0,51.0/255.0,0,0);*/
   for(int i = 0; i<prec; i++) {
 
     m_positions.push_back(glm::vec3(0,0,0));
     m_positions.push_back(glm::vec3(cos(i*step)*0.5,sin(i*step)*0.5,0));
     m_positions.push_back(glm::vec3(cos((i+1)*step)*0.5,sin((i+1)*step)*0.5,0));
 
-/*    m_colors.push_back(myColor);
-    m_colors.push_back(myColor);
-    m_colors.push_back(myColor);*/
     m_texCoords.push_back(glm::vec2(0.0,1.0));
     m_texCoords.push_back(glm::vec2(1.0,0.0));
     m_texCoords.push_back(glm::vec2(1.0,1.0));
@@ -39,9 +34,6 @@ TruncTex::TruncTex(ShaderProgramPtr shaderProgram, const std::string& textureFil
     m_positions.push_back(glm::vec3(cos(i*step)*0.5,sin(i*step)*0.5,2));
     m_positions.push_back(glm::vec3(cos((i+1)*step)*0.5,sin((i+1)*step)*0.5,2));
 
-  /*  m_colors.push_back(myColor);
-    m_colors.push_back(myColor);
-    m_colors.push_back(myColor);*/
     m_texCoords.push_back(glm::vec2(0.0,1.0));
     m_texCoords.push_back(glm::vec2(1.0,0.0));
     m_texCoords.push_back(glm::vec2(1.0,1.0));
@@ -74,12 +66,6 @@ TruncTex::TruncTex(ShaderProgramPtr shaderProgram, const std::string& textureFil
     m_texCoords.push_back(glm::vec2((double) (i+1)/prec,0.0));
     m_texCoords.push_back(glm::vec2((double) (i+1)/prec,1.0));
 
-/*    m_colors.push_back(myColor);
-    m_colors.push_back(myColor);
-    m_colors.push_back(myColor);
-    m_colors.push_back(myColor);
-    m_colors.push_back(myColor);
-    m_colors.push_back(myColor);*/
 
 
   }

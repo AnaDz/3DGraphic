@@ -104,9 +104,6 @@ void TruncSimple::do_draw()
     int modelLocation = m_shaderProgram->getUniformLocation("modelMat");
     int nitLocation = m_shaderProgram->getUniformLocation("NIT");
 
-    //Send material as uniform to GPU
-    Material::sendToGPU(m_shaderProgram, m_material);
-
     //Send the data corresponding to this identifier on the GPU
     if (modelLocation != ShaderProgram::null_location) {
         glcheck(glUniformMatrix4fv(modelLocation, 1, GL_FALSE, glm::value_ptr(getModelMatrix())));
@@ -159,9 +156,4 @@ void TruncSimple::do_draw()
 
 void TruncSimple::do_animate(float time)
 {
-}
-
-
-void TruncSimple::setMaterial(const MaterialPtr& material){
-  m_material = material;
 }

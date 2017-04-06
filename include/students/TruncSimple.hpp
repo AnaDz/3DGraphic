@@ -12,7 +12,6 @@ class TruncSimple : public HierarchicalRenderable
         ~TruncSimple();
         TruncSimple( ShaderProgramPtr program);
 
-        void setMaterial(const MaterialPtr& material);
     private:
         void do_draw();
         void do_animate(float time);
@@ -26,7 +25,6 @@ class TruncSimple : public HierarchicalRenderable
         unsigned int m_nBuffer;
         unsigned int m_cBuffer;
 
-        MaterialPtr m_material;
 };
 
 typedef std::shared_ptr<TruncSimple> TruncSimplePtr;

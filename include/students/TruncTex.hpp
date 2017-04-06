@@ -11,11 +11,11 @@ class TruncTex : public HierarchicalRenderable
     public:
         ~TruncTex();
         TruncTex( ShaderProgramPtr program , const std::string& textureFilename);
-
-        void setMaterial(const MaterialPtr& material);
-    private:
         void do_draw();
         void do_animate(float time);
+        void setMaterial(const MaterialPtr& material);
+    private:
+
 
         std::vector<glm::vec3> m_positions;
         std::vector<glm::vec3> m_normals;
