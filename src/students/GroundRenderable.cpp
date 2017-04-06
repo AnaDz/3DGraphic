@@ -14,12 +14,13 @@
 #include "../../include/Utils.hpp"
 
 #include "../../include/students/PerlinNoise.hpp"
-GroundRenderable::GroundRenderable(ShaderProgramPtr shaderProgram, int x, int y, int n)
+GroundRenderable::GroundRenderable(ShaderProgramPtr shaderProgram, int x, int y, int n, Viewer* v)
 	: HierarchicalRenderable(shaderProgram),
-	  m_pBuffer(0), m_cBuffer(0), m_nBuffer(0), m_iBuffer(0)
+	  m_pBuffer(0), m_cBuffer(0), m_nBuffer(0), m_iBuffer(0),
+	  viewer(v)
 {
-
-		std::cerr << "Hey, teacher, leave them kids alone! -- GroundRenderable" << std::endl;
+		viewer = v;
+		//std::cerr << "Hey, teacher, leave them kids alone! -- GroundRenderable" << std::endl;
 		for (int i=0; i<=n; i++){
 			for (int j=0; j<=n; j++){
 				m_positions.push_back(glm::vec3((float)i/n,(float)j/n, 0.3*Get2DPerlinNoiseValue((i+x*n),(j+y*n), 10.0)));
@@ -57,67 +58,10 @@ GroundRenderable::GroundRenderable(ShaderProgramPtr shaderProgram, int x, int y,
 	    glcheck(glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_indices.size()*sizeof(glm::ivec3), m_indices.data(), GL_STATIC_DRAW));
 }
 
-void GroundRenderable::GroundRenderable::do_animate(float time)
+void GroundRenderable::do_animate(float time)
 {
-
-
-    std::cerr << "Hey, teacher, leave them kids alone! -- Indexed cube" << std::endl;
-
-    // 8 vertices
-    m_positions.push_back(glm::vec3(-0.5, -0.5, -0.5));
-    m_positions.push_back(glm::vec3(0.5, -0.5, -0.5));
-    m_positions.push_back(glm::vec3(0.5, 0.5, -0.5));
-    m_positions.push_back(glm::vec3(-0.5, 0.5, -0.5));
-    m_positions.push_back(glm::vec3(-0.5, -0.5, 0.5));
-    m_positions.push_back(glm::vec3(-0.5, 0.5, 0.5));
-    m_positions.push_back(glm::vec3(0.5, 0.5, 0.5));
-    m_positions.push_back(glm::vec3(0.5, -0.5, 0.5));
-
-    // 8 normals (== vertex coordinates, since the cube is centered)
-    for(const glm::vec3& x : m_positions) {
-        m_normals.push_back(glm::normalize(x));
-    }
-
-    // 12 triangles, 3 indices each
-    m_indices.push_back(glm::ivec3(0, 2, 1));
-    m_indices.push_back(glm::ivec3(0, 3, 2));
-    m_indices.push_back(glm::ivec3(1, 6, 7));
-    m_indices.push_back(glm::ivec3(1, 2, 6));
-    m_indices.push_back(glm::ivec3(5, 4, 7));
-    m_indices.push_back(glm::ivec3(5, 7, 6));
-    m_indices.push_back(glm::ivec3(4, 3, 0));
-    m_indices.push_back(glm::ivec3(4, 5, 3));
-    m_indices.push_back(glm::ivec3(3, 6, 2));
-    m_indices.push_back(glm::ivec3(3, 5, 6));
-    m_indices.push_back(glm::ivec3(4, 0, 1));
-    m_indices.push_back(glm::ivec3(4, 1, 7));
-
-    //Assign one color to each of the 12 triangles
-    m_colors.push_back(glm::vec4(1,0,0,1));
-    m_colors.push_back(glm::vec4(0,1,0,1));
-    m_colors.push_back(glm::vec4(0,0,1,1));
-    m_colors.push_back(glm::vec4(0,1,1,1));
-    m_colors.push_back(glm::vec4(1,0,0,1));
-    m_colors.push_back(glm::vec4(0,1,0,1));
-    m_colors.push_back(glm::vec4(0,0,1,1));
-    m_colors.push_back(glm::vec4(0,1,1,1));
-
-
-    //Create buffers
-    glGenBuffers(1, &m_pBuffer); //vertices
-    glGenBuffers(1, &m_cBuffer); //colors
-    glGenBuffers(1, &m_nBuffer); //normals
-    glGenBuffers(1, &m_iBuffer); //indices
-
-    //Activate buffer and send data to the graphics card
-    glcheck(glBindBuffer(GL_ARRAY_BUFFER, m_pBuffer));
-    glcheck(glBufferData(GL_ARRAY_BUFFER, m_positions.size()*sizeof(glm::vec3), m_positions.data(), GL_STATIC_DRAW));
-    glcheck(glBindBuffer(GL_ARRAY_BUFFER, m_cBuffer));
-    glcheck(glBufferData(GL_ARRAY_BUFFER, m_colors.size()*sizeof(glm::vec4), m_colors.data(), GL_STATIC_DRAW));
-    glcheck(glBindBuffer(GL_ARRAY_BUFFER, m_nBuffer));
-    glcheck(glBufferData(GL_ARRAY_BUFFER, m_normals.size()*sizeof(glm::vec3), m_normals.data(), GL_STATIC_DRAW));
-    glcheck(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_iBuffer));
-    glcheck(glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_indices.size()*sizeof(glm::ivec3), m_indices.data(), GL_STATIC_DRAW));
+	//viewer->getCamera().setPosition(viewer->getCamera().getPosition()+glm::vec3(0,time,0));
+	//viewer->getCamera().setPosition(glm::vec3(5,-2+time,2));
 }
 
 void GroundRenderable::do_draw()

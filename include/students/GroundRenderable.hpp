@@ -11,17 +11,19 @@
 #include <vector>
 #include <glm/glm.hpp>
 #include "../HierarchicalRenderable.hpp"
+#include "../Viewer.hpp"
 
 class GroundRenderable : public HierarchicalRenderable
 {
 public:
     ~GroundRenderable();
-    GroundRenderable(ShaderProgramPtr program, int x, int y, int n);
+    GroundRenderable(ShaderProgramPtr program, int x, int y, int n, Viewer* v);
 
 protected:
     void do_draw();
     void do_animate(float time);
 
+    Viewer *viewer;
     std::vector<glm::vec3> m_positions;
     std::vector<glm::vec4> m_colors;
     std::vector<glm::vec3> m_normals;
@@ -31,6 +33,8 @@ protected:
     unsigned int m_cBuffer;
     unsigned int m_nBuffer;
     unsigned int m_iBuffer;
+
+
 };
 
 typedef std::shared_ptr<GroundRenderable> GroundRenderablePtr;
