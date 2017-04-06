@@ -124,7 +124,7 @@ void initialize_project_skyrim_2(Viewer& viewer) {
   if(Ana){
     TreePtr tree = std::make_shared<Tree>(texShader, filename, filename2);
     viewer.addRenderable(tree->tronc);
-
+  }
 
 
   bool Matthieu = true;

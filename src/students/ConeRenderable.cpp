@@ -17,7 +17,7 @@ ConeRenderable::ConeRenderable(ShaderProgramPtr shaderProgram,
   // Création du cône
   std::vector<glm::vec3> positions;
   std::vector<glm::vec3> normals;
-  const unsigned int strips = 50;
+  const unsigned int strips = 20;
   const unsigned int slices = 20;
   teachers::getUnitCone(positions, normals, strips, slices);
   m_positions.insert(m_positions.end(), positions.begin(), positions.end());
@@ -87,31 +87,6 @@ ConeRenderable::ConeRenderable(ShaderProgramPtr shaderProgram,
   glcheck(glBufferData(GL_ARRAY_BUFFER, m_colors.size()*sizeof(glm::vec4), m_colors.data(), GL_STATIC_DRAW));
   glcheck(glBindBuffer(GL_ARRAY_BUFFER, m_nBuffer));
   glcheck(glBufferData(GL_ARRAY_BUFFER, m_normals.size()*sizeof(glm::vec3), m_normals.data(), GL_STATIC_DRAW));
-
-  // Pareil pour les textures, s'il y en a
-  if (textureFilename == "") {
-    // Buffer de textures
-    // CALCUL DES TEXTURES
-
-    glGenBuffers(1, &m_tBuffer);
-    glcheck(glBindBuffer(GL_ARRAY_BUFFER, m_tBuffer));
-    glcheck(glBufferData(GL_ARRAY_BUFFER, m_texCoords.size()*sizeof(glm::vec2), m_texCoords.data(), GL_STATIC_DRAW));
-
-    //Handle the texture image itself
-    sf::Image image;
-    image.loadFromFile(textureFilename);
-    image.flipVertically();
-    glcheck(glGenTextures(1, &m_texId));
-    glcheck(glBindTexture(GL_TEXTURE_2D, m_texId));
-    glcheck(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
-    glcheck(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
-    glcheck(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
-    glcheck(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
-    glcheck(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F,
-        image.getSize().x, image.getSize().y, 0, GL_RGBA, GL_UNSIGNED_BYTE,
-        (const GLvoid*)image.getPixelsPtr()));
-    glcheck(glBindTexture(GL_TEXTURE_2D, 0));
-  }
 
 }
 
