@@ -38,7 +38,7 @@ ConeRenderable::ConeRenderable(ShaderProgramPtr shaderProgram,
   glcheck(glBufferData(GL_ARRAY_BUFFER, m_normals.size()*sizeof(glm::vec3), m_normals.data(), GL_STATIC_DRAW));
 
   // Pareil pour les textures, s'il y en a
-  if (textureFilename == "") {
+  if (textureFilename != "") {
     // Buffer de textures
     // CALCUL DES TEXTURES
 

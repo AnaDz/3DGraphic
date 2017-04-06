@@ -11,8 +11,8 @@ class SphereRenderable : public HierarchicalRenderable, public Materiable {
 public:
   ~SphereRenderable();
   SphereRenderable(ShaderProgramPtr program,
-                    const MaterialPtr& material = Material::TissuNoir(),
-                    const std::string& textureFilename = "");
+                    const MaterialPtr& material = Material::Neige(),
+                    const std::string& textureFilename = "../textures/snow.png");
   void do_draw();
 
 private:

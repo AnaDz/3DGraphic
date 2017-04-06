@@ -37,7 +37,7 @@ CylinderRenderable::CylinderRenderable(ShaderProgramPtr shaderProgram,
   glcheck(glBufferData(GL_ARRAY_BUFFER, m_normals.size()*sizeof(glm::vec3), m_normals.data(), GL_STATIC_DRAW));
 
   // Pareil pour les textures, s'il y en a
-  if (textureFilename == "") {
+  if (textureFilename != "") {
     // Buffer de textures
     for(int i = 0; i<slices; i++) {
       m_texCoords.push_back(glm::vec2(0.0,1.0));

@@ -7,8 +7,8 @@
 #include <GL/glew.h>
 
 
-BonhommeDeNeige::BonhommeDeNeige(ShaderProgramPtr shaderProgram) :
-  HierarchicalRenderable(shaderProgram)
+BonhommeDeNeige::BonhommeDeNeige(ShaderProgramPtr phongShader, ShaderProgramPtr texShader) :
+  HierarchicalRenderable(texShader)
 {
   glm::mat4 scaleM(1.0);
   glm::mat4 translationM(1.0);
@@ -26,19 +26,19 @@ BonhommeDeNeige::BonhommeDeNeige(ShaderProgramPtr shaderProgram) :
   double phi = M_PI/8; // Angle horizontal
 
   // Base du bonhomme de neige
-  base = std::make_shared<SphereRenderable>(shaderProgram, blanc);
+  base = std::make_shared<SphereRenderable>(texShader, blanc);
   scaleM = glm::scale(glm::mat4(1.0), glm::vec3(taille_base,taille_base,taille_base));
   base->setLocalTransform(scaleM);
 
   // Buste du bonhomme de neige
-  std::shared_ptr<SphereRenderable> buste = std::make_shared<SphereRenderable>(shaderProgram, blanc);
+  std::shared_ptr<SphereRenderable> buste = std::make_shared<SphereRenderable>(texShader, blanc);
   translationM = glm::translate(glm::mat4(1.0), glm::vec3(0, taille_base + 0.5, 0));
   scaleM = glm::scale(glm::mat4(1.0), glm::vec3(taille_buste,taille_buste,taille_buste));
   buste->setParentTransform(translationM);
   buste->setLocalTransform(scaleM);
 
   // Tête du bonhomme de neige
-  std::shared_ptr<SphereRenderable> tete = std::make_shared<SphereRenderable>(shaderProgram, blanc);
+  std::shared_ptr<SphereRenderable> tete = std::make_shared<SphereRenderable>(texShader, blanc);
   translationM = glm::translate(glm::mat4(1.0), glm::vec3(0, taille_buste + 0.5, 0));
   scaleM = glm::scale(glm::mat4(1.0), glm::vec3(taille_tete,taille_tete,taille_tete));
   tete->setParentTransform(translationM);
@@ -48,23 +48,23 @@ BonhommeDeNeige::BonhommeDeNeige(ShaderProgramPtr shaderProgram) :
   HierarchicalRenderable::addChild(buste, tete);
 
   // Boutons du bonhomme de neige
-  std::shared_ptr<SphereRenderable> bouton1 = std::make_shared<SphereRenderable>(shaderProgram, noir);
+  std::shared_ptr<SphereRenderable> bouton1 = std::make_shared<SphereRenderable>(phongShader, noir);
   translationM = glm::translate(glm::mat4(1.0), glm::vec3(taille_base*cos(-angle_boutons), taille_base*sin(-angle_boutons), 0));
   scaleM = glm::scale(glm::mat4(1.0), glm::vec3(taille_boutons/2,taille_boutons,taille_boutons));
   bouton1->setParentTransform(translationM);
   bouton1->setLocalTransform(scaleM);
 
-  std::shared_ptr<SphereRenderable> bouton2 = std::make_shared<SphereRenderable>(shaderProgram, noir);
+  std::shared_ptr<SphereRenderable> bouton2 = std::make_shared<SphereRenderable>(phongShader, noir);
   translationM = glm::translate(glm::mat4(1.0), glm::vec3(taille_base*cos(angle_boutons), taille_base*sin(angle_boutons), 0));
   bouton2->setParentTransform(translationM);
   bouton2->setLocalTransform(scaleM);
 
-  std::shared_ptr<SphereRenderable> bouton3 = std::make_shared<SphereRenderable>(shaderProgram, noir);
+  std::shared_ptr<SphereRenderable> bouton3 = std::make_shared<SphereRenderable>(phongShader, noir);
   translationM = glm::translate(glm::mat4(1.0), glm::vec3(taille_buste*cos(-angle_boutons), taille_buste*sin(-angle_boutons), 0));
   bouton3->setParentTransform(translationM);
   bouton3->setLocalTransform(scaleM);
 
-  std::shared_ptr<SphereRenderable> bouton4 = std::make_shared<SphereRenderable>(shaderProgram, noir);
+  std::shared_ptr<SphereRenderable> bouton4 = std::make_shared<SphereRenderable>(phongShader, noir);
   translationM = glm::translate(glm::mat4(1.0), glm::vec3(taille_buste*cos(angle_boutons), taille_buste*sin(angle_boutons), 0));
   bouton4->setParentTransform(translationM);
   bouton4->setLocalTransform(scaleM);
@@ -75,12 +75,12 @@ BonhommeDeNeige::BonhommeDeNeige(ShaderProgramPtr shaderProgram) :
   HierarchicalRenderable::addChild(buste, bouton4);
 
   // Yeux du bonhomme de neige
-  std::shared_ptr<SphereRenderable> oeil1 = std::make_shared<SphereRenderable>(shaderProgram, noir);
+  std::shared_ptr<SphereRenderable> oeil1 = std::make_shared<SphereRenderable>(phongShader, noir);
   translationM = glm::translate(glm::mat4(1.0), glm::vec3(taille_tete*cos(phi), taille_tete*sin(theta)*sin(phi), taille_tete*cos(theta)*sin(phi)));
   oeil1->setParentTransform(translationM);
   oeil1->setLocalTransform(scaleM);
 
-  std::shared_ptr<SphereRenderable> oeil2 = std::make_shared<SphereRenderable>(shaderProgram, noir);
+  std::shared_ptr<SphereRenderable> oeil2 = std::make_shared<SphereRenderable>(phongShader, noir);
   translationM = glm::translate(glm::mat4(1.0), glm::vec3(taille_tete*cos(phi), taille_tete*sin(theta)*sin(phi), taille_tete*cos(theta)*sin(-phi)));
   oeil2->setParentTransform(translationM);
   oeil2->setLocalTransform(scaleM);
@@ -89,21 +89,21 @@ BonhommeDeNeige::BonhommeDeNeige(ShaderProgramPtr shaderProgram) :
   HierarchicalRenderable::addChild(tete, oeil2);
 
   // Chapeau du bonhomme de neige
-  std::shared_ptr<CylinderRenderable> chapeau_base = std::make_shared<CylinderRenderable>(shaderProgram, noir);
+  std::shared_ptr<CylinderRenderable> chapeau_base = std::make_shared<CylinderRenderable>(phongShader, noir);
   translationM = glm::translate(glm::mat4(1.0), glm::vec3(0, taille_tete*0.95, 0));
   scaleM = glm::scale(glm::mat4(1.0), glm::vec3(taille_tete,taille_tete,taille_tete*0.1));
   rotationM = glm::rotate(glm::mat4(1.0), -(float)(M_PI/2.0), glm::vec3(1,0,0));
   chapeau_base->setParentTransform(translationM);
   chapeau_base->setLocalTransform(rotationM*scaleM);
 
-  std::shared_ptr<CylinderRenderable> chapeau_forme = std::make_shared<CylinderRenderable>(shaderProgram, noir);
+  std::shared_ptr<CylinderRenderable> chapeau_forme = std::make_shared<CylinderRenderable>(phongShader, noir);
   translationM = glm::translate(glm::mat4(1.0), glm::vec3(0, taille_tete*0.1, 0));
   scaleM = glm::scale(glm::mat4(1.0), glm::vec3(taille_tete*0.5,taille_tete*0.5,taille_tete));
   rotationM = glm::rotate(glm::mat4(1.0), -(float)(M_PI/2.0), glm::vec3(1,0,0));
   chapeau_forme->setParentTransform(translationM);
   chapeau_forme->setLocalTransform(rotationM*scaleM);
 
-  std::shared_ptr<CylinderRenderable> chapeau_bourdalou = std::make_shared<CylinderRenderable>(shaderProgram, bleu);
+  std::shared_ptr<CylinderRenderable> chapeau_bourdalou = std::make_shared<CylinderRenderable>(phongShader, bleu);
   translationM = glm::translate(glm::mat4(1.0), glm::vec3(0, taille_tete*0.1, 0));
   scaleM = glm::scale(glm::mat4(1.0), glm::vec3(taille_tete*0.51,taille_tete*0.51,taille_tete*0.2));
   rotationM = glm::rotate(glm::mat4(1.0), -(float)(M_PI/2.0), glm::vec3(1,0,0));
@@ -115,7 +115,7 @@ BonhommeDeNeige::BonhommeDeNeige(ShaderProgramPtr shaderProgram) :
   HierarchicalRenderable::addChild(chapeau_base, chapeau_bourdalou);
 
   // Carotte du bonhomme de neige
-  std::shared_ptr<ConeRenderable> carotte = std::make_shared<ConeRenderable>(shaderProgram, orange);
+  std::shared_ptr<ConeRenderable> carotte = std::make_shared<ConeRenderable>(phongShader, orange);
   translationM = glm::translate(glm::mat4(1.0), glm::vec3(taille_tete, 0, 0));
   scaleM = glm::scale(glm::mat4(1.0), glm::vec3(taille_tete*0.1,taille_tete*0.1,taille_tete));
   rotationM = glm::rotate(glm::mat4(1.0), (float)(M_PI/2.0), glm::vec3(0,1,0));
@@ -125,7 +125,7 @@ BonhommeDeNeige::BonhommeDeNeige(ShaderProgramPtr shaderProgram) :
   HierarchicalRenderable::addChild(tete, carotte);
 
   // Bras du bonhomme de neige
-  std::shared_ptr<ConeRenderable> bras1 = std::make_shared<ConeRenderable>(shaderProgram, noir);
+  std::shared_ptr<ConeRenderable> bras1 = std::make_shared<ConeRenderable>(phongShader, noir);
   translationM = glm::translate(glm::mat4(1.0), glm::vec3(taille_buste*cos(M_PI/2)*sin(M_PI/6), taille_buste*sin(M_PI/2)*sin(M_PI/6), taille_buste*cos(M_PI/6)));
   scaleM = glm::scale(glm::mat4(1.0), glm::vec3(taille_buste*0.05,taille_buste*0.05,taille_tete*4));
   rotationM = glm::rotate(glm::mat4(1.0), (float)(M_PI/2.0), glm::vec3(0,0,1));
@@ -133,7 +133,7 @@ BonhommeDeNeige::BonhommeDeNeige(ShaderProgramPtr shaderProgram) :
   bras1->setParentTransform(translationM);
   bras1->setLocalTransform(rotationM*scaleM);
 
-  std::shared_ptr<ConeRenderable> bras2 = std::make_shared<ConeRenderable>(shaderProgram, noir);
+  std::shared_ptr<ConeRenderable> bras2 = std::make_shared<ConeRenderable>(phongShader, noir);
   translationM = glm::translate(glm::mat4(1.0), glm::vec3(0.9*taille_buste*cos(M_PI/2)*sin(5*M_PI/6), 0.9*taille_buste*sin(M_PI/2)*sin(5*M_PI/6), 0.9*taille_buste*cos(5*M_PI/6)));
   scaleM = glm::scale(glm::mat4(1.0), glm::vec3(taille_buste*0.05,taille_buste*0.05,taille_tete*4));
   rotationM = glm::rotate(glm::mat4(1.0), (float)(M_PI/2.0), glm::vec3(0,0,1));
@@ -147,13 +147,16 @@ BonhommeDeNeige::BonhommeDeNeige(ShaderProgramPtr shaderProgram) :
 }
 
 void BonhommeDeNeige::generateAnimation() {
-  // Animation du bonhomme de neige : il saute droit devant
-  this->addParentTransformKeyframe(0.0, GeometricTransformation(glm::vec3(0.0, 0.0, 0.0), glm::angleAxis(0.0f, glm::vec3(0.0, 0.0, 1.0))));
-  this->addParentTransformKeyframe(0.2, GeometricTransformation(glm::vec3(1.0, 1.0, 0.0), glm::angleAxis(0.0f, glm::vec3(0.0, 1.0, 0.0))));
-  this->addParentTransformKeyframe(0.4, GeometricTransformation(glm::vec3(2.0, 2.0, 0.0), glm::angleAxis(0.0f, glm::vec3(0.0, 1.0, 0.0))));
-  this->addParentTransformKeyframe(0.6, GeometricTransformation(glm::vec3(3.0, 3.0, 0.0), glm::angleAxis(0.0f, glm::vec3(0.0, 1.0, 0.0))));
-  this->addParentTransformKeyframe(0.8, GeometricTransformation(glm::vec3(4.0, 1.5, 0.0), glm::angleAxis(0.0f, glm::vec3(0.0, 1.0, 0.0))));
-  this->addParentTransformKeyframe(1.0, GeometricTransformation(glm::vec3(5.0, 0.0, 0.0), glm::angleAxis(0.0f, glm::vec3(0.0, 1.0, 0.0))));
+  // Animation du bonhomme de neige : il saute droit devant pendant 10 secondes
+  for (int t=0; t <= 10; t++) {
+    this->addParentTransformKeyframe(t+0.0, GeometricTransformation(glm::vec3((4.5*t)+0.0, 0.0, 0.0), glm::angleAxis(0.0f, glm::vec3(0.0, 0.0, 1.0))));
+    this->addParentTransformKeyframe(t+0.2, GeometricTransformation(glm::vec3((4.5*t)+0.5, 1.5, 0.0), glm::angleAxis(0.0f, glm::vec3(0.0, 1.0, 0.0))));
+    this->addParentTransformKeyframe(t+0.4, GeometricTransformation(glm::vec3((4.5*t)+1.5, 2.0, 0.0), glm::angleAxis(0.0f, glm::vec3(0.0, 1.0, 0.0))));
+    this->addParentTransformKeyframe(t+0.5, GeometricTransformation(glm::vec3((4.5*t)+2.25, 2.2, 0.0), glm::angleAxis(0.0f, glm::vec3(0.0, 1.0, 0.0))));
+    this->addParentTransformKeyframe(t+0.6, GeometricTransformation(glm::vec3((4.5*t)+3.0, 2.0, 0.0), glm::angleAxis(0.0f, glm::vec3(0.0, 1.0, 0.0))));
+    this->addParentTransformKeyframe(t+0.8, GeometricTransformation(glm::vec3((4.5*t)+4.0, 1.5, 0.0), glm::angleAxis(0.0f, glm::vec3(0.0, 1.0, 0.0))));
+    this->addParentTransformKeyframe(t+1.0, GeometricTransformation(glm::vec3((4.5*t)+4.5, 0.0, 0.0), glm::angleAxis(0.0f, glm::vec3(0.0, 1.0, 0.0))));
+  }
 }
 
 BonhommeDeNeige::~BonhommeDeNeige() {

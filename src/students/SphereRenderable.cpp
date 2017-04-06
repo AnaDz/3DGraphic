@@ -38,21 +38,40 @@ SphereRenderable::SphereRenderable(ShaderProgramPtr shaderProgram,
   glcheck(glBufferData(GL_ARRAY_BUFFER, m_normals.size()*sizeof(glm::vec3), m_normals.data(), GL_STATIC_DRAW));
 
   // Pareil pour les textures, s'il y en a
-  if (textureFilename == "") {
-    // Buffer de textures
+  if (textureFilename != "") {
+    // Buffer de textures avec le UV mapping
     for(int i = 0; i<slices; i++) {
-      m_texCoords.push_back(glm::vec2(0.0,1.0));
-      m_texCoords.push_back(glm::vec2(1.0,0.0));
-      m_texCoords.push_back(glm::vec2(1.0,1.0));
-      m_texCoords.push_back(glm::vec2(0.0,1.0));
-      m_texCoords.push_back(glm::vec2(1.0,0.0));
-      m_texCoords.push_back(glm::vec2(1.0,1.0));
-      m_texCoords.push_back(glm::vec2((double) i/slices,0.0));
-      m_texCoords.push_back(glm::vec2((double) (i+1)/slices,1.0));
-      m_texCoords.push_back(glm::vec2((double) i/slices,1.0));
-      m_texCoords.push_back(glm::vec2((double) i/slices,0.0));
-      m_texCoords.push_back(glm::vec2((double) (i+1)/slices,0.0));
-      m_texCoords.push_back(glm::vec2((double) (i+1)/slices,1.0));
+      for (int j = 0; j<strips; j++) {
+        double theta = i*(2.0*M_PI/(double)slices);
+        double phi = j*(M_PI/(double)strips);
+        double next_theta = (i+1)*(2.0*M_PI/(double)slices);
+        double next_phi = (j+1)*(M_PI/(double)strips);
+        double x;
+        double y;
+        double z;
+        x = cos(theta)*sin(phi);
+        y = sin(theta)*sin(phi);
+        z = cos(phi);
+        m_texCoords.push_back(glm::vec2(0.5+atan2(z,x)/(2*M_PI),0.5-asin(y)/M_PI));
+        x = cos(next_theta)*sin(phi);
+        y = sin(next_theta)*sin(phi);
+        m_texCoords.push_back(glm::vec2(0.5+atan2(z,x)/(2*M_PI),0.5-asin(y)/M_PI));
+        x = cos(next_theta)*sin(next_phi);
+        y = sin(next_theta)*sin(next_phi);
+        z = cos(next_phi);
+        m_texCoords.push_back(glm::vec2(0.5+atan2(z,x)/(2*M_PI),0.5-asin(y)/M_PI));
+        x = cos(theta)*sin(phi);
+        y = sin(theta)*sin(phi);
+        z = cos(phi);
+        m_texCoords.push_back(glm::vec2(0.5+atan2(z,x)/(2*M_PI),0.5-asin(y)/M_PI));
+        x = cos(next_theta)*sin(next_phi);
+        y = sin(next_theta)*sin(next_phi);
+        z = cos(next_phi);
+        m_texCoords.push_back(glm::vec2(0.5+atan2(z,x)/(2*M_PI),0.5-asin(y)/M_PI));
+        x = cos(theta)*sin(next_phi);
+        y = sin(theta)*sin(next_phi);
+        m_texCoords.push_back(glm::vec2(0.5+atan2(z,x)/(2*M_PI),0.5-asin(y)/M_PI));
+      }
     }
 
     glGenBuffers(1, &m_tBuffer);
