@@ -15,6 +15,7 @@ CylinderRenderable::CylinderRenderable(ShaderProgramPtr shaderProgram,
   HierarchicalRenderable(shaderProgram), Materiable(material),
   m_pBuffer(0), m_cBuffer(0), m_nBuffer(0), m_tBuffer(0), m_texId(0)
 {
+  // Création du cylindre
   std::vector<glm::vec3> positions;
   std::vector<glm::vec3> normals;
   const unsigned int slices = 20;
@@ -35,8 +36,24 @@ CylinderRenderable::CylinderRenderable(ShaderProgramPtr shaderProgram,
   glcheck(glBindBuffer(GL_ARRAY_BUFFER, m_nBuffer));
   glcheck(glBufferData(GL_ARRAY_BUFFER, m_normals.size()*sizeof(glm::vec3), m_normals.data(), GL_STATIC_DRAW));
 
-  //Same for textures
+  // Pareil pour les textures, s'il y en a
   if (textureFilename == "") {
+    // Buffer de textures
+    for(int i = 0; i<slices; i++) {
+      m_texCoords.push_back(glm::vec2(0.0,1.0));
+      m_texCoords.push_back(glm::vec2(1.0,0.0));
+      m_texCoords.push_back(glm::vec2(1.0,1.0));
+      m_texCoords.push_back(glm::vec2(0.0,1.0));
+      m_texCoords.push_back(glm::vec2(1.0,0.0));
+      m_texCoords.push_back(glm::vec2(1.0,1.0));
+      m_texCoords.push_back(glm::vec2((double) i/slices,0.0));
+      m_texCoords.push_back(glm::vec2((double) (i+1)/slices,1.0));
+      m_texCoords.push_back(glm::vec2((double) i/slices,1.0));
+      m_texCoords.push_back(glm::vec2((double) i/slices,0.0));
+      m_texCoords.push_back(glm::vec2((double) (i+1)/slices,0.0));
+      m_texCoords.push_back(glm::vec2((double) (i+1)/slices,1.0));
+    }
+
     glGenBuffers(1, &m_tBuffer);
     glcheck(glBindBuffer(GL_ARRAY_BUFFER, m_tBuffer));
     glcheck(glBufferData(GL_ARRAY_BUFFER, m_texCoords.size()*sizeof(glm::vec2), m_texCoords.data(), GL_STATIC_DRAW));
