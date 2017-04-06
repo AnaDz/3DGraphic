@@ -124,6 +124,48 @@ BonhommeDeNeige::BonhommeDeNeige(ShaderProgramPtr shaderProgram) :
 
   HierarchicalRenderable::addChild(tete, carotte);
 
+  // Bras du bonhomme de neige
+  std::shared_ptr<ConeRenderable> bras1 = std::make_shared<ConeRenderable>(shaderProgram, noir);
+  translationM = glm::translate(glm::mat4(1.0), glm::vec3(taille_buste*cos(M_PI/2)*sin(M_PI/6), taille_buste*sin(M_PI/2)*sin(M_PI/6), taille_buste*cos(M_PI/6)));
+  scaleM = glm::scale(glm::mat4(1.0), glm::vec3(taille_buste*0.05,taille_buste*0.05,taille_tete*4));
+  rotationM = glm::rotate(glm::mat4(1.0), (float)(M_PI/2.0), glm::vec3(0,0,1));
+  rotationM *= glm::rotate(glm::mat4(1.0), (float)(M_PI/6.0), glm::vec3(0,1,0));
+  bras1->setParentTransform(translationM);
+  bras1->setLocalTransform(rotationM*scaleM);
+
+  std::shared_ptr<ConeRenderable> bras2 = std::make_shared<ConeRenderable>(shaderProgram, noir);
+  translationM = glm::translate(glm::mat4(1.0), glm::vec3(0.9*taille_buste*cos(M_PI/2)*sin(5*M_PI/6), 0.9*taille_buste*sin(M_PI/2)*sin(5*M_PI/6), 0.9*taille_buste*cos(5*M_PI/6)));
+  scaleM = glm::scale(glm::mat4(1.0), glm::vec3(taille_buste*0.05,taille_buste*0.05,taille_tete*4));
+  rotationM = glm::rotate(glm::mat4(1.0), (float)(M_PI/2.0), glm::vec3(0,0,1));
+  rotationM *= glm::rotate(glm::mat4(1.0), (float)(3*M_PI/4.0), glm::vec3(0,1,0));
+  bras2->setParentTransform(translationM);
+  bras2->setLocalTransform(rotationM*scaleM);
+
+  HierarchicalRenderable::addChild(buste, bras1);
+  HierarchicalRenderable::addChild(buste, bras2);
+
+}
+
+void BonhommeDeNeige::generateAnimation() {
+  // Animation du bonhomme de neige : il saute droit devant
+  this->addParentTransformKeyframe(0.0, GeometricTransformation(glm::vec3(0.0, 0.0, 0.0), glm::angleAxis(0.0f, glm::vec3(0.0, 0.0, 1.0))));
+  this->addParentTransformKeyframe(0.2, GeometricTransformation(glm::vec3(1.0, 1.0, 0.0), glm::angleAxis(0.0f, glm::vec3(0.0, 1.0, 0.0))));
+  this->addParentTransformKeyframe(0.4, GeometricTransformation(glm::vec3(2.0, 2.0, 0.0), glm::angleAxis(0.0f, glm::vec3(0.0, 1.0, 0.0))));
+  this->addParentTransformKeyframe(0.6, GeometricTransformation(glm::vec3(3.0, 3.0, 0.0), glm::angleAxis(0.0f, glm::vec3(0.0, 1.0, 0.0))));
+  this->addParentTransformKeyframe(0.8, GeometricTransformation(glm::vec3(4.0, 1.5, 0.0), glm::angleAxis(0.0f, glm::vec3(0.0, 1.0, 0.0))));
+  this->addParentTransformKeyframe(1.0, GeometricTransformation(glm::vec3(5.0, 0.0, 0.0), glm::angleAxis(0.0f, glm::vec3(0.0, 1.0, 0.0))));
+}
+
+BonhommeDeNeige::~BonhommeDeNeige() {
+  // Rien ?
+}
+
+void BonhommeDeNeige::addParentTransformKeyframe(float time, const GeometricTransformation& transformation) {
+  m_parentKeyframes.add(time, transformation);
+}
+
+void BonhommeDeNeige::addLocalTransformKeyframe(float time, const GeometricTransformation& transformation) {
+  m_localKeyframes.add(time, transformation);
 }
 
 void BonhommeDeNeige::do_draw() {
@@ -131,5 +173,12 @@ void BonhommeDeNeige::do_draw() {
 }
 
 void BonhommeDeNeige::do_animate(float time) {
+  //Assign the interpolated transformations from the keyframes to the local/parent transformations.
+  if (!m_localKeyframes.empty()) {
+      setLocalTransform(m_localKeyframes.interpolateTransformation(time));
+  }
+  if (!m_parentKeyframes.empty()) {
+      setParentTransform(m_parentKeyframes.interpolateTransformation(time));
+  }
 
 }

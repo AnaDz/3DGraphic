@@ -40,6 +40,13 @@ void SphereRenderable::do_draw()
     //Send material to GPU as uniform
     Material::sendToGPU(m_shaderProgram, getMaterial());
 
+    //NIT matrix
+    int nitLocation = m_shaderProgram->getUniformLocation("NIT");
+    if (nitLocation != ShaderProgram::null_location) {
+        glcheck(glUniformMatrix3fv(nitLocation, 1, GL_FALSE,
+            glm::value_ptr(glm::transpose(glm::inverse(glm::mat3(getModelMatrix()))))));
+    }
+
     //Location
     int positionLocation = m_shaderProgram->getAttributeLocation("vPosition");
     int colorLocation = m_shaderProgram->getAttributeLocation("vColor");
@@ -90,6 +97,10 @@ void SphereRenderable::do_draw()
     if(normalLocation != ShaderProgram::null_location)
     {
         glcheck(glDisableVertexAttribArray(normalLocation));
+    }
+
+    if (nitLocation != ShaderProgram::null_location) {
+        glcheck(glDisableVertexAttribArray(nitLocation));
     }
 
 }

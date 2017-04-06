@@ -109,7 +109,7 @@ void initialize_project_skyrim_2(Viewer& viewer) {
 
     // Define a directional light for the whole scene
     glm::vec3 lightDirection = glm::normalize(glm::vec3(0.0, -1.0, -1.0));
-    glm::vec3 ghostWhite(248.0/255, 248.0/255, 248.0/255);
+    glm::vec3 ghostWhite(248.0/255, 248.0/255, 1.0);
     DirectionalLightPtr directionalLight =
         std::make_shared<DirectionalLight>(lightDirection, ghostWhite, ghostWhite, ghostWhite);
     viewer.setDirectionalLight(directionalLight);
@@ -123,9 +123,10 @@ void initialize_project_skyrim_2(Viewer& viewer) {
 
     /* Création d'un bonhomme de neige */
     BonhommeDeNeigePtr bonhomme = std::make_shared<BonhommeDeNeige>(phongShader);
-    viewer.addRenderable(bonhomme->base);
     bonhomme->setParentTransform(glm::mat4(1.0));
-
+    HierarchicalRenderable::addChild(bonhomme, bonhomme->base);
+    bonhomme->generateAnimation();
+    viewer.addRenderable(bonhomme);
   }
   /*bool Anais = false;
   if (Anais) {
@@ -220,6 +221,6 @@ void initialize_project_skyrim_2(Viewer& viewer) {
   }*/
 
   // Run the animation
-  viewer.setAnimationLoop(true, 6.0);
+  viewer.setAnimationLoop(true, 1.2);
   viewer.startAnimation();
 }
