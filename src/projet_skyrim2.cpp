@@ -113,6 +113,7 @@ void initialize_project_skyrim_2(Viewer& viewer) {
   viewer.setDirectionalLight(directionalLight);
   viewer.addRenderable(directionalLightRenderable);
 
+
   /*******************************************************************************
    * FIN INITIALISATION *
    ******************************************************************************/
@@ -125,6 +126,30 @@ void initialize_project_skyrim_2(Viewer& viewer) {
     viewer.addRenderable(tree->tronc);
 
 
+
+  bool Matthieu = true;
+  if (Matthieu) {
+
+    // Define a directional light for the whole scene
+    glm::vec3 lightDirection = glm::normalize(glm::vec3(0.0, -1.0, -1.0));
+    glm::vec3 ghostWhite(248.0/255, 248.0/255, 1.0);
+    DirectionalLightPtr directionalLight =
+        std::make_shared<DirectionalLight>(lightDirection, ghostWhite, ghostWhite, ghostWhite);
+    viewer.setDirectionalLight(directionalLight);
+    // Add a renderable to display the light and control it via mouse/key event
+    glm::vec3 lightPosition(0.0, 5.0, 8.0);
+    DirectionalLightRenderablePtr directionalLightRenderable
+        = std::make_shared<DirectionalLightRenderable>(flatShader, directionalLight, lightPosition);
+    glm::mat4 localTransformation = glm::scale(glm::mat4(1.0), glm::vec3(0.5, 0.5, 0.5));
+    directionalLightRenderable->setLocalTransform(localTransformation);
+    viewer.addRenderable(directionalLightRenderable);
+
+    /* Création d'un bonhomme de neige */
+    BonhommeDeNeigePtr bonhomme = std::make_shared<BonhommeDeNeige>(phongShader);
+    bonhomme->setParentTransform(glm::mat4(1.0));
+    HierarchicalRenderable::addChild(bonhomme, bonhomme->base);
+    bonhomme->generateAnimation();
+    viewer.addRenderable(bonhomme);
   }
 
 /*  bool Olivier = false;
@@ -160,32 +185,7 @@ void initialize_project_skyrim_2(Viewer& viewer) {
 		  }
 	  }
   }*/
-
-/*  bool Matthieu = true;
-   if (Matthieu) {
-
-     // Define a directional light for the whole scene
-     glm::vec3 lightDirection = glm::normalize(glm::vec3(0.0, -1.0, -1.0));
-     glm::vec3 ghostWhite(248.0/255, 248.0/255, 248.0/255);
-     DirectionalLightPtr directionalLight =
-         std::make_shared<DirectionalLight>(lightDirection, ghostWhite, ghostWhite, ghostWhite);
-     viewer.setDirectionalLight(directionalLight);
-     // Add a renderable to display the light and control it via mouse/key event
-     glm::vec3 lightPosition(0.0, 5.0, 8.0);
-     DirectionalLightRenderablePtr directionalLightRenderable
-         = std::make_shared<DirectionalLightRenderable>(flatShader, directionalLight, lightPosition);
-     glm::mat4 localTransformation = glm::scale(glm::mat4(1.0), glm::vec3(0.5, 0.5, 0.5));
-     directionalLightRenderable->setLocalTransform(localTransformation);
-     viewer.addRenderable(directionalLightRenderable);
-
-
-     BonhommeDeNeigePtr bonhomme = std::make_shared<BonhommeDeNeige>(phongShader);
-     viewer.addRenderable(bonhomme->base);
-     bonhomme->setParentTransform(glm::mat4(1.0));
-
-}*/
   // Run the animation
-  /*
-  viewer.setAnimationLoop(true, 6.0);
-  viewer.startAnimation();*/
+  viewer.setAnimationLoop(true, 1.2);
+  viewer.startAnimation();
 }
