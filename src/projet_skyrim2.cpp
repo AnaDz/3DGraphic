@@ -126,7 +126,7 @@ void initialize_project_skyrim_2(Viewer& viewer) {
 
   }
 
-  bool Olivier = false;
+/*  bool Olivier = false;
   if (Olivier){
 	  ShaderProgramPtr flatShader= std::make_shared<ShaderProgram>("../shaders/flatVertex.glsl",
 			  "../shaders/flatFragment.glsl");
@@ -158,9 +158,9 @@ void initialize_project_skyrim_2(Viewer& viewer) {
 			  viewer.addRenderable(groundR);
 		  }
 	  }
-  }
+  }*/
 
-  bool Matthieu = true;
+/*  bool Matthieu = true;
    if (Matthieu) {
 
      // Define a directional light for the whole scene
@@ -177,12 +177,12 @@ void initialize_project_skyrim_2(Viewer& viewer) {
      directionalLightRenderable->setLocalTransform(localTransformation);
      viewer.addRenderable(directionalLightRenderable);
 
-     /* Création d'un bonhomme de neige */
+
      BonhommeDeNeigePtr bonhomme = std::make_shared<BonhommeDeNeige>(phongShader);
      viewer.addRenderable(bonhomme->base);
      bonhomme->setParentTransform(glm::mat4(1.0));
 
-
+}*/
   // Run the animation
   /*
   viewer.setAnimationLoop(true, 6.0);
