@@ -9,7 +9,7 @@
 
 class Tree: public HierarchicalRenderable{
 public:
-  Tree(ShaderProgramPtr program, const std::string& textureFilename);
+  Tree(ShaderProgramPtr program, const std::string& textureFilename, const std::string& textureFilename2="");
   ~Tree();
   std::shared_ptr<TruncTex> tronc;
 
@@ -17,9 +17,9 @@ private:
   void do_draw();
   void do_animate(float time);
 
-  MaterialPtr m_material = Material::Emerald();
+  MaterialPtr m_material = Material::Neige();
 
-};  
+};
 
 typedef std::shared_ptr<Tree> TreePtr;
 

@@ -99,11 +99,33 @@ void initialize_project_skyrim_2(Viewer& viewer) {
 
   glm::mat4 parentTransformation(1.0), localTransformation(1.0);
   std::string filename;
+  std::string filename2;
+  //Define a directional light for the whole scene
+  glm::vec3 d_direction = glm::normalize(glm::vec3(0.0,0.0,-1.0));
+  glm::vec3 d_ambient(1.0,1.0,1.0), d_diffuse(1.0,1.0,0.8), d_specular(1.0,1.0,1.0);
+  glm::vec3 ghostWhite(248.0/255, 248.0/255, 248.0/255);
+  DirectionalLightPtr directionalLight = std::make_shared<DirectionalLight>(d_direction, ghostWhite, ghostWhite, ghostWhite);
+  //Add a renderable to display the light and control it via mouse/key event
+  glm::vec3 lightPosition(0,0.0,7.0);
+  DirectionalLightRenderablePtr directionalLightRenderable = std::make_shared<DirectionalLightRenderable>(flatShader, directionalLight, lightPosition);
+  localTransformation = glm::scale(glm::mat4(1.0), glm::vec3(0.5,0.5,0.5));
+  directionalLightRenderable->setLocalTransform(localTransformation);
+  viewer.setDirectionalLight(directionalLight);
+  viewer.addRenderable(directionalLightRenderable);
+
 
   /*******************************************************************************
    * FIN INITIALISATION *
    ******************************************************************************/
   filename = "../textures/bark.jpg";
+  filename2 = "../textures/needle2.jpeg";
+
+  bool Ana = true;
+  if(Ana){
+    TreePtr tree = std::make_shared<Tree>(texShader, filename, filename2);
+    viewer.addRenderable(tree->tronc);
+  }
+
 
   bool Matthieu = true;
   if (Matthieu) {
@@ -129,15 +151,6 @@ void initialize_project_skyrim_2(Viewer& viewer) {
     bonhomme->generateAnimation();
     viewer.addRenderable(bonhomme);
   }
-  /*bool Anais = false;
-  if (Anais) {
-    std::shared_ptr<BasicCubicTreeRenderable> tree = std::make_shared<BasicCubicTreeRenderable>(flatShader);
-    std::string filename;
-    filename = "../textures/bark.jpg";
-    std::shared_ptr<BasicCubicTreeRenderable> tree = std::make_shared<BasicCubicTreeRenderable>(texShader,filename);
-    tree->setParentTransform(glm::mat4(1.0));
-    tree->setMaterial(pearl);
-  }*/
 
 /*  bool Olivier = false;
   if (Olivier){

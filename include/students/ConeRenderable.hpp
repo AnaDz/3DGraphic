@@ -23,6 +23,9 @@ private:
   std::vector< glm::vec3 > m_normals;
   std::vector <glm::vec2> m_texCoords;
 
+//Permet de savoir si on a ou non une texure
+  int texture=0;
+
   unsigned int m_pBuffer;
   unsigned int m_cBuffer;
   unsigned int m_nBuffer;
