@@ -53,6 +53,7 @@
 #include "../include/students/GroundRenderable.hpp"
 #include "../include/students/SnowballRenderable.hpp"
 
+
 void initialize_project_skyrim_2(Viewer& viewer) {
 
   /*******************************************************************************
@@ -122,12 +123,28 @@ void initialize_project_skyrim_2(Viewer& viewer) {
 
   bool Ana = true;
   if(Ana){
-    TreePtr tree = std::make_shared<Tree>(texShader, filename, filename2);
-    viewer.addRenderable(tree->tronc);
+
+    // Temporary variables to use to define transformation
+    glm::mat4 rotationM(1.0), rot1(1.0), rot2(1.0);
+    glm::mat4 scaleM(1.0);
+    glm::mat4 translationM(1.0);
+
+
+    //Head
+    TexturedMeshRenderablePtr mesh =
+        std::make_shared<TexturedMeshRenderable>(
+            texShader, "../meshes/Maison.obj", "../textures/Cottage Texture.jpg");
+    scaleM = glm::scale(glm::mat4(1.0), glm::vec3(0.2,0.2,0.2));
+    mesh->setParentTransform(scaleM);
+     mesh->setMaterial(Material::Maison());
+    /*rotationM = glm::rotate(glm::mat4(1.0), (float)(M_PI/2.0), glm::vec3(1,0,0));
+    head->setLocalTransform(rotationM)*/
+    viewer.addRenderable(mesh);
+
   }
 
 
-  bool Matthieu = true;
+  bool Matthieu = false;
   if (Matthieu) {
 
     // Define a directional light for the whole scene

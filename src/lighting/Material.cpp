@@ -181,3 +181,13 @@ MaterialPtr Material::TissuBleu()
   float shininess = openGLFactor*0.3;
   return std::make_shared<Material>(ambient, diffuse, specular, shininess);
 }
+
+MaterialPtr Material::Maison()
+{
+  float openGLFactor=128.0;
+  glm::vec3 ambient(1.0, 1.0, 1.0);
+  glm::vec3 diffuse(0.5, 0.5, 0.5);
+  glm::vec3 specular(0.0, 0.0, 0.0);
+  float shininess = openGLFactor*0.3;
+  return std::make_shared<Material>(ambient, diffuse, specular, shininess);
+}
