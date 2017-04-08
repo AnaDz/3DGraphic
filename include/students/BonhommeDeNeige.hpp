@@ -15,7 +15,7 @@
 
 class BonhommeDeNeige : public HierarchicalRenderable {
 public:
-  BonhommeDeNeige(ShaderProgramPtr program);
+  BonhommeDeNeige(ShaderProgramPtr phongShader, ShaderProgramPtr texShader);
   ~BonhommeDeNeige();
   std::shared_ptr<SphereRenderable> base;
   void addParentTransformKeyframe(float time, const GeometricTransformation& transformation);

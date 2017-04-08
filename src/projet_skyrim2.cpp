@@ -162,7 +162,7 @@ void initialize_project_skyrim_2(Viewer& viewer) {
     viewer.addRenderable(directionalLightRenderable);
 
     /* Création d'un bonhomme de neige */
-    BonhommeDeNeigePtr bonhomme = std::make_shared<BonhommeDeNeige>(phongShader);
+    BonhommeDeNeigePtr bonhomme = std::make_shared<BonhommeDeNeige>(phongShader, texShader);
     bonhomme->setParentTransform(glm::mat4(1.0));
     HierarchicalRenderable::addChild(bonhomme, bonhomme->base);
     bonhomme->generateAnimation();
@@ -203,6 +203,6 @@ void initialize_project_skyrim_2(Viewer& viewer) {
 	  }
   }*/
   // Run the animation
-  viewer.setAnimationLoop(true, 1.2);
+  viewer.setAnimationLoop(true, 10);
   viewer.startAnimation();
 }

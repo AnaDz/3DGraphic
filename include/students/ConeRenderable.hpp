@@ -11,7 +11,7 @@ class ConeRenderable : public HierarchicalRenderable, public Materiable {
 public:
   ~ConeRenderable();
   ConeRenderable(ShaderProgramPtr program,
-                    const MaterialPtr& material = Material::TissuNoir(),
+                    const MaterialPtr& material = Material::Carotte(),
                     const std::string& textureFilename = "");
   void do_draw();
 
