@@ -32,17 +32,17 @@ ConeRenderable::ConeRenderable(ShaderProgramPtr shaderProgram,
         double next_theta = (i+1)*(2.0*M_PI/(double)slices);
         double next_u = (j+1)*(1.0/(double)strips);
         glm::vec2 tex;
-        tex = glm::vec2(0.5+cos(curr_theta)*(1-curr_u),0.5+sin(curr_theta)*(1-curr_u));
+        tex = glm::vec2(0.5+cos(curr_theta)*(1-curr_u)/2.0,0.5+sin(curr_theta)*(1-curr_u)/2.0);
         m_texCoords.push_back(tex);
-        tex = glm::vec2(0.5+cos(next_theta)*(1-curr_u),0.5+sin(next_theta)*(1-curr_u));
+        tex = glm::vec2(0.5+cos(next_theta)*(1-curr_u)/2.0,0.5+sin(next_theta)*(1-curr_u)/2.0);
         m_texCoords.push_back(tex);
-        tex = glm::vec2(0.5+cos(next_theta)*(1-next_u),0.5+sin(next_theta)*(1-next_u));
+        tex = glm::vec2(0.5+cos(next_theta)*(1-next_u)/2.0,0.5+sin(next_theta)*(1-next_u)/2.0);
         m_texCoords.push_back(tex);
-        tex = glm::vec2(0.5+cos(curr_theta)*(1-curr_u),0.5+sin(curr_theta)*(1-curr_u));
+        tex = glm::vec2(0.5+cos(curr_theta)*(1-curr_u)/2.0,0.5+sin(curr_theta)*(1-curr_u)/2.0);
         m_texCoords.push_back(tex);
-        tex = glm::vec2(0.5+cos(next_theta)*(1-next_u),0.5+sin(next_theta)*(1-next_u));
+        tex = glm::vec2(0.5+cos(next_theta)*(1-next_u)/2.0,0.5+sin(next_theta)*(1-next_u)/2.0);
         m_texCoords.push_back(tex);
-        tex = glm::vec2(0.5+cos(curr_theta)*(1-next_u),0.5+sin(curr_theta)*(1-next_u));
+        tex = glm::vec2(0.5+cos(curr_theta)*(1-next_u)/2.0,0.5+sin(curr_theta)*(1-next_u)/2.0);
         m_texCoords.push_back(tex);
 
         glcheck(glGenBuffers(1, &m_tBuffer)); //textures

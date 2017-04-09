@@ -119,7 +119,7 @@ void initialize_project_skyrim_2(Viewer& viewer) {
    * FIN INITIALISATION *
    ******************************************************************************/
   filename = "../textures/bark.jpg";
-  filename2 = "../textures/needle2.jpeg";
+  filename2 = "../textures/needle.jpg";
 
   bool Ana = true;
   if(Ana){
@@ -128,8 +128,9 @@ void initialize_project_skyrim_2(Viewer& viewer) {
     glm::mat4 rotationM(1.0), rot1(1.0), rot2(1.0);
     glm::mat4 scaleM(1.0);
     glm::mat4 translationM(1.0);
-
-    Explosion(system, systemRenderable, phongShader);
+    TreePtr tree = std::make_shared<Tree>(texShader, filename, filename2);
+    viewer.addRenderable(tree->tronc);
+  //  Explosion(system, systemRenderable, phongShader);
 
       /*  TexturedMeshRenderablePtr mesh =
             std::make_shared<TexturedMeshRenderable>(
