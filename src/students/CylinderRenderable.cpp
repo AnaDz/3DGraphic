@@ -6,12 +6,16 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <GL/glew.h>
+#include <SFML/Graphics/Image.hpp>
+#include <iostream>
 
 CylinderRenderable::CylinderRenderable(ShaderProgramPtr shaderProgram,
-                                      const MaterialPtr& material) :
+                                      const MaterialPtr& material,
+                                      const std::string& textureFilename) :
   HierarchicalRenderable(shaderProgram), Materiable(material),
-  m_pBuffer(0), m_cBuffer(0), m_nBuffer(0)
+  m_pBuffer(0), m_cBuffer(0), m_nBuffer(0), m_tBuffer(0), m_texId(0)
 {
+  // Création du cylindre
   std::vector<glm::vec3> positions;
   std::vector<glm::vec3> normals;
   const unsigned int slices = 20;
@@ -32,23 +36,69 @@ CylinderRenderable::CylinderRenderable(ShaderProgramPtr shaderProgram,
   glcheck(glBindBuffer(GL_ARRAY_BUFFER, m_nBuffer));
   glcheck(glBufferData(GL_ARRAY_BUFFER, m_normals.size()*sizeof(glm::vec3), m_normals.data(), GL_STATIC_DRAW));
 
+  // Pareil pour les textures, s'il y en a
+  if (textureFilename != "") {
+    // Buffer de textures
+    for(int i = 0; i<slices; i++) {
+      m_texCoords.push_back(glm::vec2(0.0,1.0));
+      m_texCoords.push_back(glm::vec2(1.0,0.0));
+      m_texCoords.push_back(glm::vec2(1.0,1.0));
+      m_texCoords.push_back(glm::vec2(0.0,1.0));
+      m_texCoords.push_back(glm::vec2(1.0,0.0));
+      m_texCoords.push_back(glm::vec2(1.0,1.0));
+      m_texCoords.push_back(glm::vec2((double) i/slices,0.0));
+      m_texCoords.push_back(glm::vec2((double) (i+1)/slices,1.0));
+      m_texCoords.push_back(glm::vec2((double) i/slices,1.0));
+      m_texCoords.push_back(glm::vec2((double) i/slices,0.0));
+      m_texCoords.push_back(glm::vec2((double) (i+1)/slices,0.0));
+      m_texCoords.push_back(glm::vec2((double) (i+1)/slices,1.0));
+    }
+
+    glGenBuffers(1, &m_tBuffer);
+    glcheck(glBindBuffer(GL_ARRAY_BUFFER, m_tBuffer));
+    glcheck(glBufferData(GL_ARRAY_BUFFER, m_texCoords.size()*sizeof(glm::vec2), m_texCoords.data(), GL_STATIC_DRAW));
+
+    //Handle the texture image itself
+    sf::Image image;
+    image.loadFromFile(textureFilename);
+    image.flipVertically();
+    glcheck(glGenTextures(1, &m_texId));
+    glcheck(glBindTexture(GL_TEXTURE_2D, m_texId));
+    glcheck(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
+    glcheck(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
+    glcheck(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
+    glcheck(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
+    glcheck(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F,
+        image.getSize().x, image.getSize().y, 0, GL_RGBA, GL_UNSIGNED_BYTE,
+        (const GLvoid*)image.getPixelsPtr()));
+    glcheck(glBindTexture(GL_TEXTURE_2D, 0));
+  }
 }
 
 void CylinderRenderable::do_draw()
 {
-    //Send material to GPU as uniform
-    Material::sendToGPU(m_shaderProgram, getMaterial());
-
     //Location
     int positionLocation = m_shaderProgram->getAttributeLocation("vPosition");
     int colorLocation = m_shaderProgram->getAttributeLocation("vColor");
     int normalLocation = m_shaderProgram->getAttributeLocation("vNormal");
     int modelLocation = m_shaderProgram->getUniformLocation("modelMat");
+    int texSamplerLocation = m_shaderProgram->getUniformLocation("texSampler");
+    int texCoordLocation = m_shaderProgram->getAttributeLocation("vTexCoord");
+    int nitLocation = m_shaderProgram->getUniformLocation("NIT");
+
+    //Send material to GPU as uniform
+    Material::sendToGPU(m_shaderProgram, getMaterial());
 
     //Send data to GPU
     if(modelLocation != ShaderProgram::null_location)
     {
         glcheck(glUniformMatrix4fv(modelLocation, 1, GL_FALSE, glm::value_ptr(getModelMatrix())));
+    }
+
+    //NIT matrix
+    if (nitLocation != ShaderProgram::null_location) {
+        glcheck(glUniformMatrix3fv(nitLocation, 1, GL_FALSE,
+            glm::value_ptr(glm::transpose(glm::inverse(glm::mat3(getModelMatrix()))))));
     }
 
     if(positionLocation != ShaderProgram::null_location)
@@ -75,6 +125,22 @@ void CylinderRenderable::do_draw()
         glcheck(glVertexAttribPointer(normalLocation, 3, GL_FLOAT, GL_FALSE, 0, (void*)0));
     }
 
+    // Texture and texture coordinates
+    if (texCoordLocation != ShaderProgram::null_location) {
+        // Bind texture on texture unit 0
+        glcheck(glActiveTexture(GL_TEXTURE0));
+        glcheck(glBindTexture(GL_TEXTURE_2D, m_texId));
+
+        // Tells the sampler to use the texture unit 0
+        glcheck(glUniform1i(texSamplerLocation, 0));
+
+        // Send texture coordinates attributes
+        glcheck(glEnableVertexAttribArray(texCoordLocation));
+        glcheck(glBindBuffer(GL_ARRAY_BUFFER, m_tBuffer));
+        glcheck(glVertexAttribPointer(texCoordLocation, 2, GL_FLOAT, GL_FALSE, 0, (void*)0));
+    }
+
+
     //Draw triangles elements
     glcheck(glDrawArrays(GL_TRIANGLES,0, m_positions.size()));
 
@@ -90,6 +156,13 @@ void CylinderRenderable::do_draw()
     {
         glcheck(glDisableVertexAttribArray(normalLocation));
     }
+    if (nitLocation != ShaderProgram::null_location) {
+        glcheck(glDisableVertexAttribArray(nitLocation));
+    }
+    if (texCoordLocation != ShaderProgram::null_location) {
+        glcheck(glDisableVertexAttribArray(texCoordLocation));
+        glcheck(glBindTexture(GL_TEXTURE_2D, 0));   // unbind the texture!
+    }
 }
 
 void CylinderRenderable::do_animate(float time) {}
@@ -99,4 +172,6 @@ CylinderRenderable::~CylinderRenderable()
     glcheck(glDeleteBuffers(1, &m_pBuffer));
     glcheck(glDeleteBuffers(1, &m_cBuffer));
     glcheck(glDeleteBuffers(1, &m_nBuffer));
+    glcheck(glDeleteBuffers(1, &m_tBuffer));
+    glcheck(glDeleteTextures(1, &m_texId));
 }

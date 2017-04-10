@@ -24,7 +24,7 @@ GroundRenderable::GroundRenderable(ShaderProgramPtr shaderProgram, int x, int y,
 		for (int i=0; i<=n; i++){
 			for (int j=0; j<=n; j++){
 				m_positions.push_back(glm::vec3((float)i/n,(float)j/n, 0.3*Get2DPerlinNoiseValue((i+x*n),(j+y*n), 10.0)));
-				//m_positions.push_back(glm::vec3((float)i/n,(float)j/n, 0));
+				//m_positions.push_back(glm::vec3((float)i/n, (float)j/n, 0.3*Get2DPerlinNoiseValue((i+x*n),(j+y*n), 100.0)));
 			}
 		}
 
@@ -39,24 +39,24 @@ GroundRenderable::GroundRenderable(ShaderProgramPtr shaderProgram, int x, int y,
 			for (int j=0; j<n; j++){
 				m_indices.push_back(glm::ivec3(i*(n+1)+j, i*(n+1)+(j+1), (i+1)*(n+1)+j));
 				m_indices.push_back(glm::ivec3((i+1)*(n+1)+j, i*(n+1)+(j+1), (i+1)*(n+1)+(j+1)));
+
+
 			}
 		}
 
 
 	    glGenBuffers(1, &m_pBuffer); //vertices
 	    glGenBuffers(1, &m_cBuffer); //colors
-//	    glGenBuffers(1, &m_nBuffer); //normals
 	    glGenBuffers(1, &m_iBuffer); //indices
 
 	    glcheck(glBindBuffer(GL_ARRAY_BUFFER, m_pBuffer));
 	    glcheck(glBufferData(GL_ARRAY_BUFFER, m_positions.size()*sizeof(glm::vec3), m_positions.data(), GL_STATIC_DRAW));
 	    glcheck(glBindBuffer(GL_ARRAY_BUFFER, m_cBuffer));
 	    glcheck(glBufferData(GL_ARRAY_BUFFER, m_colors.size()*sizeof(glm::vec4), m_colors.data(), GL_STATIC_DRAW));
-	//    glcheck(glBindBuffer(GL_ARRAY_BUFFER, m_nBuffer));
-	//    glcheck(glBufferData(GL_ARRAY_BUFFER, m_normals.size()*sizeof(glm::vec3), m_normals.data(), GL_STATIC_DRAW));
 	    glcheck(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_iBuffer));
 	    glcheck(glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_indices.size()*sizeof(glm::ivec3), m_indices.data(), GL_STATIC_DRAW));
 }
+
 
 void GroundRenderable::do_animate(float time)
 {

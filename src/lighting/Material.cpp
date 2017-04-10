@@ -145,10 +145,10 @@ MaterialPtr Material::Bronze()
 MaterialPtr Material::Neige()
 {
     float openGLFactor=128.0;
-    glm::vec3 ambient(0.6, 0.6, 0.6);
-    glm::vec3 diffuse(0.2, 0.2, 0.2);
-    glm::vec3 specular(0.2, 0.2, 0.2);
-    float shininess = openGLFactor*0.9;
+    glm::vec3 ambient(0.7, 0.7, 0.7);
+    glm::vec3 diffuse(0.3, 0.3, 0.3);
+    glm::vec3 specular(0.3, 0.3, 0.3);
+    float shininess = openGLFactor*0.7;
     return std::make_shared<Material>(ambient, diffuse, specular, shininess);
 }
 
@@ -177,6 +177,16 @@ MaterialPtr Material::TissuBleu()
   float openGLFactor=128.0;
   glm::vec3 ambient(0.15, 0.45, 0.75);
   glm::vec3 diffuse(0.2, 0.2, 0.2);
+  glm::vec3 specular(0.0, 0.0, 0.0);
+  float shininess = openGLFactor*0.3;
+  return std::make_shared<Material>(ambient, diffuse, specular, shininess);
+}
+
+MaterialPtr Material::Maison()
+{
+  float openGLFactor=128.0;
+  glm::vec3 ambient(1.0, 1.0, 1.0);
+  glm::vec3 diffuse(0.5, 0.5, 0.5);
   glm::vec3 specular(0.0, 0.0, 0.0);
   float shininess = openGLFactor*0.3;
   return std::make_shared<Material>(ambient, diffuse, specular, shininess);

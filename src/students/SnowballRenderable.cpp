@@ -16,7 +16,7 @@
 #include "./../../teachers/Geometries.hpp"
 
 #include"../../include/dynamics/Particle.hpp"
-
+#include "../../include/students/GroundRenderable.hpp"
 
 
 
@@ -33,6 +33,31 @@ SnowballRenderable::SnowballRenderable(ShaderProgramPtr shaderProgram,  Viewer* 
 	 droite = false;
 	 toutDroit = true;
 
+	 //initialisation du sol
+	 int nx = 6;
+	 int ny = 75;
+	 int n = 10;
+	 float angle = -(float)3.14/12;
+
+	 glm::mat4 parentTransformation, localTransformation;
+	 GroundRenderablePtr groundR ;
+
+	 ShaderProgramPtr flatShader= std::make_shared<ShaderProgram>("../shaders/flatVertex.glsl",
+			 "../shaders/flatFragment.glsl");
+	 viewer->addShaderProgram(flatShader);
+
+	 for (int x=0; x<nx; x++){
+		 for (int y=0; y<ny; y++){
+			 groundR = std::make_shared<GroundRenderable>(flatShader,x,y,n, viewer);
+			 //parentTransformation=glm::rotate(glm::translate(glm::mat4(1.0), glm::vec3(x,y,0)), (float)3.14/6, glm::vec3(1,0,0));
+			 parentTransformation=glm::translate(glm::rotate(glm::mat4(1.0), angle, glm::vec3(1,0,0)), glm::vec3(x,y,0));
+			groundR->setParentTransform(parentTransformation);
+			 localTransformation = glm::mat4(1.0);
+			 groundR->setLocalTransform(localTransformation);
+			 viewer->addRenderable(groundR);
+
+		 }
+	 }
 }
 
 void SnowballRenderable::do_animate(float time)
@@ -41,13 +66,13 @@ void SnowballRenderable::do_animate(float time)
 
 float scaleFactor = 1;
 bool ancien[3]={false, false, false};
+int k =1;
 void SnowballRenderable::do_draw()
 {
 	if (m_particle->getPosition().y < 100){
 		scaleFactor= 1+m_particle->getPosition().y/100;
-
-
-	viewer->getCamera().setPosition(glm::vec3(5,-2+ParticleRenderable::m_particle->getPosition().y, 2+ParticleRenderable::m_particle->getPosition().z));
+	}
+	viewer->getCamera().setPosition(glm::vec3(3,-2+ParticleRenderable::m_particle->getPosition().y, 2+ParticleRenderable::m_particle->getPosition().z));
 
 	Material::sendToGPU(m_shaderProgram, Material::Neige());
 	setLocalTransform(glm::rotate(glm::mat4(1.0), -(float)(ParticleRenderable::m_particle->getPosition().y), glm::vec3(1,0,0)));
@@ -74,10 +99,10 @@ void SnowballRenderable::do_draw()
 	}
 	ParticleRenderable::do_draw();
 
-	}
-	else {
-		std::cout << "JEU FINI !!\n";
-		exit(1);
+
+
+	if (m_particle->getPosition().y >= k*25){
+
 	}
 
 

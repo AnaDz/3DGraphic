@@ -1,4 +1,4 @@
-#include "../../include/students/BasicCubicTreeRenderable.hpp"
+#include "../../include/students/TruncTex.hpp"
 #include "../../include/gl_helper.hpp"
 #include "../../include/log.hpp"
 #include "../../include/Utils.hpp"
@@ -9,24 +9,19 @@
 #include <SFML/Graphics/Image.hpp>
 #include <iostream>
 
-BasicCubicTreeRenderable::BasicCubicTreeRenderable(ShaderProgramPtr shaderProgram, const std::string& textureFilename) :
+TruncTex::TruncTex(ShaderProgramPtr shaderProgram, const std::string& textureFilename) :
   HierarchicalRenderable(shaderProgram),
   m_pBuffer(0), m_tBuffer(0), m_texId(0), m_nBuffer(0)
 {
   int prec = 10;
   float pi = atan(1) * 4;
   float step = 2*pi/prec;
-/*  glm::vec4 myColor;
-  myColor = glm::vec4(102.0/255.0,51.0/255.0,0,0);*/
   for(int i = 0; i<prec; i++) {
 
     m_positions.push_back(glm::vec3(0,0,0));
     m_positions.push_back(glm::vec3(cos(i*step)*0.5,sin(i*step)*0.5,0));
     m_positions.push_back(glm::vec3(cos((i+1)*step)*0.5,sin((i+1)*step)*0.5,0));
 
-/*    m_colors.push_back(myColor);
-    m_colors.push_back(myColor);
-    m_colors.push_back(myColor);*/
     m_texCoords.push_back(glm::vec2(0.0,1.0));
     m_texCoords.push_back(glm::vec2(1.0,0.0));
     m_texCoords.push_back(glm::vec2(1.0,1.0));
@@ -39,9 +34,6 @@ BasicCubicTreeRenderable::BasicCubicTreeRenderable(ShaderProgramPtr shaderProgra
     m_positions.push_back(glm::vec3(cos(i*step)*0.5,sin(i*step)*0.5,2));
     m_positions.push_back(glm::vec3(cos((i+1)*step)*0.5,sin((i+1)*step)*0.5,2));
 
-  /*  m_colors.push_back(myColor);
-    m_colors.push_back(myColor);
-    m_colors.push_back(myColor);*/
     m_texCoords.push_back(glm::vec2(0.0,1.0));
     m_texCoords.push_back(glm::vec2(1.0,0.0));
     m_texCoords.push_back(glm::vec2(1.0,1.0));
@@ -74,44 +66,10 @@ BasicCubicTreeRenderable::BasicCubicTreeRenderable(ShaderProgramPtr shaderProgra
     m_texCoords.push_back(glm::vec2((double) (i+1)/prec,0.0));
     m_texCoords.push_back(glm::vec2((double) (i+1)/prec,1.0));
 
-/*    m_colors.push_back(myColor);
-    m_colors.push_back(myColor);
-    m_colors.push_back(myColor);
-    m_colors.push_back(myColor);
-    m_colors.push_back(myColor);
-    m_colors.push_back(myColor);*/
 
 
   }
 
-//  myColor = glm::vec4(0,0.5,0,0);
-/*  m_positions.push_back(glm::vec3(1,1,1.5));
-  m_positions.push_back(glm::vec3(-1,1,1.5));
-  m_positions.push_back(glm::vec3(0,0,5));
-  m_colors.push_back(myColor);
-  m_colors.push_back(myColor);
-  m_colors.push_back(myColor);
-
-  m_positions.push_back(glm::vec3(1,1,1.5));
-  m_positions.push_back(glm::vec3(1,-1,1.5));
-  m_positions.push_back(glm::vec3(0,0,5));
-  m_colors.push_back(myColor);
-  m_colors.push_back(myColor);
-  m_colors.push_back(myColor);
-
-  m_positions.push_back(glm::vec3(-1,1,1.5));
-  m_positions.push_back(glm::vec3(-1,-1,1.5));
-  m_positions.push_back(glm::vec3(0,0,5));
- m_colors.push_back(myColor);
-  m_colors.push_back(myColor);
-  m_colors.push_back(myColor);
-
-  m_positions.push_back(glm::vec3(1,-1,1.5));
-  m_positions.push_back(glm::vec3(-1,-1,1.5));
-  m_positions.push_back(glm::vec3(0,0,5));
-  m_colors.push_back(myColor);
-  m_colors.push_back(myColor);
-  m_colors.push_back(myColor);*/
     m_model = glm::mat4(1.0);
 
     glcheck(glGenBuffers(1, &m_pBuffer));
@@ -154,7 +112,7 @@ BasicCubicTreeRenderable::BasicCubicTreeRenderable(ShaderProgramPtr shaderProgra
     glcheck(glBindTexture(GL_TEXTURE_2D, 0));
 }
 
-BasicCubicTreeRenderable::~BasicCubicTreeRenderable()
+TruncTex::~TruncTex()
 {
     glcheck(glDeleteBuffers(1, &m_pBuffer));
     glcheck(glDeleteBuffers(1, &m_tBuffer));
@@ -162,7 +120,7 @@ BasicCubicTreeRenderable::~BasicCubicTreeRenderable()
     glcheck(glDeleteTextures(1, &m_texId));
 }
 
-void BasicCubicTreeRenderable::do_draw()
+void TruncTex::do_draw()
 {
   //  glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
@@ -231,11 +189,11 @@ void BasicCubicTreeRenderable::do_draw()
   //  glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }
 
-void BasicCubicTreeRenderable::do_animate(float time)
+void TruncTex::do_animate(float time)
 {
 }
 
 
-void BasicCubicTreeRenderable::setMaterial(const MaterialPtr& material){
+void TruncTex::setMaterial(const MaterialPtr& material){
   m_material = material;
 }
