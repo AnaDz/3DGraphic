@@ -40,7 +40,7 @@ SnowballRenderable::SnowballRenderable(ShaderProgramPtr shaderProgram,  Viewer* 
 	 float angle = -(float)3.14/12;
 
 	 glm::mat4 parentTransformation, localTransformation;
-	 GroundRenderablePtr groundR ;
+	 //groundR = malloc(sizeof(GroundRenderablePtr) * nx * ny);
 
 	 ShaderProgramPtr flatShader= std::make_shared<ShaderProgram>("../shaders/flatVertex.glsl",
 			 "../shaders/flatFragment.glsl");
@@ -48,13 +48,13 @@ SnowballRenderable::SnowballRenderable(ShaderProgramPtr shaderProgram,  Viewer* 
 
 	 for (int x=0; x<nx; x++){
 		 for (int y=0; y<ny; y++){
-			 groundR = std::make_shared<GroundRenderable>(flatShader,x,y,n, viewer);
+			 groundR[x][y] = std::make_shared<GroundRenderable>(flatShader,x,y,n, viewer);
 			 //parentTransformation=glm::rotate(glm::translate(glm::mat4(1.0), glm::vec3(x,y,0)), (float)3.14/6, glm::vec3(1,0,0));
 			 parentTransformation=glm::translate(glm::rotate(glm::mat4(1.0), angle, glm::vec3(1,0,0)), glm::vec3(x,y,0));
-			groundR->setParentTransform(parentTransformation);
+			groundR[x][y]->setParentTransform(parentTransformation);
 			 localTransformation = glm::mat4(1.0);
-			 groundR->setLocalTransform(localTransformation);
-			 viewer->addRenderable(groundR);
+			 groundR[x][y]->setLocalTransform(localTransformation);
+			 viewer->addRenderable(groundR[x][y]);
 
 		 }
 	 }
@@ -71,12 +71,16 @@ void SnowballRenderable::do_draw()
 {
 	if (m_particle->getPosition().y < 100){
 		scaleFactor= 1+m_particle->getPosition().y/100;
+		m_particle->setRadius(scaleFactor/2);
 	}
+
 	viewer->getCamera().setPosition(glm::vec3(3,-2+ParticleRenderable::m_particle->getPosition().y, 2+ParticleRenderable::m_particle->getPosition().z));
+
+
 
 	Material::sendToGPU(m_shaderProgram, Material::Neige());
 	setLocalTransform(glm::rotate(glm::mat4(1.0), -(float)(ParticleRenderable::m_particle->getPosition().y), glm::vec3(1,0,0)));
-	setLocalTransform(glm::scale(getLocalTransform(), glm::vec3(scaleFactor) ));
+	//setLocalTransform(glm::scale(getLocalTransform(), glm::vec3(scaleFactor) ));
 
 	float vitesse = m_particle->getVelocity().y;
 	if (gauche){
@@ -97,12 +101,49 @@ void SnowballRenderable::do_draw()
 			ancien[2]=false;
 		}
 	}
+
+	if (m_particle->getVelocity().y > 50 ){
+		glm::vec3 tmp = m_particle->getVelocity();
+		tmp.y = 50;
+		m_particle->setVelocity(tmp);
+		//printf("vitesse.x =%f, vitesse.y =%f, vitesse.z =%f \n",m_particle->getVelocity().x, m_particle->getVelocity().y, m_particle->getVelocity().z);
+	}
 	ParticleRenderable::do_draw();
 
 
 
 	if (m_particle->getPosition().y >= k*25){
+		// m_particle->setPosition(glm::vec3(m_particle->getPosition().x, 0, 0));
+		int nx = 6;
+		int ny = 75;
+		int n = 10;
+		float angle = -(float)3.14/12;
 
+		glm::mat4 parentTransformation, localTransformation;
+		//GroundRenderablePtr groundR ;
+
+		ShaderProgramPtr flatShader= std::make_shared<ShaderProgram>("../shaders/flatVertex.glsl",
+				"../shaders/flatFragment.glsl");
+		viewer->addShaderProgram(flatShader);
+		GroundRenderablePtr tmp;
+			for (int x=0; x<nx; x++){
+				for (int y=0; y<25; y++){
+					tmp = groundR[x][y];
+					//printf("x=%i, y=%i \n",x,y);
+					parentTransformation=glm::translate(glm::rotate(glm::mat4(1.0), angle, glm::vec3(1,0,0)), glm::vec3(x,(k+2)*25+y,0));
+					tmp->setParentTransform(parentTransformation);
+					localTransformation = glm::mat4(1.0);
+					tmp->setLocalTransform(localTransformation);
+
+					groundR[x][y]= groundR[x][y+25];
+					groundR[x][y+25]=groundR[x][y+50];
+					groundR[x][y+50]=tmp;
+
+				}
+			}
+			//printf("segfault avant \n");
+
+		k++;
 	}
 
 
