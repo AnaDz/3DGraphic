@@ -90,13 +90,6 @@ void initialize_project_skyrim_2(Viewer& viewer) {
    DynamicSystemRenderablePtr systemRenderable = std::make_shared<DynamicSystemRenderable>(system);
    viewer.addRenderable(systemRenderable);
 
-  //Position the camera
-  viewer.getCamera().setViewMatrix(
-    glm::lookAt(
-      glm::vec3(0, -8, 8 ),
-      glm::vec3(0, 0, 0),
-      glm::vec3( 0, 0, 1 ) ) );
-
 
   glm::mat4 parentTransformation(1.0), localTransformation(1.0);
   std::string filename;
@@ -131,7 +124,6 @@ void initialize_project_skyrim_2(Viewer& viewer) {
 
   bool Ana = false;
   if(Ana){
-
     // Temporary variables to use to define transformation
     filename = "../textures/bark.jpg";
     filename2 = "../textures/needle.jpg";
@@ -151,13 +143,10 @@ void initialize_project_skyrim_2(Viewer& viewer) {
         /*rotationM = glm::rotate(glm::mat4(1.0), (float)(M_PI/2.0), glm::vec3(1,0,0));
         head->setLocalTransform(rotationM)*/
         //viewer.addRenderable(mesh);
-
   }
-
 
   bool Matthieu = true;
   if (Matthieu) {
-
     /* Création d'un bonhomme de neige */
     BonhommeDeNeigePtr bonhomme = std::make_shared<BonhommeDeNeige>(phongShader, texShader);
     bonhomme->setParentTransform(glm::mat4(1.0));
@@ -165,39 +154,77 @@ void initialize_project_skyrim_2(Viewer& viewer) {
     viewer.addRenderable(bonhomme);
   }
 
-/*  bool Olivier = false;
+bool Olivier = true;
   if (Olivier){
-	  ShaderProgramPtr flatShader= std::make_shared<ShaderProgram>("../shaders/flatVertex.glsl",
-			  "../shaders/flatFragment.glsl");
-	  viewer.addShaderProgram(flatShader);
+    MaterialPtr pearl = Material::Pearl();
 
-	  ShaderProgramPtr phongShader= std::make_shared<ShaderProgram>("../shaders/phongVertex.glsl",
-			  "../shaders/phongFragment.glsl");
-	  viewer.addShaderProgram(phongShader);
+ 	  glm::vec3 lightDirection = glm::normalize(glm::vec3(0.0, -1.0, -1.0));
+ 	  glm::vec3 ghostWhite(248.0/255, 248.0/255, 248.0/255);
+ 	  DirectionalLightPtr directionalLight = std::make_shared<DirectionalLight>(lightDirection, ghostWhite, ghostWhite, ghostWhite);
+ 	  viewer.setDirectionalLight(directionalLight);
+
+ 	  glm::mat4 parentTransformation, localTransformation;
+ 	  GroundRenderablePtr groundR ;
+ 	  int nx = 6;
+ 	  int ny = 75;
+ 	  int n = 10; //nb de points par dalle
+ 	  float angle = -(float)3.14/12;
+
+ 	  //cf memo : plan invisible. il n'est même pas tracé. Normalement ça fonctionne
+ 	  glm::vec3 p1(0.0, 0.0, 0.0);
+ 	  glm::vec3 p2(nx, 0.0, 0.0);
+ 	  glm::vec3 p3(nx, ny*cos(angle), ny*sin(angle) );
+ 	  glm::vec3 p4(0, ny*cos(angle), ny*sin(angle));
+ 	  PlanePtr plane = std::make_shared<Plane>(p1, p2, p3);
+ 	  system->addPlaneObstacle(plane);
+
+ 	  //Create a plane renderable to display the obstacle
+ //PlaneRenderablePtr planeRenderable = std::make_shared<QuadRenderable>(flatShader, p1,p2,p3,p4, glm::vec4(0,0,1,1));
+ 	 // parentTransformation=glm::rotate(glm::mat4(1.0), -angle, glm::vec3(1,0,0));
+ 	 // planeRenderable->setParentTransform(parentTransformation);
+ 	 // HierarchicalRenderable::addChild( systemRenderable, planeRenderable );
 
 
-	  // add a 3D frame to the viewer
-	  viewer.addRenderable(std::make_shared<FrameRenderable>(flatShader));
+ 	  //possible de faire tout ça en une seule classe si besoin :) comme ça une texture "globale"
+ 	  //voire à faire dans le but d'en faire un plane renderable. Ou alors mettre un plan transparent au même niveau
 
 
-	  glm::mat4 parentTransformation, localTransformation;
-	  GroundRenderablePtr groundR ;
+ 	  glm::vec3 px,pv;
+ 	  float pm, pr;
+ 	  px = glm::vec3(3, 1,0 );
+ 	  pv = glm::vec3(0.0, 1.0, 0.0);
+ 	  pr = 0.5;
+ 	  pm = 10;
+ 	  ParticlePtr particle = std::make_shared<Particle>(px, pv, pm, pr);
+	  system->addParticle(particle);
 
-	  //possible de faire tout ça en une seule classe si besoin :) comme ça une texture "globale"
-	  int n = 10;
-	  for (int x=0; x<10; x++){
-		  for (int y=0; y<10; y++){
-			  groundR = std::make_shared<GroundRenderable>(flatShader,x,y,n);
-			  //parentTransformation=glm::rotate(glm::translate(glm::mat4(1.0), glm::vec3(x,y,0)), (float)3.14/6, glm::vec3(1,0,0));
-			  parentTransformation=glm::translate(glm::rotate(glm::mat4(1.0), -(float)3.14/12, glm::vec3(1,0,0)), glm::vec3(x,y,0));
-			  groundR->setParentTransform(parentTransformation);
-			  localTransformation = glm::mat4(1.0);
-			  groundR->setLocalTransform(localTransformation);
+ 	  SnowballRenderablePtr sb = std::make_shared<SnowballRenderable>(phongShader, &viewer, particle);
+ 	  parentTransformation=glm::translate(glm::mat4(1.0), glm::vec3(5,1,0));
+ 	  sb->setParentTransform(parentTransformation);
+ 	  HierarchicalRenderable::addChild(systemRenderable, sb);
 
-			  viewer.addRenderable(groundR);
-		  }
-	  }
-  }*/
+ 	  ConstantForceFieldPtr gravityForceField = std::make_shared<ConstantForceField>(system->getParticles(), glm::vec3{0,0,-10} );
+ 	  system->addForceField(gravityForceField);
+
+ //	  glm::vec3 nullForce(0.0, 0.0, 0.0);
+ //	  ConstantForceFieldPtr force = std::make_shared<ConstantForceField>(system->getParticles(), nullForce);
+ //	  system->addForceField(force);
+ //
+ //	  ControlledForceFieldRenderablePtr forceRenderable = std::make_shared<ControlledForceFieldRenderable>(flatShader, force);
+ //	  ControlledForceFieldStatus(glm::vec3(0,1,0));
+ //	  HierarchicalRenderable::addChild(systemRenderable, forceRenderable);
+
+
+     viewer.getCamera().setViewMatrix(
+ 	      glm::lookAt(
+ 	        glm::vec3(5, -2, 2),
+ 	        glm::vec3(5, 0, 0),
+ 	        glm::vec3(0, 1, 0)));
+ 	    //viewer.getCamera().setPosition(glm::vec3(5,-2,2));
+
+
+  }
+
   // Run the animation
   viewer.setAnimationLoop(true, 4);
   viewer.startAnimation();
