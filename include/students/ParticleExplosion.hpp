@@ -8,7 +8,7 @@
 #include "../Viewer.hpp"
 #include "./../lighting/Materiable.hpp"
 
-class ParticleExplosion : public ParticleRenderable, public Materiable
+class ParticleExplosion : public ParticleRenderable
 {
 public:
     ~ParticleExplosion();

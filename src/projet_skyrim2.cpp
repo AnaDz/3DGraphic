@@ -163,7 +163,7 @@ void initialize_project_skyrim_2(Viewer& viewer) {
     HierarchicalRenderable::addChild(tree, tree->tronc);
     //tree->setFalling(true);
     viewer.addRenderable(tree);
-//    Explosion(system, systemRenderable, phongShader);
+  //  Explosion(system, systemRenderable, phongShader);
 
   /*  TexturedMeshRenderablePtr mesh =
         std::make_shared<TexturedMeshRenderable>(
@@ -175,29 +175,6 @@ void initialize_project_skyrim_2(Viewer& viewer) {
     head->setLocalTransform(rotationM)*/
     //viewer.addRenderable(mesh);
 
-    pv = glm::vec3(0.0, 0.0, 0.0);
-    pm = 1.0, pr = 1.0;
-    px = glm::vec3(10.0,0.0,0.0);
-    ParticlePtr mobile = std::make_shared<Particle>( px, pv, pm, pr);
-    system->addParticle( mobile );
-    ParticleRenderablePtr mobileRenderable = std::make_shared<ParticleRenderable>(flatShader, mobile);
-    HierarchicalRenderable::addChild(systemRenderable, mobileRenderable);
-    //Initialize a force field that apply only to the mobile particle
-    glm::vec3 nullForce(0.0, 0.0, 0.0);
-    std::vector<ParticlePtr> vParticle;
-    vParticle.push_back(mobile);
-    ConstantForceFieldPtr force = std::make_shared<ConstantForceField>(vParticle, nullForce);
-    system->addForceField(force);
-    ControlledForceFieldRenderablePtr forceRenderable = std::make_shared<ControlledForceFieldRenderable>(flatShader, force);
-    HierarchicalRenderable::addChild(systemRenderable, forceRenderable);
-
-    //Add a damping force field to the mobile.
-    DampingForceFieldPtr dampingForceField = std::make_shared<DampingForceField>(vParticle, 0.9);
-    system->addForceField(dampingForceField);
-
-    //Activate collision and set the restitution coefficient to 1.0
-    system->setCollisionsDetection(true);
-    system->setRestitution(1.0f);
   }
 
   bool Matthieu = false;
