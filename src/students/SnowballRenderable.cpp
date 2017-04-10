@@ -15,114 +15,162 @@
 #include "../../include/Utils.hpp"
 #include "./../../teachers/Geometries.hpp"
 
-#include"../../include/dynamics/Particle.hpp" // attention, surement doit extend ParticleRenderable. A voir
-SnowballRenderable::SnowballRenderable(ShaderProgramPtr shaderProgram,  const MaterialPtr& material, Viewer* v, ParticlePtr particle)
-	: ParticleRenderable(shaderProgram, particle), Materiable(material),
-	  m_pBuffer(0), m_cBuffer(0), m_nBuffer(0),
+#include"../../include/dynamics/Particle.hpp"
+#include "../../include/students/GroundRenderable.hpp"
+
+
+
+SnowballRenderable::SnowballRenderable(ShaderProgramPtr shaderProgram,  Viewer* v, ParticlePtr particle)
+	: ParticleRenderable(shaderProgram, particle),
+//	  m_pBuffer(0), m_cBuffer(0), m_nBuffer(0),
 	  viewer(v)
 {
 	 viewer = v;
-	 std::vector<glm::vec3> tmp_x, tmp_n;
-	 unsigned int strips=20, slices=20;
-	 teachers::getUnitSphere(tmp_x, tmp_n, strips, slices);
-	 m_positions.insert(m_positions.end(), tmp_x.begin(), tmp_x.end());
-	 m_normals.insert(m_normals.end(), tmp_n.begin(), tmp_n.end());
-	 m_colors.resize(m_positions.size(), randomColor());
+//	 buste->setLocalTransform(glm::translate(glm::mat4(1.0), glm::vec3(0, 1 + 0.5, 0)));
+//	   HierarchicalRenderable::addChild(boule, buste);
+	 //setParentTransform(glm::translate(getParentTransform(), glm::vec3(5, -20, 0)));
+	 gauche = false;
+	 droite = false;
+	 toutDroit = true;
 
+	 //initialisation du sol
+	 int nx = 6;
+	 int ny = 75;
+	 int n = 10;
+	 float angle = -(float)3.14/12;
 
-	 //Create buffers
-	 glGenBuffers(1, &m_pBuffer); //vertices
-	 glGenBuffers(1, &m_cBuffer); //colors
-	 glGenBuffers(1, &m_nBuffer); //normals
+	 glm::mat4 parentTransformation, localTransformation;
+	 //groundR = malloc(sizeof(GroundRenderablePtr) * nx * ny);
 
-	 //Activate buffer and send data to the graphics card
-	 glcheck(glBindBuffer(GL_ARRAY_BUFFER, m_pBuffer));
-	 glcheck(glBufferData(GL_ARRAY_BUFFER, m_positions.size()*sizeof(glm::vec3), m_positions.data(), GL_STATIC_DRAW));
-	 glcheck(glBindBuffer(GL_ARRAY_BUFFER, m_cBuffer));
-	 glcheck(glBufferData(GL_ARRAY_BUFFER, m_colors.size()*sizeof(glm::vec4), m_colors.data(), GL_STATIC_DRAW));
-	 glcheck(glBindBuffer(GL_ARRAY_BUFFER, m_nBuffer));
-	 glcheck(glBufferData(GL_ARRAY_BUFFER, m_normals.size()*sizeof(glm::vec3), m_normals.data(), GL_STATIC_DRAW));
+	 ShaderProgramPtr flatShader= std::make_shared<ShaderProgram>("../shaders/flatVertex.glsl",
+			 "../shaders/flatFragment.glsl");
+	 viewer->addShaderProgram(flatShader);
+
+	 for (int x=0; x<nx; x++){
+		 for (int y=0; y<ny; y++){
+			 groundR[x][y] = std::make_shared<GroundRenderable>(flatShader,x,y,n, viewer);
+			 //parentTransformation=glm::rotate(glm::translate(glm::mat4(1.0), glm::vec3(x,y,0)), (float)3.14/6, glm::vec3(1,0,0));
+			 parentTransformation=glm::translate(glm::rotate(glm::mat4(1.0), angle, glm::vec3(1,0,0)), glm::vec3(x,y,0));
+			groundR[x][y]->setParentTransform(parentTransformation);
+			 localTransformation = glm::mat4(1.0);
+			 groundR[x][y]->setLocalTransform(localTransformation);
+			 viewer->addRenderable(groundR[x][y]);
+
+		 }
+	 }
 }
 
 void SnowballRenderable::do_animate(float time)
 {
-	//ça la fait rouler mais du coup ça fait pas prendre en compte les collisions :) mais c'est déjà ça !
-	//viewer->getCamera().setPosition(glm::vec3(5,-2+time,2));
-	//ça la fait grossir aussi :D
-//	setParentTransform(glm::translate(glm::mat4(1.0), glm::vec3(2*time,0,0)));
-//	setParentTransform(glm::scale(getParentTransform(), glm::vec3(1+time/5,1+time/5,1+time/5)));
-//	setLocalTransform(glm::rotate(glm::mat4(1.0), (float)(2*time*3.14), glm::vec3(0,1,0)));
 }
-int k=0;
+
+float scaleFactor = 1;
+bool ancien[3]={false, false, false};
+int k =1;
 void SnowballRenderable::do_draw()
 {
-	Material::sendToGPU(m_shaderProgram, getMaterial());
+	if (m_particle->getPosition().y < 100){
+		scaleFactor= 1+m_particle->getPosition().y/100;
+		m_particle->setRadius(scaleFactor/2);
+	}
+
+	viewer->getCamera().setPosition(glm::vec3(3,-2+ParticleRenderable::m_particle->getPosition().y, 2+ParticleRenderable::m_particle->getPosition().z));
+
+
+
+	Material::sendToGPU(m_shaderProgram, Material::Neige());
+	setLocalTransform(glm::rotate(glm::mat4(1.0), -(float)(ParticleRenderable::m_particle->getPosition().y), glm::vec3(1,0,0)));
+	//setLocalTransform(glm::scale(getLocalTransform(), glm::vec3(scaleFactor) ));
+
+	float vitesse = m_particle->getVelocity().y;
+	if (gauche){
+		m_particle->setVelocity(m_particle->getVelocity() + glm::vec3(-1, 0,0));
+		ancien[0]=true;
+	}
+	if (droite){
+		m_particle->setVelocity(m_particle->getVelocity() + glm::vec3(1, 0,0));
+		ancien[2]=true;
+	}
+	if (toutDroit){
+		if(ancien[0]){
+			m_particle->setVelocity(m_particle->getVelocity() + glm::vec3(-m_particle->getVelocity().x, 0,0));
+			ancien[0]=false;
+		}
+		else if (ancien[2]) {
+			m_particle->setVelocity(m_particle->getVelocity() + glm::vec3(-m_particle->getVelocity().x, 0,0));
+			ancien[2]=false;
+		}
+	}
+
+	if (m_particle->getVelocity().y > 50 ){
+		glm::vec3 tmp = m_particle->getVelocity();
+		tmp.y = 50;
+		m_particle->setVelocity(tmp);
+		//printf("vitesse.x =%f, vitesse.y =%f, vitesse.z =%f \n",m_particle->getVelocity().x, m_particle->getVelocity().y, m_particle->getVelocity().z);
+	}
 	ParticleRenderable::do_draw();
-//	if (ParticleRenderable::m_particle->getPosition()[0] > k){
-//		k++;
-//		setParentTransform(glm::scale(getParentTransform(), glm::vec3(k,k,k)));
-//		std::cout << k;
-//
-//	}
-//	//Location
-//	    int positionLocation = m_shaderProgram->getAttributeLocation("vPosition");
-//	    int colorLocation = m_shaderProgram->getAttributeLocation("vColor");
-//	    int normalLocation = m_shaderProgram->getAttributeLocation("vNormal");
-//	    int modelLocation = m_shaderProgram->getUniformLocation("modelMat");
-//
-//	    Material::sendToGPU(m_shaderProgram, getMaterial());
-//	    //Send data to GPU
-//	    if(modelLocation != ShaderProgram::null_location)
-//	    {
-//	        glcheck(glUniformMatrix4fv(modelLocation, 1, GL_FALSE, glm::value_ptr(getModelMatrix())));
-//	    }
-//
-//	    if(positionLocation != ShaderProgram::null_location)
-//	    {
-//	        //Activate location
-//	        glcheck(glEnableVertexAttribArray(positionLocation));
-//	        //Bind buffer
-//	        glcheck(glBindBuffer(GL_ARRAY_BUFFER, m_pBuffer));
-//	        //Specify internal format
-//	        glcheck(glVertexAttribPointer(positionLocation, 3, GL_FLOAT, GL_FALSE, 0, (void*)0));
-//	    }
-//
-//	    if(colorLocation != ShaderProgram::null_location)
-//	    {
-//	        glcheck(glEnableVertexAttribArray(colorLocation));
-//	        glcheck(glBindBuffer(GL_ARRAY_BUFFER, m_cBuffer));
-//	        glcheck(glVertexAttribPointer(colorLocation, 4, GL_FLOAT, GL_FALSE, 0, (void*)0));
-//	    }
-//
-//	    if(normalLocation != ShaderProgram::null_location)
-//	    {
-//	        glcheck(glEnableVertexAttribArray(normalLocation));
-//	        glcheck(glBindBuffer(GL_ARRAY_BUFFER, m_nBuffer));
-//	        glcheck(glVertexAttribPointer(normalLocation, 3, GL_FLOAT, GL_FALSE, 0, (void*)0));
-//	    }
-//
-//	    //Draw triangles elements
-//	    glcheck(glDrawArrays(GL_TRIANGLES,0, m_positions.size()));
-//
-//	    if(positionLocation != ShaderProgram::null_location)
-//	    {
-//	        glcheck(glDisableVertexAttribArray(positionLocation));
-//	    }
-//	    if(colorLocation != ShaderProgram::null_location)
-//	    {
-//	        glcheck(glDisableVertexAttribArray(colorLocation));
-//	    }
-//	    if(normalLocation != ShaderProgram::null_location)
-//	    {
-//	        glcheck(glDisableVertexAttribArray(normalLocation));
-//	    }
+
+
+
+	if (m_particle->getPosition().y >= k*25){
+		// m_particle->setPosition(glm::vec3(m_particle->getPosition().x, 0, 0));
+		int nx = 6;
+		int ny = 75;
+		int n = 10;
+		float angle = -(float)3.14/12;
+
+		glm::mat4 parentTransformation, localTransformation;
+		//GroundRenderablePtr groundR ;
+
+		ShaderProgramPtr flatShader= std::make_shared<ShaderProgram>("../shaders/flatVertex.glsl",
+				"../shaders/flatFragment.glsl");
+		viewer->addShaderProgram(flatShader);
+		GroundRenderablePtr tmp;
+			for (int x=0; x<nx; x++){
+				for (int y=0; y<25; y++){
+					tmp = groundR[x][y];
+					//printf("x=%i, y=%i \n",x,y);
+					parentTransformation=glm::translate(glm::rotate(glm::mat4(1.0), angle, glm::vec3(1,0,0)), glm::vec3(x,(k+2)*25+y,0));
+					tmp->setParentTransform(parentTransformation);
+					localTransformation = glm::mat4(1.0);
+					tmp->setLocalTransform(localTransformation);
+
+					groundR[x][y]= groundR[x][y+25];
+					groundR[x][y+25]=groundR[x][y+50];
+					groundR[x][y+50]=tmp;
+
+				}
+			}
+			//printf("segfault avant \n");
+
+		k++;
+	}
+
+
 }
 
 SnowballRenderable::~SnowballRenderable()
 {
-    glcheck(glDeleteBuffers(1, &m_pBuffer));
-    glcheck(glDeleteBuffers(1, &m_cBuffer));
-    glcheck(glDeleteBuffers(1, &m_nBuffer));
+//    glcheck(glDeleteBuffers(1, &m_pBuffer));
+//    glcheck(glDeleteBuffers(1, &m_cBuffer));
+//    glcheck(glDeleteBuffers(1, &m_nBuffer));
 }
 
+void SnowballRenderable::do_keyPressedEvent(sf::Event& e){
+	if (e.key.code == sf::Keyboard::Left) {
+	        gauche=true;
+	        droite=false;
+	        toutDroit=false;
+	} else if (e.key.code == sf::Keyboard::Right) {
+	        gauche=false;
+	        droite=true;
+	        toutDroit=false;
+	}
+}
 
+void SnowballRenderable::do_keyReleasedEvent(sf::Event& e){
+	gauche = false;
+	droite = false;
+	toutDroit = true;
+
+}

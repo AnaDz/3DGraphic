@@ -19,8 +19,8 @@ public:
     ~GroundRenderable();
     GroundRenderable(ShaderProgramPtr program, int x, int y, int n, Viewer* v);
 
+        void do_draw();
 protected:
-    void do_draw();
     void do_animate(float time);
 
     Viewer *viewer;

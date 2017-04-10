@@ -19,9 +19,9 @@ ParticleRenderable::ParticleRenderable(ShaderProgramPtr shaderProgram, ParticleP
     m_particle(particle),
     m_pBuffer(0), m_cBuffer(0), m_nBuffer(0)
 {
-    double radius = 1.0;
-    int thetaStep = 20;
-    int phiStep = 10;
+    double radius = 0.5;
+    int thetaStep = 30;
+    int phiStep = 30;
 
     glm::vec3 center(0.0, 0.0, 0.0);
 
@@ -106,7 +106,7 @@ void ParticleRenderable::do_draw()
     const glm::vec3& pPosition = m_particle->getPosition();
     glm::mat4 scale = glm::scale(glm::mat4(1.0), glm::vec3(pRadius));
     glm::mat4 translate = glm::translate(glm::mat4(1.0), glm::vec3(pPosition));
-    setLocalTransform(translate*scale);
+    setParentTransform(translate*scale);
 
     //Draw geometric data
     int positionLocation = m_shaderProgram->getAttributeLocation("vPosition");
