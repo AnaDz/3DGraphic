@@ -23,7 +23,8 @@ BonhommeDeNeige::BonhommeDeNeige(ShaderProgramPtr phongShader, ShaderProgramPtr 
   double taille_boutons = 0.15;
   double angle_boutons = M_PI/20;
   double theta = M_PI/6; // Angle vertical pour positionner les yeux
-  double phi = M_PI/8; // Angle horizontal
+  double phi = M_PI/8; // Angle horizontal pour positionner les yeux
+  int nb_sauts = 2; // Nombre de sauts que fait le bonhomme de neige en ligne droite
 
   // Base du bonhomme de neige
   base = std::make_shared<SphereRenderable>(texShader, blanc);
@@ -126,7 +127,7 @@ BonhommeDeNeige::BonhommeDeNeige(ShaderProgramPtr phongShader, ShaderProgramPtr 
 
   // Bras du bonhomme de neige
   std::shared_ptr<ConeRenderable> bras1 = std::make_shared<ConeRenderable>(phongShader, noir);
-  translationM = glm::translate(glm::mat4(1.0), glm::vec3(taille_buste*cos(M_PI/2)*sin(M_PI/6), taille_buste*sin(M_PI/2)*sin(M_PI/6), taille_buste*cos(M_PI/6)));
+  translationM = glm::translate(glm::mat4(1.0), glm::vec3(0.9*taille_buste*cos(M_PI/2)*sin(M_PI/6), 0.9*taille_buste*sin(M_PI/2)*sin(M_PI/6), 0.9*taille_buste*cos(M_PI/6)));
   scaleM = glm::scale(glm::mat4(1.0), glm::vec3(taille_buste*0.05,taille_buste*0.05,taille_tete*4));
   rotationM = glm::rotate(glm::mat4(1.0), (float)(M_PI/2.0), glm::vec3(0,0,1));
   rotationM *= glm::rotate(glm::mat4(1.0), (float)(M_PI/6.0), glm::vec3(0,1,0));
@@ -144,19 +145,22 @@ BonhommeDeNeige::BonhommeDeNeige(ShaderProgramPtr phongShader, ShaderProgramPtr 
   HierarchicalRenderable::addChild(buste, bras1);
   HierarchicalRenderable::addChild(buste, bras2);
 
-}
+  // Repositionnement et redimensionnement final du bonhomme de neige
+  scaleM = glm::scale(glm::mat4(1.0), glm::vec3(0.3, 0.3, 0.3));
+  rotationM = glm::rotate(glm::mat4(1.0), (float)(M_PI/2.0), glm::vec3(1,0,0));
+  base->setParentTransform(rotationM*scaleM);
 
-void BonhommeDeNeige::generateAnimation() {
   // Animation du bonhomme de neige : il saute droit devant pendant 10 secondes
-  for (int t=0; t <= 10; t++) {
-    this->addParentTransformKeyframe(t+0.0, GeometricTransformation(glm::vec3((4.5*t)+0.0, 0.0, 0.0), glm::angleAxis(0.0f, glm::vec3(0.0, 0.0, 1.0))));
-    this->addParentTransformKeyframe(t+0.2, GeometricTransformation(glm::vec3((4.5*t)+0.5, 1.5, 0.0), glm::angleAxis(0.0f, glm::vec3(0.0, 1.0, 0.0))));
-    this->addParentTransformKeyframe(t+0.4, GeometricTransformation(glm::vec3((4.5*t)+1.5, 2.0, 0.0), glm::angleAxis(0.0f, glm::vec3(0.0, 1.0, 0.0))));
-    this->addParentTransformKeyframe(t+0.5, GeometricTransformation(glm::vec3((4.5*t)+2.25, 2.2, 0.0), glm::angleAxis(0.0f, glm::vec3(0.0, 1.0, 0.0))));
-    this->addParentTransformKeyframe(t+0.6, GeometricTransformation(glm::vec3((4.5*t)+3.0, 2.0, 0.0), glm::angleAxis(0.0f, glm::vec3(0.0, 1.0, 0.0))));
-    this->addParentTransformKeyframe(t+0.8, GeometricTransformation(glm::vec3((4.5*t)+4.0, 1.5, 0.0), glm::angleAxis(0.0f, glm::vec3(0.0, 1.0, 0.0))));
-    this->addParentTransformKeyframe(t+1.0, GeometricTransformation(glm::vec3((4.5*t)+4.5, 0.0, 0.0), glm::angleAxis(0.0f, glm::vec3(0.0, 1.0, 0.0))));
+  for (int t=0; t < nb_sauts; t++) {
+    this->addParentTransformKeyframe(t+0.0, GeometricTransformation(glm::vec3((2.0*t)+0.0, 0.0, 0.0), glm::angleAxis(0.0f, glm::vec3(0.0, 0.0, 1.0))));
+    this->addParentTransformKeyframe(t+0.2, GeometricTransformation(glm::vec3((2.0*t)+0.35, 0.0, 0.7), glm::angleAxis(0.0f, glm::vec3(0.0, 1.0, 0.0))));
+    this->addParentTransformKeyframe(t+0.4, GeometricTransformation(glm::vec3((2.0*t)+0.7, 0.0, 1.3), glm::angleAxis(0.0f, glm::vec3(0.0, 1.0, 0.0))));
+    this->addParentTransformKeyframe(t+0.5, GeometricTransformation(glm::vec3((2.0*t)+1.0, 0.0, 1.5), glm::angleAxis(0.0f, glm::vec3(0.0, 1.0, 0.0))));
+    this->addParentTransformKeyframe(t+0.6, GeometricTransformation(glm::vec3((2.0*t)+1.3, 0.0, 1.3), glm::angleAxis(0.0f, glm::vec3(0.0, 1.0, 0.0))));
+    this->addParentTransformKeyframe(t+0.8, GeometricTransformation(glm::vec3((2.0*t)+1.65, 0.0, 0.7), glm::angleAxis(0.0f, glm::vec3(0.0, 1.0, 0.0))));
+    this->addParentTransformKeyframe(t+1.0, GeometricTransformation(glm::vec3((2.0*t)+2.0, 0.0, 0.0), glm::angleAxis(0.0f, glm::vec3(0.0, 1.0, 0.0))));
   }
+
 }
 
 BonhommeDeNeige::~BonhommeDeNeige() {

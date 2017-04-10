@@ -101,30 +101,40 @@ void initialize_project_skyrim_2(Viewer& viewer) {
   glm::mat4 parentTransformation(1.0), localTransformation(1.0);
   std::string filename;
   std::string filename2;
-  //Define a directional light for the whole scene
-  glm::vec3 d_direction = glm::normalize(glm::vec3(0.0,0.0,-1.0));
-  glm::vec3 d_ambient(1.0,1.0,1.0), d_diffuse(1.0,1.0,0.8), d_specular(1.0,1.0,1.0);
-  glm::vec3 ghostWhite(248.0/255, 248.0/255, 248.0/255);
-  DirectionalLightPtr directionalLight = std::make_shared<DirectionalLight>(d_direction, ghostWhite, ghostWhite, ghostWhite);
-  //Add a renderable to display the light and control it via mouse/key event
-  glm::vec3 lightPosition(0,0.0,7.0);
-  DirectionalLightRenderablePtr directionalLightRenderable = std::make_shared<DirectionalLightRenderable>(flatShader, directionalLight, lightPosition);
-  localTransformation = glm::scale(glm::mat4(1.0), glm::vec3(0.5,0.5,0.5));
-  directionalLightRenderable->setLocalTransform(localTransformation);
-  viewer.setDirectionalLight(directionalLight);
-  viewer.addRenderable(directionalLightRenderable);
 
 
   /*******************************************************************************
    * FIN INITIALISATION *
    ******************************************************************************/
-  filename = "../textures/bark.jpg";
-  filename2 = "../textures/needle.jpg";
 
-  bool Ana = true;
+   //Define a directional light for the whole scene
+   glm::vec3 d_direction = glm::normalize(glm::vec3(0.0,0.0,-1.0));
+   glm::vec3 d_ambient(1.0,1.0,1.0), d_diffuse(1.0,1.0,0.8), d_specular(1.0,1.0,1.0);
+   glm::vec3 ghostWhite(248.0/255, 248.0/255, 248.0/255);
+   DirectionalLightPtr directionalLight = std::make_shared<DirectionalLight>(d_direction, ghostWhite, ghostWhite, ghostWhite);
+   //Add a renderable to display the light and control it via mouse/key event
+   glm::vec3 lightPosition(0,0.0,7.0);
+   DirectionalLightRenderablePtr directionalLightRenderable = std::make_shared<DirectionalLightRenderable>(flatShader, directionalLight, lightPosition);
+   localTransformation = glm::scale(glm::mat4(1.0), glm::vec3(0.5,0.5,0.5));
+   directionalLightRenderable->setLocalTransform(localTransformation);
+   viewer.setDirectionalLight(directionalLight);
+   viewer.addRenderable(directionalLightRenderable);
+
+   // Skybox
+   std::shared_ptr<SphereRenderable> skybox =
+       std::make_shared<SphereRenderable>(texShader, Material::Ciel(), "../textures/sky.png");
+   glm::mat4 scale_skybox = glm::scale(glm::mat4(1.0), glm::vec3(50, 50, 50));
+   glm::mat4 rotation_skybox = glm::rotate(glm::mat4(1.0), -(float)(M_PI/2.0), glm::vec3(1,0,0));
+   rotation_skybox *= glm::rotate(glm::mat4(1.0), -(float)(M_PI/2.0), glm::vec3(0,1,0));
+   skybox->setLocalTransform(rotation_skybox*scale_skybox);
+   viewer.addRenderable(skybox);
+
+  bool Ana = false;
   if(Ana){
 
     // Temporary variables to use to define transformation
+    filename = "../textures/bark.jpg";
+    filename2 = "../textures/needle.jpg";
     glm::mat4 rotationM(1.0), rot1(1.0), rot2(1.0);
     glm::mat4 scaleM(1.0);
     glm::mat4 translationM(1.0);
@@ -145,28 +155,13 @@ void initialize_project_skyrim_2(Viewer& viewer) {
   }
 
 
-  bool Matthieu = false;
+  bool Matthieu = true;
   if (Matthieu) {
-
-    // Define a directional light for the whole scene
-    glm::vec3 lightDirection = glm::normalize(glm::vec3(0.0, -1.0, -1.0));
-    glm::vec3 ghostWhite(248.0/255, 248.0/255, 1.0);
-    DirectionalLightPtr directionalLight =
-        std::make_shared<DirectionalLight>(lightDirection, ghostWhite, ghostWhite, ghostWhite);
-    viewer.setDirectionalLight(directionalLight);
-    // Add a renderable to display the light and control it via mouse/key event
-    glm::vec3 lightPosition(0.0, 5.0, 8.0);
-    DirectionalLightRenderablePtr directionalLightRenderable
-        = std::make_shared<DirectionalLightRenderable>(flatShader, directionalLight, lightPosition);
-    glm::mat4 localTransformation = glm::scale(glm::mat4(1.0), glm::vec3(0.5, 0.5, 0.5));
-    directionalLightRenderable->setLocalTransform(localTransformation);
-    viewer.addRenderable(directionalLightRenderable);
 
     /* Création d'un bonhomme de neige */
     BonhommeDeNeigePtr bonhomme = std::make_shared<BonhommeDeNeige>(phongShader, texShader);
     bonhomme->setParentTransform(glm::mat4(1.0));
     HierarchicalRenderable::addChild(bonhomme, bonhomme->base);
-    bonhomme->generateAnimation();
     viewer.addRenderable(bonhomme);
   }
 
@@ -204,6 +199,6 @@ void initialize_project_skyrim_2(Viewer& viewer) {
 	  }
   }*/
   // Run the animation
-  viewer.setAnimationLoop(true, 10);
+  viewer.setAnimationLoop(true, 4);
   viewer.startAnimation();
 }

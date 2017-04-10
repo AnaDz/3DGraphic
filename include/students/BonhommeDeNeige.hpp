@@ -20,7 +20,6 @@ public:
   std::shared_ptr<SphereRenderable> base;
   void addParentTransformKeyframe(float time, const GeometricTransformation& transformation);
   void addLocalTransformKeyframe(float time, const GeometricTransformation& transformation);
-  void generateAnimation();
 
 private:
   void do_draw();
