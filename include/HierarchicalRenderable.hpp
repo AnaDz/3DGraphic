@@ -50,6 +50,9 @@ typedef std::shared_ptr<HierarchicalRenderable> HierarchicalRenderablePtr;
 class HierarchicalRenderable : public Renderable
 {
 public :
+    bool falling = false;
+
+    void setFalling(bool fal);
     /**@brief Instance destructor.
      *
      * Since this class is meant to be derived (as it is abstract because we do

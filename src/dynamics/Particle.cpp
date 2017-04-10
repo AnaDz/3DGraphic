@@ -24,6 +24,7 @@ Particle::Particle(const glm::vec3 &position, const glm::vec3 &velocity,
     m_force(glm::vec3(0.0,0.0,0.0)),
     m_mass(mass),
     m_radius(radius), m_isFixed( false )
+
 {}
 
 Particle::~Particle()
@@ -101,4 +102,13 @@ std::ostream& operator<<(std::ostream& os, const ParticlePtr& p)
     os << "vel (" << v[0] << ", " << v[1] << ", " << v[2] << ")";
 
     return os;
+}
+
+void Particle::setSpecialAnimation(bool anim){
+  needSpecialAnimation = anim;
+}
+
+
+void Particle::setLink(HierarchicalRenderablePtr l){
+  linked = l;
 }
