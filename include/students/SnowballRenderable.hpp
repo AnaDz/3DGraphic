@@ -15,7 +15,7 @@
 #include "../Viewer.hpp"
 #include "./../lighting/Materiable.hpp"
 #include "../../include/students/SphereRenderable.hpp"
-
+#include "../../include/students/GroundRenderable.hpp"
 
 
 
@@ -35,6 +35,10 @@ private:
     bool gauche;
     bool droite;
     bool toutDroit;
+
+    //nx = 6; ny=75;
+    GroundRenderablePtr groundR[6][75];
+
 
 };
 

@@ -122,7 +122,7 @@ void initialize_project_skyrim_2(Viewer& viewer) {
    skybox->setLocalTransform(rotation_skybox*scale_skybox);
    viewer.addRenderable(skybox);
 
-  bool Ana = false;
+  bool Ana = true;
   if(Ana){
     // Temporary variables to use to define transformation
     filename = "../textures/bark.jpg";
@@ -166,7 +166,7 @@ bool Olivier = true;
  	  glm::mat4 parentTransformation, localTransformation;
  	  GroundRenderablePtr groundR ;
  	  int nx = 6;
- 	  int ny = 75;
+ 	  int ny = 100;
  	  int n = 10; //nb de points par dalle
  	  float angle = -(float)3.14/12;
 
@@ -178,6 +178,19 @@ bool Olivier = true;
  	  PlanePtr plane = std::make_shared<Plane>(p1, p2, p3);
  	  system->addPlaneObstacle(plane);
 
+    glm::vec3 p5(0.0, 0.0, 0.0);
+ 	  glm::vec3 p6(0, 1, 0.0);
+ 	  glm::vec3 p7(0,0,1 );
+ 	  PlanePtr plane2 = std::make_shared<Plane>(p5, p6, p7);
+ 	  system->addPlaneObstacle(plane2);
+
+    glm::vec3 p8(6, 0.0, 0.0);
+ 	  glm::vec3 p9(6, 1, 0.0);
+ 	  glm::vec3 p10( 6,1,1);
+ 	  PlanePtr plane3 = std::make_shared<Plane>(p8, p9, p10);
+ 	  system->addPlaneObstacle(plane3);
+
+    system->setRestitution(0.0f);
  	  //Create a plane renderable to display the obstacle
  //PlaneRenderablePtr planeRenderable = std::make_shared<QuadRenderable>(flatShader, p1,p2,p3,p4, glm::vec4(0,0,1,1));
  	 // parentTransformation=glm::rotate(glm::mat4(1.0), -angle, glm::vec3(1,0,0));
@@ -185,8 +198,7 @@ bool Olivier = true;
  	 // HierarchicalRenderable::addChild( systemRenderable, planeRenderable );
 
 
- 	  //possible de faire tout ça en une seule classe si besoin :) comme ça une texture "globale"
- 	  //voire à faire dans le but d'en faire un plane renderable. Ou alors mettre un plan transparent au même niveau
+
 
 
  	  glm::vec3 px,pv;
@@ -198,8 +210,8 @@ bool Olivier = true;
  	  ParticlePtr particle = std::make_shared<Particle>(px, pv, pm, pr);
 	  system->addParticle(particle);
 
- 	  SnowballRenderablePtr sb = std::make_shared<SnowballRenderable>(phongShader, &viewer, particle);
- 	  parentTransformation=glm::translate(glm::mat4(1.0), glm::vec3(5,1,0));
+ 	  SnowballRenderablePtr sb = std::make_shared<SnowballRenderable>(texShader, &viewer, particle);
+ 	  parentTransformation=glm::translate(glm::mat4(1.0), glm::vec3(3,1,0));
  	  sb->setParentTransform(parentTransformation);
  	  HierarchicalRenderable::addChild(systemRenderable, sb);
 
@@ -226,6 +238,6 @@ bool Olivier = true;
   }
 
   // Run the animation
-  viewer.setAnimationLoop(true, 4);
+  //viewer.setAnimationLoop(true, 1000);
   viewer.startAnimation();
 }
