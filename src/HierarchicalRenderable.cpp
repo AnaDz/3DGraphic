@@ -126,3 +126,6 @@ std::vector<HierarchicalRenderablePtr> & HierarchicalRenderable::getChildren()
 {
     return m_children;
 }
+void HierarchicalRenderable::setFalling(bool fal){
+  falling = fal;
+}

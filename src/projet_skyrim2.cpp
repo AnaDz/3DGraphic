@@ -128,9 +128,40 @@ void initialize_project_skyrim_2(Viewer& viewer) {
     glm::mat4 rotationM(1.0), rot1(1.0), rot2(1.0);
     glm::mat4 scaleM(1.0);
     glm::mat4 translationM(1.0);
+
+    glm::vec3 p1(-50.0, -50.0, 0.0);
+    glm::vec3 p2(50.0, -50.0, 0.0);
+    glm::vec3 p3(50.0, 50.0, 0.0);
+    glm::vec3 p4(-50.0, 50.0, 0.0);
+    PlanePtr plane = std::make_shared<Plane>(p1, p2, p3);
+    system->addPlaneObstacle(plane);
+
+
+
+    //Create a plane renderable to display the obstacle
+    PlaneRenderablePtr planeRenderable = std::make_shared<QuadRenderable>(flatShader, p1,p2,p3,p4);
+    HierarchicalRenderable::addChild( systemRenderable, planeRenderable );
+
     TreePtr tree = std::make_shared<Tree>(texShader, filename, filename2);
-    viewer.addRenderable(tree->tronc);
-  //  Explosion(system, systemRenderable, phongShader);
+    tree->setParentTransform(glm::mat4(1.0));
+
+
+    glm::vec3 px,pv;
+    float pm, pr;
+    px = glm::vec3(0,0,0.5);
+    pv = glm::vec3(0,0,0);
+    pr = 0.5;
+    pm = 1.0;
+    ParticlePtr particle = std::make_shared<Particle>(px, pv, pm, pr);
+    particle->setSpecialAnimation(true);
+    particle->setLink(tree);
+    system->addParticle(particle);
+
+
+    HierarchicalRenderable::addChild(tree, tree->tronc);
+    //tree->setFalling(true);
+    viewer.addRenderable(tree);
+//    Explosion(system, systemRenderable, phongShader);
 
       /*  TexturedMeshRenderablePtr mesh =
             std::make_shared<TexturedMeshRenderable>(
@@ -138,10 +169,33 @@ void initialize_project_skyrim_2(Viewer& viewer) {
         scaleM = glm::scale(glm::mat4(1.0), glm::vec3(0.2,0.2,0.2));
         mesh->setParentTransform(scaleM);
          mesh->setMaterial(Material::Maison());
-        /*rotationM = glm::rotate(glm::mat4(1.0), (float)(M_PI/2.0), glm::vec3(1,0,0));
-        head->setLocalTransform(rotationM)*/
-        //viewer.addRenderable(mesh);
 
+        viewer.addRenderable(mesh);*/
+
+
+         pv = glm::vec3(0.0, 0.0, 0.0);
+       pm = 1.0, pr = 1.0;
+        px = glm::vec3(10.0,0.0,0.0);
+        ParticlePtr mobile = std::make_shared<Particle>( px, pv, pm, pr);
+        system->addParticle( mobile );
+        ParticleRenderablePtr mobileRenderable = std::make_shared<ParticleRenderable>(flatShader, mobile);
+        HierarchicalRenderable::addChild(systemRenderable, mobileRenderable);
+        //Initialize a force field that apply only to the mobile particle
+        glm::vec3 nullForce(0.0, 0.0, 0.0);
+        std::vector<ParticlePtr> vParticle;
+        vParticle.push_back(mobile);
+        ConstantForceFieldPtr force = std::make_shared<ConstantForceField>(vParticle, nullForce);
+        system->addForceField(force);
+        ControlledForceFieldRenderablePtr forceRenderable = std::make_shared<ControlledForceFieldRenderable>(flatShader, force);
+        HierarchicalRenderable::addChild(systemRenderable, forceRenderable);
+
+        //Add a damping force field to the mobile.
+        DampingForceFieldPtr dampingForceField = std::make_shared<DampingForceField>(vParticle, 0.9);
+        system->addForceField(dampingForceField);
+
+        //Activate collision and set the restitution coefficient to 1.0
+        system->setCollisionsDetection(true);
+        system->setRestitution(1.0f);
   }
 
 
@@ -204,6 +258,6 @@ void initialize_project_skyrim_2(Viewer& viewer) {
 	  }
   }*/
   // Run the animation
-  viewer.setAnimationLoop(true, 10);
+//  viewer.setAnimationLoop(true, 10);
   viewer.startAnimation();
 }

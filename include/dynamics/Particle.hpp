@@ -4,6 +4,7 @@
 #include <iostream>
 #include <memory>
 #include <glm/glm.hpp>
+#include "../HierarchicalRenderable.hpp"
 
 /**@brief Represent a particle as a moving ball.
  *
@@ -31,6 +32,10 @@ public:
             const float& mass, const float& radius);
     virtual ~Particle();
 
+    bool needSpecialAnimation = false;
+    HierarchicalRenderablePtr  linked;
+
+    void setLink(HierarchicalRenderablePtr l);
     /**@brief Access to this particle's position.
      *
      * Get the position of this particle.
@@ -137,6 +142,10 @@ public:
      * Set the particle's position and velocity to their initial values.
      */
     void restart();
+
+    void setSpecialAnimation(bool anim);
+
+
 
 private:
     /**@brief The initial particle's position.

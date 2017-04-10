@@ -34,9 +34,9 @@ Explosion::Explosion(DynamicSystemPtr system, DynamicSystemRenderablePtr systemR
   glm::vec3 px,pv;
   float pm, pr;
 
-  int slices = 10;
-  int strips = 10;
-  double radius = 3.0;
+  int slices = 15;
+  int strips = 15;
+  double radius = 1.0;
   for(int i=0; i<slices; ++i)
   {
       for(int j=0; j<strips; ++j)
@@ -47,13 +47,13 @@ Explosion::Explosion(DynamicSystemPtr system, DynamicSystemRenderablePtr systemR
           /* Ce qu'on peut faire : augmenter le v ou diminuer
           et aussi ajouter une composante pour la vitesse (genre 20 + Vx) pour que les boules soient dirigées plus vers un sens !*/
           int v = random(2,10);
-          px = glm::vec3(0,0,3) + glm::vec3(radius*cos(curr_theta)*sin(curr_phi), radius*sin(curr_theta)*sin(curr_phi), radius*cos(curr_phi));
+          px = glm::vec3(0,0,radius) + glm::vec3(radius*cos(curr_theta)*sin(curr_phi), radius*sin(curr_theta)*sin(curr_phi), radius*cos(curr_phi));
           pv = glm::vec3(v*radius*cos(curr_theta)*sin(curr_phi), v*radius*sin(curr_theta)*sin(curr_phi), v*radius*cos(curr_phi));
-          pr = random(0.5,1.0);
+          pr = random(0.1,0.3);
           pm = 10;
           ParticlePtr particle = std::make_shared<Particle>(px, pv, pm, pr);
           system->addParticle(particle);
-          // ATTENTION A ADAPTER LE TRANSLATE 
+          // ATTENTION A ADAPTER LE TRANSLATE
           translationM = glm::translate(glm::mat4(1.0), glm::vec3(0.0,0.0,4.0));
           ParticleRenderablePtr particleRenderable = std::make_shared<ParticleRenderable>(phongShader, particle);
 
