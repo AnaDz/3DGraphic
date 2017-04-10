@@ -44,7 +44,8 @@ ControlledForceFieldRenderable::ControlledForceFieldRenderable(ShaderProgramPtr 
     : HierarchicalRenderable(program),
     m_force(forceField), m_pBuffer(0), m_cBuffer(0), m_nBuffer(0)
 {
-    glm::vec3 initial_direction(1,0,0);
+	//glm::vec3 initial_direction(1,0,0);
+	glm::vec3 initial_direction(0,1,0);
     m_status = ControlledForceFieldStatus(initial_direction);
 
     //Create geometric data to display an arrow representing the movement of the particle
@@ -85,27 +86,43 @@ ControlledForceFieldRenderable::~ControlledForceFieldRenderable()
 
 void ControlledForceFieldRenderable::do_keyPressedEvent(sf::Event& e)
 {
+//    if (e.key.code == sf::Keyboard::Left) {
+//        m_status.turning_left= true;
+//    } else if (e.key.code == sf::Keyboard::Right) {
+//        m_status.turning_right = true;
+//    } else if (e.key.code == sf::Keyboard::Up) {
+//        m_status.accelerating = true;
+//    } else if (e.key.code == sf::Keyboard::Down) {
+//        m_status.deaccelerating = true;
+//    }
+
     if (e.key.code == sf::Keyboard::Left) {
-        m_status.turning_left = true;
+        m_status.turning_left= true;
+        m_status.accelerating = true;
     } else if (e.key.code == sf::Keyboard::Right) {
         m_status.turning_right = true;
-    } else if (e.key.code == sf::Keyboard::Up) {
         m_status.accelerating = true;
-    } else if (e.key.code == sf::Keyboard::Down) {
-        m_status.deaccelerating = true;
     }
 }
 
 void ControlledForceFieldRenderable::do_keyReleasedEvent(sf::Event& e)
 {
+//    if (e.key.code == sf::Keyboard::Left) {
+//        m_status.turning_left = false;
+//    } else if (e.key.code == sf::Keyboard::Right) {
+//        m_status.turning_right = false;
+//    } else if (e.key.code == sf::Keyboard::Up) {
+//        m_status.accelerating = false;
+//    } else if (e.key.code == sf::Keyboard::Down) {
+//        m_status.deaccelerating = false;
+//    }
+
     if (e.key.code == sf::Keyboard::Left) {
         m_status.turning_left = false;
+        m_status.accelerating = false;
     } else if (e.key.code == sf::Keyboard::Right) {
         m_status.turning_right = false;
-    } else if (e.key.code == sf::Keyboard::Up) {
         m_status.accelerating = false;
-    } else if (e.key.code == sf::Keyboard::Down) {
-        m_status.deaccelerating = false;
     }
 }
 
