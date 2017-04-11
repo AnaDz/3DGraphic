@@ -1,5 +1,5 @@
-#ifndef PARTICLE_RENDERABLE_HPP
-#define PARTICLE_RENDERABLE_HPP
+#ifndef PARTICLE_RENDERABLE_STUDENT_HPP
+#define PARTICLE_RENDERABLE_STUDENT_HPP
 
 #include "../HierarchicalRenderable.hpp"
 #include "../dynamics/Particle.hpp"
@@ -51,4 +51,4 @@ class ParticleRenderableStudent : public HierarchicalRenderable, public Materiab
 
 typedef std::shared_ptr<ParticleRenderableStudent> ParticleRenderableStudentPtr;
 
-#endif //PARTICLE_RENDERABLE_HPP
+#endif //PARTICLE_RENDERABLE_STUDENT_HPP
