@@ -14,24 +14,20 @@
 #include "../../include/log.hpp"
 #include "../../include/Utils.hpp"
 #include "./../../teachers/Geometries.hpp"
-
 #include"../../include/dynamics/Particle.hpp"
 #include "../../include/students/GroundRenderable.hpp"
 
 
 
-SnowballRenderable::SnowballRenderable(ShaderProgramPtr shaderProgram,  Viewer* v, ParticlePtr particle)
-	: ParticleRenderable(shaderProgram, particle),
-//	  m_pBuffer(0), m_cBuffer(0), m_nBuffer(0),
+SnowballRenderable::SnowballRenderable(ShaderProgramPtr shaderProgram,  Viewer* v, ParticlePtr particle, std::shared_ptr<SphereRenderable> sky)
+	: ParticleRenderableStudent(shaderProgram, particle),
 	  viewer(v)
 {
 	 viewer = v;
-//	 buste->setLocalTransform(glm::translate(glm::mat4(1.0), glm::vec3(0, 1 + 0.5, 0)));
-//	   HierarchicalRenderable::addChild(boule, buste);
-	 //setParentTransform(glm::translate(getParentTransform(), glm::vec3(5, -20, 0)));
 	 gauche = false;
 	 droite = false;
 	 toutDroit = true;
+	 skybox = sky;
 
 	 //initialisation du sol
 	 int nx = 6;
@@ -49,9 +45,8 @@ SnowballRenderable::SnowballRenderable(ShaderProgramPtr shaderProgram,  Viewer* 
 	 for (int x=0; x<nx; x++){
 		 for (int y=0; y<ny; y++){
 			 groundR[x][y] = std::make_shared<GroundRenderable>(flatShader,x,y,n, viewer);
-			 //parentTransformation=glm::rotate(glm::translate(glm::mat4(1.0), glm::vec3(x,y,0)), (float)3.14/6, glm::vec3(1,0,0));
 			 parentTransformation=glm::translate(glm::rotate(glm::mat4(1.0), angle, glm::vec3(1,0,0)), glm::vec3(x,y,0));
-			groundR[x][y]->setParentTransform(parentTransformation);
+			 groundR[x][y]->setParentTransform(parentTransformation);
 			 localTransformation = glm::mat4(1.0);
 			 groundR[x][y]->setLocalTransform(localTransformation);
 			 viewer->addRenderable(groundR[x][y]);
@@ -67,6 +62,8 @@ void SnowballRenderable::do_animate(float time)
 float scaleFactor = 1;
 bool ancien[3]={false, false, false};
 int k =1;
+double prevY = 0;
+double prevZ = 0;
 void SnowballRenderable::do_draw()
 {
 	if (m_particle->getPosition().y < 100){
@@ -74,13 +71,15 @@ void SnowballRenderable::do_draw()
 		m_particle->setRadius(scaleFactor/2);
 	}
 
-	viewer->getCamera().setPosition(glm::vec3(3,-2+ParticleRenderable::m_particle->getPosition().y, 2+ParticleRenderable::m_particle->getPosition().z));
-
-
+	viewer->getCamera().setMouseBehavior(Camera::SPACESHIP_BEHAVIOR);
+	viewer->getCamera().setPosition(glm::vec3(3,-2+ParticleRenderableStudent::m_particle->getPosition().y, 2+ParticleRenderableStudent::m_particle->getPosition().z));
+	glm::mat4 translation_skybox = glm::translate(glm::mat4(1.0), glm::vec3(3,prevY,prevZ));
+	skybox->setParentTransform(translation_skybox);
+	prevY = -2+ParticleRenderableStudent::m_particle->getPosition().y;
+	prevZ = 2+ParticleRenderableStudent::m_particle->getPosition().z;
 
 	Material::sendToGPU(m_shaderProgram, Material::Neige());
-	setLocalTransform(glm::rotate(glm::mat4(1.0), -(float)(ParticleRenderable::m_particle->getPosition().y), glm::vec3(1,0,0)));
-	//setLocalTransform(glm::scale(getLocalTransform(), glm::vec3(scaleFactor) ));
+	setLocalTransform(glm::rotate(glm::mat4(1.0), -(float)(ParticleRenderableStudent::m_particle->getPosition().y), glm::vec3(1,0,0)));
 
 	float vitesse = m_particle->getVelocity().y;
 	if (gauche){
@@ -108,7 +107,7 @@ void SnowballRenderable::do_draw()
 		m_particle->setVelocity(tmp);
 		//printf("vitesse.x =%f, vitesse.y =%f, vitesse.z =%f \n",m_particle->getVelocity().x, m_particle->getVelocity().y, m_particle->getVelocity().z);
 	}
-	ParticleRenderable::do_draw();
+	ParticleRenderableStudent::do_draw();
 
 
 
@@ -122,9 +121,6 @@ void SnowballRenderable::do_draw()
 		glm::mat4 parentTransformation, localTransformation;
 		//GroundRenderablePtr groundR ;
 
-		ShaderProgramPtr flatShader= std::make_shared<ShaderProgram>("../shaders/flatVertex.glsl",
-				"../shaders/flatFragment.glsl");
-		viewer->addShaderProgram(flatShader);
 		GroundRenderablePtr tmp;
 			for (int x=0; x<nx; x++){
 				for (int y=0; y<25; y++){

@@ -242,13 +242,17 @@ bool Olivier = false;
  	  ParticlePtr particle = std::make_shared<Particle>(px, pv, pm, pr);
 	  system->addParticle(particle);
 
- 	  SnowballRenderablePtr sb = std::make_shared<SnowballRenderable>(texShader, &viewer, particle);
+ 	  SnowballRenderablePtr sb = std::make_shared<SnowballRenderable>(texShader, &viewer, particle, skybox);
  	  parentTransformation=glm::translate(glm::mat4(1.0), glm::vec3(3,1,0));
  	  sb->setParentTransform(parentTransformation);
  	  HierarchicalRenderable::addChild(systemRenderable, sb);
 
  	  ConstantForceFieldPtr gravityForceField = std::make_shared<ConstantForceField>(system->getParticles(), glm::vec3{0,0,-10} );
  	  system->addForceField(gravityForceField);
+
+    float dampingCoefficient = 1.0;
+    DampingForceFieldPtr dampingForceField = std::make_shared<DampingForceField>(system->getParticles(), dampingCoefficient);
+    system->addForceField(dampingForceField);
 
  //	  glm::vec3 nullForce(0.0, 0.0, 0.0);
  //	  ConstantForceFieldPtr force = std::make_shared<ConstantForceField>(system->getParticles(), nullForce);

@@ -10,7 +10,7 @@
 #include"../../include/dynamics/Particle.hpp"
 
 ParticleExplosion::ParticleExplosion(ShaderProgramPtr shaderProgram,  const MaterialPtr& material, ParticlePtr particle):
-  ParticleRenderable(shaderProgram, particle, material), m_pBuffer(0), m_cBuffer(0), m_nBuffer(0)
+  ParticleRenderableStudent(shaderProgram, particle, material), m_pBuffer(0), m_cBuffer(0), m_nBuffer(0)
 {
    std::vector<glm::vec3> tmp_x, tmp_n;
 	 unsigned int strips=5, slices=5;
@@ -37,10 +37,10 @@ ParticleExplosion::ParticleExplosion(ShaderProgramPtr shaderProgram,  const Mate
 void ParticleExplosion::do_draw()
 {
 	Material::sendToGPU(m_shaderProgram, getMaterial());
-	ParticleRenderable::do_draw();
+	ParticleRenderableStudent::do_draw();
 }
 void ParticleExplosion::do_animate(float time){
-  ParticleRenderable::do_animate(time);
+  ParticleRenderableStudent::do_animate(time);
 }
 
 ParticleExplosion::~ParticleExplosion()

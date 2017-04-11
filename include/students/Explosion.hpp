@@ -3,7 +3,7 @@
 
 #include <vector>
 #include <glm/glm.hpp>
-#include "../dynamics_rendering/ParticleRenderable.hpp"
+#include "../students/ParticleRenderableStudent.hpp"
 #include "../dynamics/Particle.hpp"
 #include "../Viewer.hpp"
 #include "./../lighting/Materiable.hpp"

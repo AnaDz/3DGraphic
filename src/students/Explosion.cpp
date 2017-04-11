@@ -55,7 +55,7 @@ Explosion::Explosion(DynamicSystemPtr system, DynamicSystemRenderablePtr systemR
           system->addParticle(particle);
           // ATTENTION A ADAPTER LE TRANSLATE
           translationM = glm::translate(glm::mat4(1.0), glm::vec3(0.0,0.0,4.0));
-          ParticleRenderablePtr particleRenderable = std::make_shared<ParticleRenderable>(phongShader, particle);
+          ParticleRenderableStudentPtr particleRenderable = std::make_shared<ParticleRenderableStudent>(phongShader, particle);
 
           ParticleExplosionPtr expl = std::make_shared<ParticleExplosion>(phongShader, Material::Neige(), particle);
           HierarchicalRenderable::addChild(systemRenderable, expl);

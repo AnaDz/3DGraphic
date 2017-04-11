@@ -10,7 +10,7 @@
 
 #include <vector>
 #include <glm/glm.hpp>
-#include "../dynamics_rendering/ParticleRenderable.hpp"
+#include "../students/ParticleRenderableStudent.hpp"
 #include "../dynamics/Particle.hpp"
 #include "../Viewer.hpp"
 #include "./../lighting/Materiable.hpp"
@@ -19,13 +19,14 @@
 
 
 
-class SnowballRenderable : public ParticleRenderable
+class SnowballRenderable : public ParticleRenderableStudent
 {
 public:
     ~SnowballRenderable();
-    SnowballRenderable(ShaderProgramPtr program, Viewer* v, ParticlePtr particle);
+    SnowballRenderable(ShaderProgramPtr program, Viewer* v, ParticlePtr particle, std::shared_ptr<SphereRenderable> sky);
     void do_keyPressedEvent(sf::Event& e);
     void do_keyReleasedEvent(sf::Event& e);
+    std::shared_ptr<SphereRenderable> skybox;
 private:
     void do_draw();
     void do_animate(float time);

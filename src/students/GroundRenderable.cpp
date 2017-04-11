@@ -20,11 +20,9 @@ GroundRenderable::GroundRenderable(ShaderProgramPtr shaderProgram, int x, int y,
 	  viewer(v)
 {
 		viewer = v;
-		//std::cerr << "Hey, teacher, leave them kids alone! -- GroundRenderable" << std::endl;
 		for (int i=0; i<=n; i++){
 			for (int j=0; j<=n; j++){
 				m_positions.push_back(glm::vec3((float)i/n,(float)j/n, 0.3*Get2DPerlinNoiseValue((i+x*n),(j+y*n), 10.0)));
-				//m_positions.push_back(glm::vec3((float)i/n, (float)j/n, 0.3*Get2DPerlinNoiseValue((i+x*n),(j+y*n), 100.0)));
 			}
 		}
 
@@ -60,8 +58,6 @@ GroundRenderable::GroundRenderable(ShaderProgramPtr shaderProgram, int x, int y,
 
 void GroundRenderable::do_animate(float time)
 {
-	//viewer->getCamera().setPosition(viewer->getCamera().getPosition()+glm::vec3(0,time,0));
-	//viewer->getCamera().setPosition(glm::vec3(5,-2+time,2));
 }
 
 void GroundRenderable::do_draw()
