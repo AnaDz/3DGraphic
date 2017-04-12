@@ -22,12 +22,14 @@ public:
   void addParentTransformKeyframe(float time, const GeometricTransformation& transformation);
   void addLocalTransformKeyframe(float time, const GeometricTransformation& transformation);
   void generateAnimation(float time);
+  void supprimer();
+
 private:
   void do_draw();
   void do_animate(float time);
   KeyframeCollection m_localKeyframes; /*!< A collection of keyframes for the local transformation of renderable. */
   KeyframeCollection m_parentKeyframes; /*!< A collection of keyframes for the parent transformation of renderable. */
-
+  bool existe;
 
   MaterialPtr m_material = Material::Neige();
 

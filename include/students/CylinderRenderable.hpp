@@ -14,6 +14,7 @@ public:
                     const MaterialPtr& material = Material::TissuNoir(),
                     const std::string& textureFilename = "");
   void do_draw();
+  void supprimer();
 
 private:
   void do_animate(float time);

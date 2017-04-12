@@ -24,7 +24,6 @@ ConeRenderable::ConeRenderable(ShaderProgramPtr shaderProgram,
   m_normals.insert(m_normals.end(), normals.begin(), normals.end());
 
   if(textureFilename != ""){
-    texture=1;
     for(int i=0; i<slices; i++){
       for(int j=0; j<strips; j++){
         double curr_theta = i*(2.0*M_PI/(double)slices);
@@ -49,26 +48,19 @@ ConeRenderable::ConeRenderable(ShaderProgramPtr shaderProgram,
         glcheck(glBindBuffer(GL_ARRAY_BUFFER, m_tBuffer));
         glcheck(glBufferData(GL_ARRAY_BUFFER, m_texCoords.size()*sizeof(glm::vec2), m_texCoords.data(), GL_STATIC_DRAW));
 
+        //Handle the texture image itself
         sf::Image image;
         image.loadFromFile(textureFilename);
         image.flipVertically();
-
-        // create a GPU buffer then bind the texture
         glcheck(glGenTextures(1, &m_texId));
         glcheck(glBindTexture(GL_TEXTURE_2D, m_texId));
-
-        // texture options
         glcheck(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
         glcheck(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
         glcheck(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
         glcheck(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
-
-        // Transfer the texture image texture to the GPU
         glcheck(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F,
             image.getSize().x, image.getSize().y, 0, GL_RGBA, GL_UNSIGNED_BYTE,
             (const GLvoid*)image.getPixelsPtr()));
-
-        // Release the texture
         glcheck(glBindTexture(GL_TEXTURE_2D, 0));
 
       }
@@ -92,69 +84,69 @@ ConeRenderable::ConeRenderable(ShaderProgramPtr shaderProgram,
 
 void ConeRenderable::do_draw()
 {
-    //Send material to GPU as uniform
-    Material::sendToGPU(m_shaderProgram, getMaterial());
+  //Location
+  int positionLocation = m_shaderProgram->getAttributeLocation("vPosition");
+  int colorLocation = m_shaderProgram->getAttributeLocation("vColor");
+  int normalLocation = m_shaderProgram->getAttributeLocation("vNormal");
+  int modelLocation = m_shaderProgram->getUniformLocation("modelMat");
+  int texSamplerLocation = m_shaderProgram->getUniformLocation("texSampler");
+  int texCoordLocation = m_shaderProgram->getAttributeLocation("vTexCoord");
+  int nitLocation = m_shaderProgram->getUniformLocation("NIT");
 
-    //Location
-    int positionLocation = m_shaderProgram->getAttributeLocation("vPosition");
-    int colorLocation = m_shaderProgram->getAttributeLocation("vColor");
-    int normalLocation = m_shaderProgram->getAttributeLocation("vNormal");
-    int modelLocation = m_shaderProgram->getUniformLocation("modelMat");
-    int nitLocation = m_shaderProgram->getUniformLocation("NIT");
-    int texCoordLocation = m_shaderProgram->getAttributeLocation("vTexCoord");
-    int texSamplerLocation = m_shaderProgram->getUniformLocation("texSampler");
+  //Send material to GPU as uniform
+  Material::sendToGPU(m_shaderProgram, getMaterial());
 
-
-    //Send data to GPU
-    if(modelLocation != ShaderProgram::null_location)
-    {
-        glcheck(glUniformMatrix4fv(modelLocation, 1, GL_FALSE, glm::value_ptr(getModelMatrix())));
-    }
-
-    if (nitLocation != ShaderProgram::null_location) {
-        glcheck(glUniformMatrix3fv(nitLocation, 1, GL_FALSE,
-            glm::value_ptr(glm::transpose(glm::inverse(glm::mat3(getModelMatrix()))))));
-    }
-
-    if(positionLocation != ShaderProgram::null_location)
-    {
-        //Activate location
-        glcheck(glEnableVertexAttribArray(positionLocation));
-        //Bind buffer
-        glcheck(glBindBuffer(GL_ARRAY_BUFFER, m_pBuffer));
-        //Specify internal format
-        glcheck(glVertexAttribPointer(positionLocation, 3, GL_FLOAT, GL_FALSE, 0, (void*)0));
-    }
-
-    if(colorLocation != ShaderProgram::null_location)
-    {
-        glcheck(glEnableVertexAttribArray(colorLocation));
-        glcheck(glBindBuffer(GL_ARRAY_BUFFER, m_cBuffer));
-        glcheck(glVertexAttribPointer(colorLocation, 4, GL_FLOAT, GL_FALSE, 0, (void*)0));
-    }
-
-    if(normalLocation != ShaderProgram::null_location)
-    {
-        glcheck(glEnableVertexAttribArray(normalLocation));
-        glcheck(glBindBuffer(GL_ARRAY_BUFFER, m_nBuffer));
-        glcheck(glVertexAttribPointer(normalLocation, 3, GL_FLOAT, GL_FALSE, 0, (void*)0));
-    }
-
-  if(texture==1){
-    if (texCoordLocation != ShaderProgram::null_location) {
-        // Bind texture on texture unit 0
-        glcheck(glActiveTexture(GL_TEXTURE0));
-        glcheck(glBindTexture(GL_TEXTURE_2D, m_texId));
-
-        // Tells the sampler to use the texture unit 0
-        glcheck(glUniform1i(texSamplerLocation, 0));
-
-        // Send texture coordinates attributes
-        glcheck(glEnableVertexAttribArray(texCoordLocation));
-        glcheck(glBindBuffer(GL_ARRAY_BUFFER, m_tBuffer));
-        glcheck(glVertexAttribPointer(texCoordLocation, 2, GL_FLOAT, GL_FALSE, 0, (void*)0));
-    }
+  //Send data to GPU
+  if(modelLocation != ShaderProgram::null_location)
+  {
+      glcheck(glUniformMatrix4fv(modelLocation, 1, GL_FALSE, glm::value_ptr(getModelMatrix())));
   }
+
+  //NIT matrix
+  if (nitLocation != ShaderProgram::null_location) {
+      glcheck(glUniformMatrix3fv(nitLocation, 1, GL_FALSE,
+          glm::value_ptr(glm::transpose(glm::inverse(glm::mat3(getModelMatrix()))))));
+  }
+
+  if(positionLocation != ShaderProgram::null_location)
+  {
+      //Activate location
+      glcheck(glEnableVertexAttribArray(positionLocation));
+      //Bind buffer
+      glcheck(glBindBuffer(GL_ARRAY_BUFFER, m_pBuffer));
+      //Specify internal format
+      glcheck(glVertexAttribPointer(positionLocation, 3, GL_FLOAT, GL_FALSE, 0, (void*)0));
+  }
+
+  if(colorLocation != ShaderProgram::null_location)
+  {
+      glcheck(glEnableVertexAttribArray(colorLocation));
+      glcheck(glBindBuffer(GL_ARRAY_BUFFER, m_cBuffer));
+      glcheck(glVertexAttribPointer(colorLocation, 4, GL_FLOAT, GL_FALSE, 0, (void*)0));
+  }
+
+  if(normalLocation != ShaderProgram::null_location)
+  {
+      glcheck(glEnableVertexAttribArray(normalLocation));
+      glcheck(glBindBuffer(GL_ARRAY_BUFFER, m_nBuffer));
+      glcheck(glVertexAttribPointer(normalLocation, 3, GL_FLOAT, GL_FALSE, 0, (void*)0));
+  }
+
+  // Texture and texture coordinates
+  if (texCoordLocation != ShaderProgram::null_location) {
+      // Bind texture on texture unit 0
+      glcheck(glActiveTexture(GL_TEXTURE0));
+      glcheck(glBindTexture(GL_TEXTURE_2D, m_texId));
+
+      // Tells the sampler to use the texture unit 0
+      glcheck(glUniform1i(texSamplerLocation, 0));
+
+      // Send texture coordinates attributes
+      glcheck(glEnableVertexAttribArray(texCoordLocation));
+      glcheck(glBindBuffer(GL_ARRAY_BUFFER, m_tBuffer));
+      glcheck(glVertexAttribPointer(texCoordLocation, 2, GL_FLOAT, GL_FALSE, 0, (void*)0));
+  }
+
 
   //Draw triangles elements
   glcheck(glDrawArrays(GL_TRIANGLES,0, m_positions.size()));
@@ -171,14 +163,13 @@ void ConeRenderable::do_draw()
   {
       glcheck(glDisableVertexAttribArray(normalLocation));
   }
+  if (nitLocation != ShaderProgram::null_location) {
+      glcheck(glDisableVertexAttribArray(nitLocation));
+  }
   if (texCoordLocation != ShaderProgram::null_location) {
       glcheck(glDisableVertexAttribArray(texCoordLocation));
       glcheck(glBindTexture(GL_TEXTURE_2D, 0));   // unbind the texture!
   }
-
-
-
-
 
 }
 
@@ -191,4 +182,16 @@ ConeRenderable::~ConeRenderable()
     glcheck(glDeleteBuffers(1, &m_nBuffer));
     glcheck(glDeleteTextures(1,&m_texId));
     glcheck(glDeleteBuffers(1, &m_tBuffer));
+}
+
+void ConeRenderable::supprimer()
+{
+  glcheck(glDeleteBuffers(1, &m_pBuffer));
+  glcheck(glDeleteBuffers(1, &m_cBuffer));
+  glcheck(glDeleteBuffers(1, &m_nBuffer));
+  glcheck(glDeleteBuffers(1, &m_tBuffer));
+  std::vector<HierarchicalRenderablePtr> enfants = getChildren();
+  for (int i = 0; i < enfants.size(); i++) {
+    enfants[i]->supprimer();
+  }
 }

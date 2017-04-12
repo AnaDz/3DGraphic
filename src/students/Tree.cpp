@@ -16,7 +16,6 @@ Tree::Tree(ShaderProgramPtr program, const std::string& textureFilename, const s
 
 
   tronc = std::make_shared<TruncTex>(program, textureFilename);
-  tronc->setMaterial(m_material);
   std::shared_ptr<ConeRenderable> feuilles = std::make_shared<ConeRenderable>(program, m_material, textureFilename2);
   translationM = glm::translate(glm::mat4(1.0), glm::vec3(0, 0, 1.0));
   scaleM = glm::scale(glm::mat4(1.0), glm::vec3(1.5,1.5,3.5));
@@ -25,6 +24,8 @@ Tree::Tree(ShaderProgramPtr program, const std::string& textureFilename, const s
   feuilles->setParentTransform(translationM);
 
   HierarchicalRenderable::addChild(tronc,feuilles);
+
+  existe = false;
 
 }
 
@@ -51,7 +52,6 @@ Tree::~Tree(){
 
 
 void Tree::do_draw() {
-    tronc->do_draw();
 }
 
 void Tree::do_animate(float time) {
@@ -68,7 +68,10 @@ void Tree::do_animate(float time) {
   /*    for(int i=0; i<1000000;i++) {}
       std::cerr << "fini" << std::endl;*/
   }
+}
 
-
-
+void Tree::supprimer() {
+  if (!existe) {
+    tronc->supprimer();
+  }
 }

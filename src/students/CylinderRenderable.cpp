@@ -175,3 +175,15 @@ CylinderRenderable::~CylinderRenderable()
     glcheck(glDeleteBuffers(1, &m_tBuffer));
     glcheck(glDeleteTextures(1, &m_texId));
 }
+
+void CylinderRenderable::supprimer()
+{
+  glcheck(glDeleteBuffers(1, &m_pBuffer));
+  glcheck(glDeleteBuffers(1, &m_cBuffer));
+  glcheck(glDeleteBuffers(1, &m_nBuffer));
+  glcheck(glDeleteBuffers(1, &m_tBuffer));
+  std::vector<HierarchicalRenderablePtr> enfants = getChildren();
+  for (int i = 0; i < enfants.size(); i++) {
+    enfants[i]->supprimer();
+  }
+}
