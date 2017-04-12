@@ -1,5 +1,5 @@
-#ifndef PARTICLE_RENDERABLE_HPP
-#define PARTICLE_RENDERABLE_HPP
+#ifndef PARTICLE_RENDERABLE_STUDENT_HPP
+#define PARTICLE_RENDERABLE_STUDENT_HPP
 
 #include "../HierarchicalRenderable.hpp"
 #include "../dynamics/Particle.hpp"
@@ -14,7 +14,7 @@
  * a ball, this renderable simply render the corresponding ball. If
  * you have more than one renderable, have a look to ParticleListRenderable.
  */
-class ParticleRenderable : public HierarchicalRenderable
+class ParticleRenderableStudent : public HierarchicalRenderable, public Materiable
 {
     public:
         /**@brief Build a particle renderable.
@@ -23,9 +23,12 @@ class ParticleRenderable : public HierarchicalRenderable
          * @param program The shader program used to render the particle.
          * @param particle The particle to render.
          */
-        ParticleRenderable(ShaderProgramPtr program, ParticlePtr particle);
+        ParticleRenderableStudent(ShaderProgramPtr program,
+                            ParticlePtr particle,
+                            const MaterialPtr& material = Material::Neige(),
+                            const std::string& textureFilename = "../textures/snow.png");
 
-        ~ParticleRenderable();
+        ~ParticleRenderableStudent();
 
     protected:
         void do_draw();
@@ -37,12 +40,15 @@ class ParticleRenderable : public HierarchicalRenderable
         std::vector< glm::vec3 > m_positions;
         std::vector< glm::vec4 > m_colors;
         std::vector< glm::vec3 > m_normals;
+        std::vector <glm::vec2> m_texCoords;
 
         unsigned int m_pBuffer;
         unsigned int m_cBuffer;
         unsigned int m_nBuffer;
+        unsigned int m_tBuffer;
+        unsigned int m_texId;
 };
 
-typedef std::shared_ptr<ParticleRenderable> ParticleRenderablePtr;
+typedef std::shared_ptr<ParticleRenderableStudent> ParticleRenderableStudentPtr;
 
-#endif //PARTICLE_RENDERABLE_HPP
+#endif //PARTICLE_RENDERABLE_STUDENT_HPP

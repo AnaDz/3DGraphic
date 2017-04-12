@@ -160,11 +160,11 @@ BonhommeDeNeige::BonhommeDeNeige(ShaderProgramPtr phongShader, ShaderProgramPtr 
     this->addParentTransformKeyframe(t+0.8, GeometricTransformation(glm::vec3((2.0*t)+1.65, 0.0, 0.7), glm::angleAxis(0.0f, glm::vec3(0.0, 1.0, 0.0))));
     this->addParentTransformKeyframe(t+1.0, GeometricTransformation(glm::vec3((2.0*t)+2.0, 0.0, 0.0), glm::angleAxis(0.0f, glm::vec3(0.0, 1.0, 0.0))));
   }
-
+  existe = false;
 }
 
 BonhommeDeNeige::~BonhommeDeNeige() {
-  // Rien ?
+
 }
 
 void BonhommeDeNeige::addParentTransformKeyframe(float time, const GeometricTransformation& transformation) {
@@ -176,7 +176,7 @@ void BonhommeDeNeige::addLocalTransformKeyframe(float time, const GeometricTrans
 }
 
 void BonhommeDeNeige::do_draw() {
-  base->do_draw();
+
 }
 
 void BonhommeDeNeige::do_animate(float time) {
@@ -187,5 +187,10 @@ void BonhommeDeNeige::do_animate(float time) {
   if (!m_parentKeyframes.empty()) {
       setParentTransform(m_parentKeyframes.interpolateTransformation(time));
   }
+}
 
+void BonhommeDeNeige::supprimer() {
+  if (!existe) {
+    base->supprimer();
+  }
 }

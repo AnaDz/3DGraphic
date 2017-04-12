@@ -129,3 +129,6 @@ std::vector<HierarchicalRenderablePtr> & HierarchicalRenderable::getChildren()
 void HierarchicalRenderable::setFalling(bool fal){
   falling = fal;
 }
+
+void HierarchicalRenderable::supprimer() {
+}
