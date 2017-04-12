@@ -208,7 +208,7 @@ void initialize_project_skyrim_2(Viewer& viewer) {
 
   }
 
-  bool Matthieu = true;
+  bool Matthieu = false;
   if (Matthieu) {
     /* Création d'un bonhomme de neige */
     BonhommeDeNeigePtr bonhomme = std::make_shared<BonhommeDeNeige>(phongShader, texShader);
@@ -218,7 +218,7 @@ void initialize_project_skyrim_2(Viewer& viewer) {
     bonhomme->supprimer();
   }
 
-bool Olivier = false;
+bool Olivier = true;
   if (Olivier){
     MaterialPtr pearl = Material::Pearl();
 
@@ -249,12 +249,14 @@ bool Olivier = false;
  	  system->addPlaneObstacle(plane2);
 
     glm::vec3 p8(6, 0.0, 0.0);
- 	  glm::vec3 p9(6, 1, 0.0);
- 	  glm::vec3 p10( 6,1,1);
+ 	  glm::vec3 p9(6, 10, 0.0);
+ 	  glm::vec3 p10( 6,10,-10);
+    glm::vec3 p11(6,0,-10);
  	  PlanePtr plane3 = std::make_shared<Plane>(p8, p9, p10);
+    //plane3->setNormal(-plane3->normal());
+
  	  system->addPlaneObstacle(plane3);
 
-    system->setRestitution(0.0f);
  	  //Create a plane renderable to display the obstacle
  //PlaneRenderablePtr planeRenderable = std::make_shared<QuadRenderable>(flatShader, p1,p2,p3,p4, glm::vec4(0,0,1,1));
  	 // parentTransformation=glm::rotate(glm::mat4(1.0), -angle, glm::vec3(1,0,0));
@@ -269,12 +271,12 @@ bool Olivier = false;
  	  float pm, pr;
  	  px = glm::vec3(3, 1,0 );
  	  pv = glm::vec3(0.0, 1.0, 0.0);
- 	  pr = 0.5;
+ 	  pr = 0.25;
  	  pm = 10;
  	  ParticlePtr particle = std::make_shared<Particle>(px, pv, pm, pr);
 	  system->addParticle(particle);
 
- 	  SnowballRenderablePtr sb = std::make_shared<SnowballRenderable>(texShader, &viewer, particle, skybox);
+ 	  SnowballRenderablePtr sb = std::make_shared<SnowballRenderable>(texShader, flatShader, texShader, phongShader, &viewer, particle, skybox, system);
  	  parentTransformation=glm::translate(glm::mat4(1.0), glm::vec3(3,1,0));
  	  sb->setParentTransform(parentTransformation);
  	  HierarchicalRenderable::addChild(systemRenderable, sb);

@@ -16,14 +16,14 @@
 #include "./../lighting/Materiable.hpp"
 #include "../../include/students/SphereRenderable.hpp"
 #include "../../include/students/GroundRenderable.hpp"
-
+#include "../../include/dynamics/DynamicSystem.hpp"
 
 
 class SnowballRenderable : public ParticleRenderableStudent
 {
 public:
     ~SnowballRenderable();
-    SnowballRenderable(ShaderProgramPtr program, Viewer* v, ParticlePtr particle, std::shared_ptr<SphereRenderable> sky);
+    SnowballRenderable(ShaderProgramPtr program, ShaderProgramPtr flatShader, ShaderProgramPtr texShader, ShaderProgramPtr phongShader, Viewer* v, ParticlePtr particle, std::shared_ptr<SphereRenderable> sky, DynamicSystemPtr system);
     void do_keyPressedEvent(sf::Event& e);
     void do_keyReleasedEvent(sf::Event& e);
     std::shared_ptr<SphereRenderable> skybox;
@@ -40,6 +40,11 @@ private:
     //nx = 6; ny=75;
     GroundRenderablePtr groundR[6][75];
 
+    ShaderProgramPtr flatShader;
+    ShaderProgramPtr texShader;
+    ShaderProgramPtr phongShader;
+    DynamicSystemPtr system;
+    void ajouterObstacles();
 
 };
 
