@@ -17,15 +17,17 @@
 #include "../../include/students/SphereRenderable.hpp"
 #include "../../include/students/GroundRenderable.hpp"
 #include "../../include/dynamics/DynamicSystem.hpp"
-
+#include "../../include/students/Tree.hpp"
 #include "../../include/students/BonhommeDeNeige.hpp"
 #include "../../include/texturing/TexturedMeshRenderable.hpp"
+
+#include <vector>
 
 class SnowballRenderable : public ParticleRenderableStudent
 {
 public:
     ~SnowballRenderable();
-    SnowballRenderable(ShaderProgramPtr program, ShaderProgramPtr flatShader, ShaderProgramPtr texShader, ShaderProgramPtr phongShader, Viewer* v, ParticlePtr particle, std::shared_ptr<SphereRenderable> sky, DynamicSystemPtr system);
+    SnowballRenderable(ShaderProgramPtr flatShader, ShaderProgramPtr phongShader, ShaderProgramPtr texShader, Viewer* v, ParticlePtr particle, std::shared_ptr<SphereRenderable> sky, DynamicSystemPtr system);
     void do_keyPressedEvent(sf::Event& e);
     void do_keyReleasedEvent(sf::Event& e);
     std::shared_ptr<SphereRenderable> skybox;
@@ -33,21 +35,21 @@ private:
     void do_draw();
     void do_animate(float time);
 
-    Viewer *viewer;
+    Viewer* viewer;
 
     bool gauche;
     bool droite;
     bool toutDroit;
 
-    //nx = 6; ny=75;
-    GroundRenderablePtr groundR[6][75];
+    std::vector<std::vector<GroundRenderablePtr>> groundR;
 
     ShaderProgramPtr flatShader;
     ShaderProgramPtr texShader;
     ShaderProgramPtr phongShader;
     DynamicSystemPtr system;
-    BonhommeDeNeigePtr bonhommes[5];
+    BonhommeDeNeigePtr bonhomme;
     TexturedMeshRenderablePtr mesh;
+    TreePtr arbre;
 
 };
 

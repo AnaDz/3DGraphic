@@ -5,7 +5,6 @@
  *      Author: mariono
  */
 
-
 #include"../../include/students/SnowballRenderable.hpp"
 #include <glm/gtc/type_ptr.hpp>
 #include <GL/glew.h>
@@ -16,98 +15,103 @@
 #include "./../../teachers/Geometries.hpp"
 #include"../../include/dynamics/Particle.hpp"
 #include "../../include/students/GroundRenderable.hpp"
-
-
-#include "../../include/students/Tree.hpp"
-
 #include "../../include/dynamics/DynamicSystem.hpp"
 #include <cmath>
 
-SnowballRenderable::SnowballRenderable(ShaderProgramPtr shaderProgram,  ShaderProgramPtr flatShader, ShaderProgramPtr texShader, ShaderProgramPtr phongShader, Viewer* v, ParticlePtr particle, std::shared_ptr<SphereRenderable> sky, DynamicSystemPtr system)
-	: ParticleRenderableStudent(shaderProgram, particle),
-	  viewer(v), flatShader(flatShader), texShader(texShader), phongShader(phongShader), system(system)
+int nx = 12;
+int ny = 75;
+int n = 10;
+float angle = -(float)3.14/12;
+
+SnowballRenderable::SnowballRenderable(ShaderProgramPtr flatShader,  ShaderProgramPtr phongShader, ShaderProgramPtr texShader, Viewer* v, ParticlePtr particle, std::shared_ptr<SphereRenderable> sky, DynamicSystemPtr system)
+	: ParticleRenderableStudent(texShader, particle)
 {
+	 // Initialisation des attributs
 	 viewer = v;
 	 flatShader=flatShader;
-		 texShader=texShader;
-		 phongShader=phongShader;
-	system=system;
+	 texShader=texShader;
+	 phongShader=phongShader;
+	 system=system;
 	 gauche = false;
 	 droite = false;
 	 toutDroit = true;
 	 skybox = sky;
 
-	 //initialisation du sol
-	 int nx = 6;
-	 int ny = 75;
-	 int n = 10;
-	 float angle = -(float)3.14/12;
+	 // Initialisation du sol
+	 groundR.resize(nx, std::vector<GroundRenderablePtr>(ny));
 
 	 glm::mat4 parentTransformation, localTransformation;
-	 //groundR = malloc(sizeof(GroundRenderablePtr) * nx * ny);
 
+	 // Création du terrain
 	 for (int x=0; x<nx; x++){
 		 for (int y=0; y<ny; y++){
-			 groundR[x][y] = std::make_shared<GroundRenderable>(flatShader,x,y,n, viewer);
+			 groundR[x][y] = std::make_shared<GroundRenderable>(flatShader,x,y,n);
 			 parentTransformation=glm::translate(glm::rotate(glm::mat4(1.0), angle, glm::vec3(1,0,0)), glm::vec3(x,y,0));
 			 groundR[x][y]->setParentTransform(parentTransformation);
 			 localTransformation = glm::mat4(1.0);
 			 groundR[x][y]->setLocalTransform(localTransformation);
 			 viewer->addRenderable(groundR[x][y]);
-
 		 }
 	 }
-glm::mat4 trans, scaleM;
-	 for (int i=0; i< 5; i++){
-		 bonhommes[i]=std::make_shared<BonhommeDeNeige>(phongShader, texShader);
-		 //trans = glm::translate(glm::mat4(1.0), glm::vec3(i,(i+1)*5*cos(angle),(i+1)*5*sin(angle)));
-		 scaleM = glm::scale(glm::mat4(1.0), glm::vec3(0.012,0.012,0.012));
-		 bonhommes[i]->setLocalTransform(scaleM);
-		 //bonhommes[i]->setLocalTransform(glm::rotate(glm::mat4(1.0), angle, glm::vec3(1,0,0)));
 
-		 //bonhomme->setLocalTransform(glm::rotate(glm::mat4(1.0), angle, glm::vec3(1,0,0)));
-		 HierarchicalRenderable::addChild(bonhommes[i], bonhommes[i]->base);
-		 bonhommes[i]->generateAnimation(glm::vec3(i,((i+1)*5)*cos(angle),((i+1)*5)*sin(angle))) ;
-		 viewer->addRenderable(bonhommes[i]);
-	 }
+	 // Création du bonhomme de neige
+	 bonhomme = std::make_shared<BonhommeDeNeige>(phongShader, texShader);
+	 HierarchicalRenderable::addChild(bonhomme, bonhomme->base);
+	 bonhomme->generateAnimation(0.0, glm::vec3(0,5*cos(angle),5*sin(angle))) ;
+	 viewer->addRenderable(bonhomme);
 
+	 // Création de l'arbre
+	 std::string filename = "../textures/bark.jpg";
+	 std::string filename2 = "../textures/needle.jpg";
+	 arbre = std::make_shared<Tree>(texShader, filename, filename2);
+	 glm::vec3 px,pv;
+	 float pm, pr;
+	 px = glm::vec3(0,0,0.5);
+	 pv = glm::vec3(0,0,0);
+	 pr = 0.5;
+	 pm = 1.0;
+	 ParticlePtr particle_arbre = std::make_shared<Particle>(px, pv, pm, pr);
+	 arbre->setParentTransform(glm::scale(glm::mat4(1.0), glm::vec3(0.25,0.25,0.25)));
+	 particle_arbre->setSpecialAnimation(true);
+	 particle_arbre->setLink(arbre);
+	 system->addParticle(particle_arbre);
+	 HierarchicalRenderable::addChild(arbre, arbre->tronc);
+	 //arbre->setFalling(true);
+	 viewer->addRenderable(arbre);
+	 //Explosion(system, systemRenderable, phongShader);
 
-
-	 	mesh=std::make_shared<TexturedMeshRenderable>(
-		 texShader, "../meshes/Maison.obj", "../textures/Cottage Texture.jpg");
-
-		 trans = glm::translate(glm::mat4(1.0), glm::vec3(1,5*cos(angle),5*sin(angle)));
-		 scaleM = glm::scale(trans, glm::vec3(0.012,0.012,0.012));
-		 mesh->setParentTransform(scaleM);
-		 //mesh->setParentTransform(scaleM);
-		 mesh->setMaterial(Material::Maison());
-		 glm::mat4 rotationM = glm::rotate(glm::rotate(glm::rotate(glm::mat4(1.0), (float)(M_PI/2.0), glm::vec3(1,0,0)), (float)(M_PI/2.0), glm::vec3(0,1,0)), angle, glm::vec3(0,0,1));
-		 mesh->setLocalTransform(rotationM);
-
-		 viewer->addRenderable(mesh);
-
+	 // Création du mesh : la petite maison dans la prairie enneigée
+ 	 mesh=std::make_shared<TexturedMeshRenderable>(
+	 texShader, "../meshes/Maison.obj", "../textures/Cottage Texture.jpg");
+	 glm::mat4 trans, scaleM;
+	 trans = glm::translate(glm::mat4(1.0), glm::vec3(1,5*cos(angle),5*sin(angle)));
+	 scaleM = glm::scale(trans, glm::vec3(0.02,0.02,0.02));
+	 mesh->setParentTransform(scaleM);
+	 mesh->setMaterial(Material::Maison());
+	 glm::mat4 rotationM = glm::rotate(glm::rotate(glm::rotate(glm::mat4(1.0), (float)(M_PI/2.0), glm::vec3(1,0,0)), (float)(M_PI/2.0), glm::vec3(0,1,0)), angle, glm::vec3(0,0,1));
+	 mesh->setLocalTransform(rotationM);
+	 viewer->addRenderable(mesh);
 }
 
 void SnowballRenderable::do_animate(float time)
 {
 }
 
-
-
-
-
 float scaleFactor = 1;
 bool ancien[3]={false, false, false};
-int k =1;
+int k=1;
 double prevY = 0;
 double prevZ = 0;
+
 void SnowballRenderable::do_draw()
 {
+	// Agrandissement progressif de la boule
 	if (m_particle->getPosition().y < 100){
 		scaleFactor= 0.4+m_particle->getPosition().y/200;
 		m_particle->setRadius(scaleFactor/2);
 	}
 
+	// Positionnement de la caméra et de la skybox pour suivre le mouvement de la boule de neige
 	viewer->getCamera().setMouseBehavior(Camera::SPACESHIP_BEHAVIOR);
 	viewer->getCamera().setPosition(glm::vec3(3,-2+ParticleRenderableStudent::m_particle->getPosition().y, 2+ParticleRenderableStudent::m_particle->getPosition().z));
 	glm::mat4 translation_skybox = glm::translate(glm::mat4(1.0), glm::vec3(3,prevY,prevZ));
@@ -115,16 +119,17 @@ void SnowballRenderable::do_draw()
 	prevY = -2+ParticleRenderableStudent::m_particle->getPosition().y;
 	prevZ = 2+ParticleRenderableStudent::m_particle->getPosition().z;
 
-	Material::sendToGPU(m_shaderProgram, Material::Neige());
+	// Déplacement de la boule de neige
 	setLocalTransform(glm::rotate(glm::mat4(1.0), -(float)(ParticleRenderableStudent::m_particle->getPosition().y), glm::vec3(1,0,0)));
 
+	// Déplacement de la particule devant et sur les côtés : ajustement de la vitesse
 	float vitesse = m_particle->getVelocity().y;
 	if (gauche){
-		m_particle->setVelocity(m_particle->getVelocity() + glm::vec3(-0.5, 0,0));
+		m_particle->setVelocity(m_particle->getVelocity() + glm::vec3(-.05, 0,0));
 		ancien[0]=true;
 	}
 	if (droite){
-		m_particle->setVelocity(m_particle->getVelocity() + glm::vec3(0.5, 0,0));
+		m_particle->setVelocity(m_particle->getVelocity() + glm::vec3(0.05, 0,0));
 		ancien[2]=true;
 	}
 	if (toutDroit){
@@ -138,51 +143,34 @@ void SnowballRenderable::do_draw()
 		}
 	}
 
+	// Vitesse maximale autorisée
 	if (m_particle->getVelocity().y > 25 ){
 		glm::vec3 tmp = m_particle->getVelocity();
 		tmp.y = 25;
 		m_particle->setVelocity(tmp);
 	}
+
+	// Dessin de la boule de neige
 	ParticleRenderableStudent::do_draw();
 
-
-
-
+	// Déplacement du terrain et des objets s'y trouvant au fur et à mesure que la boule avance
 	if (m_particle->getPosition().y >= k*25){
-		// m_particle->setPosition(glm::vec3(m_particle->getPosition().x, 0, 0));
-
-
-		int nx = 6;
-		int ny = 75;
-		int n = 10;
-		float angle = -(float)3.14/12;
-
+		// Déplacement de la maison
 		glm::mat4 trans = glm::translate(glm::mat4(1.0), glm::vec3(1,(k*25+24)*cos(angle),(k*25+24)*sin(angle)));
-		glm::mat4 scaleM = glm::scale(trans, glm::vec3(0.012,0.012,0.012));
+		glm::mat4 scaleM = glm::scale(trans, glm::vec3(0.02,0.02,0.02));
 		mesh->setParentTransform(scaleM);
 
-		for (int i = 0; i <5; i++){
-			//bonhommes[i]->setParentTransform(glm::translate(glm::rotate(glm::mat4(1.0), angle, glm::vec3(1,0,0)), glm::vec3(i,(i+1)*5,0)));
-			// bonhommes[i]->setParentTransform(glm::translate(glm::rotate(glm::mat4(1.0), angle, glm::vec3(1,0,0)), glm::vec3(i,(i+1)*5+k*25,0)));
-			// bonhommes[i]->setLocalTransform(glm::mat4(1.0));
-			// trans = glm::translate(glm::mat4(1.0), glm::vec3(1,(k*25+24)*cos(angle),(k*25+24)*sin(angle)));
-			// scaleM = glm::scale(trans, glm::vec3(0.012,0.012,0.012));
-			// bonhommes[i]->setParentTransform(scaleM);
-			//bonhommes[i]->setParentTransform(glm::translate(glm::mat4(1.0), glm::vec3(i,50,0)));
+		// Déplacement du bonhomme de neige
+		bonhomme->generateAnimation(viewer->getTime(), glm::vec3(1,(k*25+24)*cos(angle),(k*25+24)*sin(angle)));
 
-			bonhommes[i]->generateAnimation(glm::vec3(i,50*cos(angle),50*sin(angle))) ;
-		}
+		// Déplacement de l'arbre
+		trans = glm::translate(glm::mat4(1.0), glm::vec3(1,(k*25+22)*cos(angle),(k*25+22)*sin(angle)));
+		scaleM = glm::scale(trans, glm::vec3(0.25,0.25,0.25));
+		arbre->setParentTransform(scaleM);
 
-
-		// BonhommeDeNeigePtr bonhomme = std::make_shared<BonhommeDeNeige>(phongShader, texShader);
-    // bonhomme->setParentTransform(glm::mat4(1.0));
-    // HierarchicalRenderable::addChild(bonhomme, bonhomme->base);
-    // viewer.addRenderable(bonhomme);
-
+		// Déplacement du terrain
 		glm::mat4 parentTransformation, localTransformation;
-
 		GroundRenderablePtr tmp;
-//version1
 			for (int x=0; x<nx; x++){
 				for (int y=0; y<25; y++){
 				// 	if (k%3==1){
@@ -199,7 +187,6 @@ void SnowballRenderable::do_draw()
 				groundR[x][y]= groundR[x][y+25];
 				groundR[x][y+25]=groundR[x][y+50];
 				groundR[x][y+50]=tmp;
-
 			}
 		}
 		//version2
@@ -224,17 +211,10 @@ void SnowballRenderable::do_draw()
 	//
 	// 	}
 	// }
-
 		k++;
 		//ajouterObstacles();
 	}
-
-
 }
-
-
-
-
 
 SnowballRenderable::~SnowballRenderable()
 {

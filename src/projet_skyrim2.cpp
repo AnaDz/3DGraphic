@@ -219,14 +219,16 @@ void initialize_project_skyrim_2(Viewer& viewer) {
     viewer.addRenderable(bonhomme);
   }
 
-bool Olivier = true;
+  bool Olivier = true;
   if (Olivier){
 
+    // Lumière globale
  	  glm::vec3 lightDirection = glm::normalize(glm::vec3(0.0, -1.0, -1.0));
  	  glm::vec3 ghostWhite(248.0/255, 248.0/255, 248.0/255);
  	  DirectionalLightPtr directionalLight = std::make_shared<DirectionalLight>(lightDirection, ghostWhite, ghostWhite, ghostWhite);
  	  viewer.setDirectionalLight(directionalLight);
 
+    // Initialisation
  	  glm::mat4 parentTransformation, localTransformation;
  	  GroundRenderablePtr groundR ;
  	  int nx = 6;
@@ -234,7 +236,7 @@ bool Olivier = true;
  	  int n = 10; //nb de points par dalle
  	  float angle = -(float)3.14/12;
 
- 	  //cf memo : plan invisible. il n'est même pas tracé. Normalement ça fonctionne
+ 	  // Pente invisible
  	  glm::vec3 p1(0.0, 0.0, 0.0);
  	  glm::vec3 p2(nx, 0.0, 0.0);
  	  glm::vec3 p3(nx, ny*cos(angle), ny*sin(angle) );
@@ -242,33 +244,30 @@ bool Olivier = true;
  	  PlanePtr plane = std::make_shared<Plane>(p1, p2, p3);
  	  system->addPlaneObstacle(plane);
 
+    // Mur invisible droit
     glm::vec3 p5(0.0, 0.0, 0.0);
  	  glm::vec3 p6(0, 1, 0.0);
- 	  glm::vec3 p7(0,0,1 );
+ 	  glm::vec3 p7(0, 0, 1);
  	  PlanePtr plane2 = std::make_shared<Plane>(p5, p6, p7);
  	  system->addPlaneObstacle(plane2);
 
+    // Mur invisible gauche
     glm::vec3 p8(6, 0.0, 0.0);
  	  glm::vec3 p9(6, 10, 0.0);
  	  glm::vec3 p10( 6,10,-10);
     glm::vec3 p11(6,0,-10);
  	  PlanePtr plane3 = std::make_shared<Plane>(p8, p9, p10);
-    //plane3->setNormal(-plane3->normal());
-
  	  system->addPlaneObstacle(plane3);
 
- 	  //Create a plane renderable to display the obstacle
-    glm::vec3 p12(0.0, 0.0, -1);
+ 	  // Terrain blanc en-dessous du terrain cabossé pour ne pas voir les défauts de déplacement
+    /*glm::vec3 p12(0.0, 0.0, -1);
     glm::vec3 p13(nx, 0.0, -1);
     glm::vec3 p14(nx, ny*cos(angle), ny*sin(angle)-1 );
     glm::vec3 p15(0, ny*cos(angle), ny*sin(angle)-1);
-   PlaneRenderablePtr planeRenderable = std::make_shared<QuadRenderable>(flatShader, p12,p13,p14,p15, glm::vec4(1,1,1,1));
- 	 HierarchicalRenderable::addChild( systemRenderable, planeRenderable );
+    PlaneRenderablePtr planeRenderable = std::make_shared<QuadRenderable>(flatShader, p12,p13,p14,p15, glm::vec4(1,1,1,1));
+ 	  HierarchicalRenderable::addChild( systemRenderable, planeRenderable );*/
 
-
-
-
-
+    // Particule physique de la boule de neige
  	  glm::vec3 px,pv;
  	  float pm, pr;
  	  px = glm::vec3(3, 1,0 );
@@ -279,30 +278,29 @@ bool Olivier = true;
  	  ParticlePtr particle = std::make_shared<Particle>(px, pv, pm, pr);
 	  system->addParticle(particle);
 
- 	  SnowballRenderablePtr sb = std::make_shared<SnowballRenderable>(texShader, flatShader, texShader, phongShader, &viewer, particle, skybox, system);
+    // Renderable visible de la boule de neige, du terrain et des objets s'y trouvant
+ 	  SnowballRenderablePtr sb = std::make_shared<SnowballRenderable>(flatShader, phongShader, texShader, &viewer, particle, skybox, system);
  	  parentTransformation=glm::translate(glm::mat4(1.0), glm::vec3(3,1,0));
  	  sb->setParentTransform(parentTransformation);
  	  HierarchicalRenderable::addChild(systemRenderable, sb);
 
+    // Forces exercées sur la boule de neige : gravitée et frottements
  	  ConstantForceFieldPtr gravityForceField = std::make_shared<ConstantForceField>(system->getParticles(), glm::vec3{0,0,-10} );
  	  system->addForceField(gravityForceField);
-
-    float dampingCoefficient = 1.0;
+    float dampingCoefficient = 3.0;
     DampingForceFieldPtr dampingForceField = std::make_shared<DampingForceField>(system->getParticles(), dampingCoefficient);
     system->addForceField(dampingForceField);
+    system->setCollisionsDetection(true);
 
-
-
+    // Initialisation de l'emplacement de la caméra
      viewer.getCamera().setViewMatrix(
  	      glm::lookAt(
  	        glm::vec3(5, -2, 2),
  	        glm::vec3(5, 0, 0),
  	        glm::vec3(0, 1, 0)));
-
-
   }
 
   // Run the animation
-  //viewer.setAnimationLoop(true, 1000);
+  //viewer.setAnimationLoop(true, 1000); PAS DE LOOP ICI !
   viewer.startAnimation();
 }

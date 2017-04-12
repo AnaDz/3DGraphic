@@ -12,47 +12,42 @@
 #include "../../include/gl_helper.hpp"
 #include "../../include/log.hpp"
 #include "../../include/Utils.hpp"
-
 #include "../../include/students/PerlinNoise.hpp"
-GroundRenderable::GroundRenderable(ShaderProgramPtr shaderProgram, int x, int y, int n, Viewer* v)
-	: HierarchicalRenderable(shaderProgram),
-	  m_pBuffer(0), m_cBuffer(0), m_nBuffer(0), m_iBuffer(0),
-	  viewer(v)
+
+GroundRenderable::GroundRenderable(ShaderProgramPtr shaderProgram, int x, int y, int n)
+	: HierarchicalRenderable(shaderProgram), m_pBuffer(0), m_cBuffer(0), m_nBuffer(0), m_iBuffer(0)
 {
-		viewer = v;
-		for (int i=0; i<=n; i++){
-			for (int j=0; j<=n; j++){
-				m_positions.push_back(glm::vec3((float)i/n,(float)j/n, 0.3*Get2DPerlinNoiseValue((i+x*n),(j+y*n), 10.0)));
-			}
+
+	for (int i=0; i<=n; i++){
+		for (int j=0; j<=n; j++){
+			m_positions.push_back(glm::vec3((float)i/n,(float)j/n, 0.3*Get2DPerlinNoiseValue((i+x*n),(j+y*n), 10.0)));
 		}
+	}
 
-		for (int i=0; i<=n; i++){
-			for (int j=0; j<=n; j++){
-				float gris = (1+Get2DPerlinNoiseValue(x*(n+1)+i, y*(n+1)+j, 10.0))*0.6+0.4;
-				m_colors.push_back(glm::vec4(gris, gris, gris, 1));
-			}
+	for (int i=0; i<=n; i++){
+		for (int j=0; j<=n; j++){
+			float gris = (1+Get2DPerlinNoiseValue(x*(n+1)+i, y*(n+1)+j, 10.0))*0.6+0.4;
+			m_colors.push_back(glm::vec4(gris, gris, gris, 1));
 		}
+	}
 
-		for (int i=0; i<n; i++){
-			for (int j=0; j<n; j++){
-				m_indices.push_back(glm::ivec3(i*(n+1)+j, i*(n+1)+(j+1), (i+1)*(n+1)+j));
-				m_indices.push_back(glm::ivec3((i+1)*(n+1)+j, i*(n+1)+(j+1), (i+1)*(n+1)+(j+1)));
-
-
-			}
+	for (int i=0; i<n; i++){
+		for (int j=0; j<n; j++){
+			m_indices.push_back(glm::ivec3(i*(n+1)+j, i*(n+1)+(j+1), (i+1)*(n+1)+j));
+			m_indices.push_back(glm::ivec3((i+1)*(n+1)+j, i*(n+1)+(j+1), (i+1)*(n+1)+(j+1)));
 		}
+	}
 
+  glGenBuffers(1, &m_pBuffer); //vertices
+  glGenBuffers(1, &m_cBuffer); //colors
+  glGenBuffers(1, &m_iBuffer); //indices
 
-	    glGenBuffers(1, &m_pBuffer); //vertices
-	    glGenBuffers(1, &m_cBuffer); //colors
-	    glGenBuffers(1, &m_iBuffer); //indices
-
-	    glcheck(glBindBuffer(GL_ARRAY_BUFFER, m_pBuffer));
-	    glcheck(glBufferData(GL_ARRAY_BUFFER, m_positions.size()*sizeof(glm::vec3), m_positions.data(), GL_STATIC_DRAW));
-	    glcheck(glBindBuffer(GL_ARRAY_BUFFER, m_cBuffer));
-	    glcheck(glBufferData(GL_ARRAY_BUFFER, m_colors.size()*sizeof(glm::vec4), m_colors.data(), GL_STATIC_DRAW));
-	    glcheck(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_iBuffer));
-	    glcheck(glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_indices.size()*sizeof(glm::ivec3), m_indices.data(), GL_STATIC_DRAW));
+  glcheck(glBindBuffer(GL_ARRAY_BUFFER, m_pBuffer));
+  glcheck(glBufferData(GL_ARRAY_BUFFER, m_positions.size()*sizeof(glm::vec3), m_positions.data(), GL_STATIC_DRAW));
+  glcheck(glBindBuffer(GL_ARRAY_BUFFER, m_cBuffer));
+  glcheck(glBufferData(GL_ARRAY_BUFFER, m_colors.size()*sizeof(glm::vec4), m_colors.data(), GL_STATIC_DRAW));
+  glcheck(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_iBuffer));
+  glcheck(glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_indices.size()*sizeof(glm::ivec3), m_indices.data(), GL_STATIC_DRAW));
 }
 
 
