@@ -205,12 +205,12 @@ void initialize_project_skyrim_2(Viewer& viewer) {
     ControlledForceFieldRenderablePtr forceRenderable = std::make_shared<ControlledForceFieldRenderable>(flatShader, force);
     HierarchicalRenderable::addChild(systemRenderable, forceRenderable);
     system->setCollisionsDetection(true);
-    system->setRestitution(1.0f);
+    system->setRestitution(0.1f);
 
     tree->supprimer();
   }
 
-  bool Matthieu = true;
+  bool Matthieu = false;
   if (Matthieu) {
     /* Création d'un bonhomme de neige */
     BonhommeDeNeigePtr bonhomme = std::make_shared<BonhommeDeNeige>(phongShader, texShader);
@@ -219,9 +219,8 @@ void initialize_project_skyrim_2(Viewer& viewer) {
     viewer.addRenderable(bonhomme);
   }
 
-bool Olivier = false;
+bool Olivier = true;
   if (Olivier){
-    MaterialPtr pearl = Material::Pearl();
 
  	  glm::vec3 lightDirection = glm::normalize(glm::vec3(0.0, -1.0, -1.0));
  	  glm::vec3 ghostWhite(248.0/255, 248.0/255, 248.0/255);
@@ -250,17 +249,21 @@ bool Olivier = false;
  	  system->addPlaneObstacle(plane2);
 
     glm::vec3 p8(6, 0.0, 0.0);
- 	  glm::vec3 p9(6, 1, 0.0);
- 	  glm::vec3 p10( 6,1,1);
+ 	  glm::vec3 p9(6, 10, 0.0);
+ 	  glm::vec3 p10( 6,10,-10);
+    glm::vec3 p11(6,0,-10);
  	  PlanePtr plane3 = std::make_shared<Plane>(p8, p9, p10);
+    //plane3->setNormal(-plane3->normal());
+
  	  system->addPlaneObstacle(plane3);
 
-    system->setRestitution(0.0f);
  	  //Create a plane renderable to display the obstacle
- //PlaneRenderablePtr planeRenderable = std::make_shared<QuadRenderable>(flatShader, p1,p2,p3,p4, glm::vec4(0,0,1,1));
- 	 // parentTransformation=glm::rotate(glm::mat4(1.0), -angle, glm::vec3(1,0,0));
- 	 // planeRenderable->setParentTransform(parentTransformation);
- 	 // HierarchicalRenderable::addChild( systemRenderable, planeRenderable );
+    glm::vec3 p12(0.0, 0.0, -1);
+    glm::vec3 p13(nx, 0.0, -1);
+    glm::vec3 p14(nx, ny*cos(angle), ny*sin(angle)-1 );
+    glm::vec3 p15(0, ny*cos(angle), ny*sin(angle)-1);
+   PlaneRenderablePtr planeRenderable = std::make_shared<QuadRenderable>(flatShader, p12,p13,p14,p15, glm::vec4(1,1,1,1));
+ 	 HierarchicalRenderable::addChild( systemRenderable, planeRenderable );
 
 
 
@@ -270,12 +273,13 @@ bool Olivier = false;
  	  float pm, pr;
  	  px = glm::vec3(3, 1,0 );
  	  pv = glm::vec3(0.0, 1.0, 0.0);
- 	  pr = 0.5;
+ 	  pr = 0.2;
  	  pm = 10;
+    system->setRestitution(0.3f);
  	  ParticlePtr particle = std::make_shared<Particle>(px, pv, pm, pr);
 	  system->addParticle(particle);
 
- 	  SnowballRenderablePtr sb = std::make_shared<SnowballRenderable>(texShader, &viewer, particle, skybox);
+ 	  SnowballRenderablePtr sb = std::make_shared<SnowballRenderable>(texShader, flatShader, texShader, phongShader, &viewer, particle, skybox, system);
  	  parentTransformation=glm::translate(glm::mat4(1.0), glm::vec3(3,1,0));
  	  sb->setParentTransform(parentTransformation);
  	  HierarchicalRenderable::addChild(systemRenderable, sb);
@@ -287,13 +291,6 @@ bool Olivier = false;
     DampingForceFieldPtr dampingForceField = std::make_shared<DampingForceField>(system->getParticles(), dampingCoefficient);
     system->addForceField(dampingForceField);
 
- //	  glm::vec3 nullForce(0.0, 0.0, 0.0);
- //	  ConstantForceFieldPtr force = std::make_shared<ConstantForceField>(system->getParticles(), nullForce);
- //	  system->addForceField(force);
- //
- //	  ControlledForceFieldRenderablePtr forceRenderable = std::make_shared<ControlledForceFieldRenderable>(flatShader, force);
- //	  ControlledForceFieldStatus(glm::vec3(0,1,0));
- //	  HierarchicalRenderable::addChild(systemRenderable, forceRenderable);
 
 
      viewer.getCamera().setViewMatrix(
@@ -301,7 +298,6 @@ bool Olivier = false;
  	        glm::vec3(5, -2, 2),
  	        glm::vec3(5, 0, 0),
  	        glm::vec3(0, 1, 0)));
- 	    //viewer.getCamera().setPosition(glm::vec3(5,-2,2));
 
 
   }
