@@ -14,6 +14,7 @@ public:
                     const MaterialPtr& material = Material::Neige(),
                     const std::string& textureFilename = "../textures/snow.png");
   void do_draw();
+  void supprimer();
 
 private:
   void do_animate(float time);

@@ -122,8 +122,15 @@ void initialize_project_skyrim_2(Viewer& viewer) {
    skybox->setLocalTransform(rotation_skybox*scale_skybox);
    viewer.addRenderable(skybox);
 
-  bool Ana = true;
+  bool Ana = false;
   if(Ana){
+    //Position the camera
+    viewer.getCamera().setViewMatrix(
+      glm::lookAt(
+      glm::vec3(0, -8, 8 ),
+        glm::vec3(0, 0, 0),
+        glm::vec3( 0, 0, 1 ) ) );
+
     // Temporary variables to use to define transformation
     filename = "../textures/bark.jpg";
     filename2 = "../textures/needle.jpg";
@@ -163,7 +170,7 @@ void initialize_project_skyrim_2(Viewer& viewer) {
     HierarchicalRenderable::addChild(tree, tree->tronc);
     //tree->setFalling(true);
     viewer.addRenderable(tree);
-  //  Explosion(system, systemRenderable, phongShader);
+    Explosion(system, systemRenderable, phongShader);
 
   /*  TexturedMeshRenderablePtr mesh =
         std::make_shared<TexturedMeshRenderable>(
@@ -175,15 +182,40 @@ void initialize_project_skyrim_2(Viewer& viewer) {
     head->setLocalTransform(rotationM)*/
     //viewer.addRenderable(mesh);
 
+    //Activate collision and set the restitution coefficient to 1.0
+    //Initialize two particles with position, velocity, mass and radius and add it to the system
+    pv =glm::vec3(0.0, 0.0, 0.0);
+    pm = 1.0;
+    pr = 1.0;
+    px = glm::vec3(10.0,0.0,0.0);
+    ParticlePtr mobile = std::make_shared<Particle>( px, pv, pm, pr);
+    system->addParticle( mobile );
+    ParticleRenderablePtr mobileRenderable = std::make_shared<ParticleRenderable>(flatShader, mobile);
+    HierarchicalRenderable::addChild(systemRenderable, mobileRenderable);
+    //Initialize a renderable for the force field applied on the mobile particle.
+    //This renderable allows to modify the attribute of the force by key/mouse events
+    //Add this renderable to the systemRenderable.
+    //Initialize a force field that apply only to the mobile particle
+    glm::vec3 nullForce(0.0, 0.0, 0.0);
+    std::vector<ParticlePtr> vParticle;
+    vParticle.push_back(mobile);
+    ConstantForceFieldPtr force = std::make_shared<ConstantForceField>(vParticle, nullForce);
+    system->addForceField(force);
+    ControlledForceFieldRenderablePtr forceRenderable = std::make_shared<ControlledForceFieldRenderable>(flatShader, force);
+    HierarchicalRenderable::addChild(systemRenderable, forceRenderable);
+    system->setCollisionsDetection(true);
+    system->setRestitution(1.0f);
+
   }
 
-  bool Matthieu = false;
+  bool Matthieu = true;
   if (Matthieu) {
     /* Création d'un bonhomme de neige */
     BonhommeDeNeigePtr bonhomme = std::make_shared<BonhommeDeNeige>(phongShader, texShader);
     bonhomme->setParentTransform(glm::mat4(1.0));
     HierarchicalRenderable::addChild(bonhomme, bonhomme->base);
     viewer.addRenderable(bonhomme);
+    bonhomme->supprimer();
   }
 
 bool Olivier = false;

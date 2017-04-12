@@ -193,4 +193,19 @@ SphereRenderable::~SphereRenderable()
     glcheck(glDeleteBuffers(1, &m_pBuffer));
     glcheck(glDeleteBuffers(1, &m_cBuffer));
     glcheck(glDeleteBuffers(1, &m_nBuffer));
+    glcheck(glDeleteBuffers(1, &m_tBuffer));
+    glcheck(glDeleteBuffers(1, &m_texId));
+}
+
+void SphereRenderable::supprimer()
+{
+  glcheck(glDeleteBuffers(1, &m_pBuffer));
+  glcheck(glDeleteBuffers(1, &m_cBuffer));
+  glcheck(glDeleteBuffers(1, &m_nBuffer));
+  glcheck(glDeleteBuffers(1, &m_tBuffer));
+  glcheck(glDeleteBuffers(1, &m_texId));
+  std::vector<HierarchicalRenderablePtr> enfants = getChildren();
+  for (int i = 0; i < enfants.size(); i++) {
+    enfants[0]->supprimer();
+  }
 }
