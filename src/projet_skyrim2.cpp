@@ -122,7 +122,7 @@ void initialize_project_skyrim_2(Viewer& viewer) {
    skybox->setLocalTransform(rotation_skybox*scale_skybox);
    viewer.addRenderable(skybox);
 
-  bool Ana = true;
+  bool Ana = false;
   if(Ana){
     //Position the camera
     viewer.getCamera().setViewMatrix(
@@ -204,7 +204,7 @@ void initialize_project_skyrim_2(Viewer& viewer) {
     ControlledForceFieldRenderablePtr forceRenderable = std::make_shared<ControlledForceFieldRenderable>(flatShader, force);
     HierarchicalRenderable::addChild(systemRenderable, forceRenderable);
     system->setCollisionsDetection(true);
-    system->setRestitution(1.0f);
+    system->setRestitution(0.1f);
 
     tree->supprimer();
   }
@@ -220,7 +220,6 @@ void initialize_project_skyrim_2(Viewer& viewer) {
 
 bool Olivier = true;
   if (Olivier){
-    MaterialPtr pearl = Material::Pearl();
 
  	  glm::vec3 lightDirection = glm::normalize(glm::vec3(0.0, -1.0, -1.0));
  	  glm::vec3 ghostWhite(248.0/255, 248.0/255, 248.0/255);
@@ -258,10 +257,12 @@ bool Olivier = true;
  	  system->addPlaneObstacle(plane3);
 
  	  //Create a plane renderable to display the obstacle
- //PlaneRenderablePtr planeRenderable = std::make_shared<QuadRenderable>(flatShader, p1,p2,p3,p4, glm::vec4(0,0,1,1));
- 	 // parentTransformation=glm::rotate(glm::mat4(1.0), -angle, glm::vec3(1,0,0));
- 	 // planeRenderable->setParentTransform(parentTransformation);
- 	 // HierarchicalRenderable::addChild( systemRenderable, planeRenderable );
+    glm::vec3 p12(0.0, 0.0, -1);
+    glm::vec3 p13(nx, 0.0, -1);
+    glm::vec3 p14(nx, ny*cos(angle), ny*sin(angle)-1 );
+    glm::vec3 p15(0, ny*cos(angle), ny*sin(angle)-1);
+   PlaneRenderablePtr planeRenderable = std::make_shared<QuadRenderable>(flatShader, p12,p13,p14,p15, glm::vec4(1,1,1,1));
+ 	 HierarchicalRenderable::addChild( systemRenderable, planeRenderable );
 
 
 
@@ -271,8 +272,9 @@ bool Olivier = true;
  	  float pm, pr;
  	  px = glm::vec3(3, 1,0 );
  	  pv = glm::vec3(0.0, 1.0, 0.0);
- 	  pr = 0.25;
+ 	  pr = 0.2;
  	  pm = 10;
+    system->setRestitution(0.3f);
  	  ParticlePtr particle = std::make_shared<Particle>(px, pv, pm, pr);
 	  system->addParticle(particle);
 
@@ -288,13 +290,6 @@ bool Olivier = true;
     DampingForceFieldPtr dampingForceField = std::make_shared<DampingForceField>(system->getParticles(), dampingCoefficient);
     system->addForceField(dampingForceField);
 
- //	  glm::vec3 nullForce(0.0, 0.0, 0.0);
- //	  ConstantForceFieldPtr force = std::make_shared<ConstantForceField>(system->getParticles(), nullForce);
- //	  system->addForceField(force);
- //
- //	  ControlledForceFieldRenderablePtr forceRenderable = std::make_shared<ControlledForceFieldRenderable>(flatShader, force);
- //	  ControlledForceFieldStatus(glm::vec3(0,1,0));
- //	  HierarchicalRenderable::addChild(systemRenderable, forceRenderable);
 
 
      viewer.getCamera().setViewMatrix(
@@ -302,7 +297,6 @@ bool Olivier = true;
  	        glm::vec3(5, -2, 2),
  	        glm::vec3(5, 0, 0),
  	        glm::vec3(0, 1, 0)));
- 	    //viewer.getCamera().setPosition(glm::vec3(5,-2,2));
 
 
   }

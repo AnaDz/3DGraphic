@@ -17,11 +17,11 @@
 #include"../../include/dynamics/Particle.hpp"
 #include "../../include/students/GroundRenderable.hpp"
 
-#include "../../include/students/BonhommeDeNeige.hpp"
+
 #include "../../include/students/Tree.hpp"
 
 #include "../../include/dynamics/DynamicSystem.hpp"
-
+#include <cmath>
 
 SnowballRenderable::SnowballRenderable(ShaderProgramPtr shaderProgram,  ShaderProgramPtr flatShader, ShaderProgramPtr texShader, ShaderProgramPtr phongShader, Viewer* v, ParticlePtr particle, std::shared_ptr<SphereRenderable> sky, DynamicSystemPtr system)
 	: ParticleRenderableStudent(shaderProgram, particle),
@@ -57,45 +57,41 @@ SnowballRenderable::SnowballRenderable(ShaderProgramPtr shaderProgram,  ShaderPr
 
 		 }
 	 }
+glm::mat4 trans, scaleM;
+	 for (int i=0; i< 5; i++){
+		 bonhommes[i]=std::make_shared<BonhommeDeNeige>(phongShader, texShader);
+		 //trans = glm::translate(glm::mat4(1.0), glm::vec3(i,(i+1)*5*cos(angle),(i+1)*5*sin(angle)));
+		 scaleM = glm::scale(glm::mat4(1.0), glm::vec3(0.012,0.012,0.012));
+		 bonhommes[i]->setLocalTransform(scaleM);
+		 //bonhommes[i]->setLocalTransform(glm::rotate(glm::mat4(1.0), angle, glm::vec3(1,0,0)));
+
+		 //bonhomme->setLocalTransform(glm::rotate(glm::mat4(1.0), angle, glm::vec3(1,0,0)));
+		 HierarchicalRenderable::addChild(bonhommes[i], bonhommes[i]->base);
+		 bonhommes[i]->generateAnimation(glm::vec3(i,((i+1)*5)*cos(angle),((i+1)*5)*sin(angle))) ;
+		 viewer->addRenderable(bonhommes[i]);
+	 }
+
+
+
+	 	mesh=std::make_shared<TexturedMeshRenderable>(
+		 texShader, "../meshes/Maison.obj", "../textures/Cottage Texture.jpg");
+
+		 trans = glm::translate(glm::mat4(1.0), glm::vec3(1,5*cos(angle),5*sin(angle)));
+		 scaleM = glm::scale(trans, glm::vec3(0.012,0.012,0.012));
+		 mesh->setParentTransform(scaleM);
+		 //mesh->setParentTransform(scaleM);
+		 mesh->setMaterial(Material::Maison());
+		 glm::mat4 rotationM = glm::rotate(glm::rotate(glm::rotate(glm::mat4(1.0), (float)(M_PI/2.0), glm::vec3(1,0,0)), (float)(M_PI/2.0), glm::vec3(0,1,0)), angle, glm::vec3(0,0,1));
+		 mesh->setLocalTransform(rotationM);
+
+		 viewer->addRenderable(mesh);
+
 }
 
 void SnowballRenderable::do_animate(float time)
 {
 }
 
-
-
-
-void SnowballRenderable::ajouterObstacles(){
-	float angle = -(float)3.14/12;
-	// BonhommeDeNeigePtr bonhomme = std::make_shared<BonhommeDeNeige>(phongShader, texShader);
-	// bonhomme->setParentTransform(glm::translate(glm::mat4(1.0), glm::vec3(5,45,0)));
-	// bonhomme->setLocalTransform(glm::rotate(glm::mat4(1.0), angle, glm::vec3(1,0,0)));
-	// HierarchicalRenderable::addChild(bonhomme, bonhomme->base);
-
-	// viewer->addRenderable(bonhomme);
-	std::string filename;
-  std::string filename2;
-	filename = "../textures/bark.jpg";
-	filename2 = "../textures/needle.jpg";
-
-	TreePtr tree = std::make_shared<Tree>(texShader, filename, filename2);
-	tree->setParentTransform(glm::translate(glm::mat4(1.0), glm::vec3(5,60,0.5)));
-
-
-	glm::vec3 px,pv;
-	float pm, pr;
-	px = glm::vec3(5,60,0.5);
-	pv = glm::vec3(0,0,0);
-	pr = 0.5;
-	pm = 1.0;
-	ParticlePtr particle = std::make_shared<Particle>(px, pv, pm, pr);
-	particle->setSpecialAnimation(true);
-	particle->setLink(tree);
-	system->addParticle(particle);
-
-	viewer->addRenderable(tree);
-}
 
 
 
@@ -108,7 +104,7 @@ double prevZ = 0;
 void SnowballRenderable::do_draw()
 {
 	if (m_particle->getPosition().y < 100){
-		scaleFactor= 0.5+m_particle->getPosition().y/100;
+		scaleFactor= 0.4+m_particle->getPosition().y/200;
 		m_particle->setRadius(scaleFactor/2);
 	}
 
@@ -124,11 +120,11 @@ void SnowballRenderable::do_draw()
 
 	float vitesse = m_particle->getVelocity().y;
 	if (gauche){
-		m_particle->setVelocity(m_particle->getVelocity() + glm::vec3(-1, 0,0));
+		m_particle->setVelocity(m_particle->getVelocity() + glm::vec3(-0.5, 0,0));
 		ancien[0]=true;
 	}
 	if (droite){
-		m_particle->setVelocity(m_particle->getVelocity() + glm::vec3(1, 0,0));
+		m_particle->setVelocity(m_particle->getVelocity() + glm::vec3(0.5, 0,0));
 		ancien[2]=true;
 	}
 	if (toutDroit){
@@ -146,7 +142,6 @@ void SnowballRenderable::do_draw()
 		glm::vec3 tmp = m_particle->getVelocity();
 		tmp.y = 25;
 		m_particle->setVelocity(tmp);
-		//printf("vitesse.x =%f, vitesse.y =%f, vitesse.z =%f \n",m_particle->getVelocity().x, m_particle->getVelocity().y, m_particle->getVelocity().z);
 	}
 	ParticleRenderableStudent::do_draw();
 
@@ -155,10 +150,28 @@ void SnowballRenderable::do_draw()
 
 	if (m_particle->getPosition().y >= k*25){
 		// m_particle->setPosition(glm::vec3(m_particle->getPosition().x, 0, 0));
+
+
 		int nx = 6;
 		int ny = 75;
 		int n = 10;
 		float angle = -(float)3.14/12;
+
+		glm::mat4 trans = glm::translate(glm::mat4(1.0), glm::vec3(1,(k*25+24)*cos(angle),(k*25+24)*sin(angle)));
+		glm::mat4 scaleM = glm::scale(trans, glm::vec3(0.012,0.012,0.012));
+		mesh->setParentTransform(scaleM);
+
+		for (int i = 0; i <5; i++){
+			//bonhommes[i]->setParentTransform(glm::translate(glm::rotate(glm::mat4(1.0), angle, glm::vec3(1,0,0)), glm::vec3(i,(i+1)*5,0)));
+			// bonhommes[i]->setParentTransform(glm::translate(glm::rotate(glm::mat4(1.0), angle, glm::vec3(1,0,0)), glm::vec3(i,(i+1)*5+k*25,0)));
+			// bonhommes[i]->setLocalTransform(glm::mat4(1.0));
+			// trans = glm::translate(glm::mat4(1.0), glm::vec3(1,(k*25+24)*cos(angle),(k*25+24)*sin(angle)));
+			// scaleM = glm::scale(trans, glm::vec3(0.012,0.012,0.012));
+			// bonhommes[i]->setParentTransform(scaleM);
+			//bonhommes[i]->setParentTransform(glm::translate(glm::mat4(1.0), glm::vec3(i,50,0)));
+
+			bonhommes[i]->generateAnimation(glm::vec3(i,50*cos(angle),50*sin(angle))) ;
+		}
 
 
 		// BonhommeDeNeigePtr bonhomme = std::make_shared<BonhommeDeNeige>(phongShader, texShader);
@@ -213,7 +226,7 @@ void SnowballRenderable::do_draw()
 	// }
 
 		k++;
-		ajouterObstacles();
+		//ajouterObstacles();
 	}
 
 

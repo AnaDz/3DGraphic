@@ -25,7 +25,7 @@ Tree::Tree(ShaderProgramPtr program, const std::string& textureFilename, const s
 
   HierarchicalRenderable::addChild(tronc,feuilles);
 
-  existe = false;
+  existe = true;
 
 }
 

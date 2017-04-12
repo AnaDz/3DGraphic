@@ -18,6 +18,8 @@
 #include "../../include/students/GroundRenderable.hpp"
 #include "../../include/dynamics/DynamicSystem.hpp"
 
+#include "../../include/students/BonhommeDeNeige.hpp"
+#include "../../include/texturing/TexturedMeshRenderable.hpp"
 
 class SnowballRenderable : public ParticleRenderableStudent
 {
@@ -44,7 +46,8 @@ private:
     ShaderProgramPtr texShader;
     ShaderProgramPtr phongShader;
     DynamicSystemPtr system;
-    void ajouterObstacles();
+    BonhommeDeNeigePtr bonhommes[5];
+    TexturedMeshRenderablePtr mesh;
 
 };
 
