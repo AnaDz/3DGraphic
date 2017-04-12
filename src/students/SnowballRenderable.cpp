@@ -18,6 +18,7 @@
 #include"../../include/dynamics/Particle.hpp"
 #include "../../include/students/GroundRenderable.hpp"
 
+#include "../../include/"
 
 
 SnowballRenderable::SnowballRenderable(ShaderProgramPtr shaderProgram,  Viewer* v, ParticlePtr particle)
