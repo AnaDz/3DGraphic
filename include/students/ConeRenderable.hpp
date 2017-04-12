@@ -14,6 +14,7 @@ public:
                     const MaterialPtr& material = Material::Carotte(),
                     const std::string& textureFilename = "");
   void do_draw();
+  void supprimer();
 
 private:
   void do_animate(float time);
@@ -22,9 +23,6 @@ private:
   std::vector< glm::vec4 > m_colors;
   std::vector< glm::vec3 > m_normals;
   std::vector <glm::vec2> m_texCoords;
-
-//Permet de savoir si on a ou non une texure
-  int texture=0;
 
   unsigned int m_pBuffer;
   unsigned int m_cBuffer;

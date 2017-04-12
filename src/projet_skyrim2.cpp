@@ -122,7 +122,7 @@ void initialize_project_skyrim_2(Viewer& viewer) {
    skybox->setLocalTransform(rotation_skybox*scale_skybox);
    viewer.addRenderable(skybox);
 
-  bool Ana = false;
+  bool Ana = true;
   if(Ana){
     //Position the camera
     viewer.getCamera().setViewMatrix(
@@ -170,7 +170,7 @@ void initialize_project_skyrim_2(Viewer& viewer) {
     HierarchicalRenderable::addChild(tree, tree->tronc);
     //tree->setFalling(true);
     viewer.addRenderable(tree);
-    Explosion(system, systemRenderable, phongShader);
+    //Explosion(system, systemRenderable, phongShader);
 
   /*  TexturedMeshRenderablePtr mesh =
         std::make_shared<TexturedMeshRenderable>(
@@ -206,6 +206,7 @@ void initialize_project_skyrim_2(Viewer& viewer) {
     system->setCollisionsDetection(true);
     system->setRestitution(1.0f);
 
+    tree->supprimer();
   }
 
   bool Matthieu = false;
@@ -215,7 +216,6 @@ void initialize_project_skyrim_2(Viewer& viewer) {
     bonhomme->setParentTransform(glm::mat4(1.0));
     HierarchicalRenderable::addChild(bonhomme, bonhomme->base);
     viewer.addRenderable(bonhomme);
-    bonhomme->supprimer();
   }
 
 bool Olivier = true;
