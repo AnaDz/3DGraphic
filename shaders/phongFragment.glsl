@@ -135,6 +135,13 @@ vec3 computeSpotLight(SpotLight light, vec3 surfel_to_camera)
     //float intensity = 1.0;
     float cos_theta = dot(surfel_to_light, -light.spotDirection);
     float intensity = clamp( (cos_theta - light.cosOuterCutOff ) / ( light.cosInnerCutOff - light.cosOuterCutOff ), 0, 1 );
+    if (intensity > 0.85) {
+      intensity = 0.95;
+    } else if (intensity > 0.45) {
+      intensity = 0.45;
+    } else {
+      intensity = 0.15;
+    }
 
     // Attenuation
     //float attenuation = 1.0;

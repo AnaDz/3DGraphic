@@ -113,6 +113,7 @@ void initialize_project_skyrim_2(Viewer& viewer) {
    viewer.setDirectionalLight(directionalLight);
    viewer.addRenderable(directionalLightRenderable);
 
+
    // Skybox
    std::shared_ptr<SphereRenderable> skybox =
        std::make_shared<SphereRenderable>(texShader, Material::Ciel(), "../textures/sky.png");
@@ -122,7 +123,7 @@ void initialize_project_skyrim_2(Viewer& viewer) {
    skybox->setLocalTransform(rotation_skybox*scale_skybox);
    viewer.addRenderable(skybox);
 
-  bool Ana = true;
+  bool Ana = false;
   if(Ana){
     //Position the camera
     viewer.getCamera().setViewMatrix(
