@@ -252,10 +252,10 @@ void initialize_project_skyrim_2(Viewer& viewer) {
  	  system->addPlaneObstacle(plane2);
 
     // Mur invisible gauche
-    glm::vec3 p8(6, 0.0, 0.0);
- 	  glm::vec3 p9(6, 10, 0.0);
- 	  glm::vec3 p10( 6,10,-10);
-    glm::vec3 p11(6,0,-10);
+    glm::vec3 p8(12, 0.0, 0.0);
+ 	  glm::vec3 p9(12, 10, 0.0);
+ 	  glm::vec3 p10( 12,10,-10);
+    glm::vec3 p11(12,0,-10);
  	  PlanePtr plane3 = std::make_shared<Plane>(p8, p9, p10);
  	  system->addPlaneObstacle(plane3);
 
