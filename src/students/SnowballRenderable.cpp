@@ -86,6 +86,9 @@ SnowballRenderable::SnowballRenderable(ShaderProgramPtr flatShader,  ShaderProgr
 	 particle_bonhomme->setSpecialAnimation(true);
 	 particle_bonhomme->setLink(bonhomme);
 	 particle_bonhomme->setFixed(true);
+/* LAAAAAAAAAAAAAAAA*/
+		particle_bonhomme->setScore(5);
+
 	 system->addParticle(particle_bonhomme);
 	 bonhomme->addParticle(particle_bonhomme);
 	//  ParticleRenderablePtr part = std::make_shared<ParticleRenderable>(flatShader, particle_bonhomme);
@@ -109,6 +112,8 @@ SnowballRenderable::SnowballRenderable(ShaderProgramPtr flatShader,  ShaderProgr
 	 particle_arbre->setSpecialAnimation(true);
 	 particle_arbre->setLink(arbre);
 	 particle_arbre->setFixed(true);
+	 /*LAAAAAAAAAAAAAAAAAA*/
+	 particle_arbre->setScore(1);
 	 system->addParticle(particle_arbre);
 
 	 //ParticleRenderablePtr part = std::make_shared<ParticleRenderable>(flatShader,particle_arbre);

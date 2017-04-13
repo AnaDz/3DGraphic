@@ -112,3 +112,18 @@ void Particle::setSpecialAnimation(bool anim){
 void Particle::setLink(HierarchicalRenderablePtr l){
   linked = l;
 }
+
+
+void Particle::setScore(int sc){
+  score = sc;
+}
+void Particle::setIsScorable(bool isit){
+  iscorable = isit;
+}
+
+bool Particle::isScorable(){
+  return iscorable;
+}
+int Particle::getScore(){
+  return score;
+}

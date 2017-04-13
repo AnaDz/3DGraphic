@@ -19,3 +19,7 @@ void Score::modifierScore(int points) {
   texte.append(std::to_string(score));
   viewer->displayText(texte, std::chrono::seconds(1000000));
 }
+
+int Score::getScore(){
+  return score;
+}

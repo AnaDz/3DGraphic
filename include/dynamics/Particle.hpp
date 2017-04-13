@@ -145,9 +145,13 @@ public:
 
     void setSpecialAnimation(bool anim);
 
-
-
+    void setScore(int sc);
+    void setIsScorable(bool isit);
+    bool isScorable();
+    int getScore();
 private:
+    int score = 0;
+    bool iscorable = false;
     /**@brief The initial particle's position.
      *
      * The initial position of this particle, stored to be set at restart.
