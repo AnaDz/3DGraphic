@@ -34,29 +34,24 @@ public:
 private:
     void do_draw();
     void do_animate(float time);
-
     Viewer* viewer;
-
     bool gauche;
     bool droite;
     bool toutDroit;
-
     std::vector<std::vector<GroundRenderablePtr>> groundR;
-
     ShaderProgramPtr flatShader;
     ShaderProgramPtr texShader;
     ShaderProgramPtr phongShader;
     DynamicSystemPtr system;
+    std::vector<BonhommeDeNeigePtr> bonshommes;
+    std::vector<TexturedMeshRenderablePtr> meshes;
+    std::vector<TreePtr> arbres;
     DynamicSystemRenderablePtr systemRenderable;
-    BonhommeDeNeigePtr bonhomme;
-    ParticlePtr particle_arbre;
-    ParticlePtr particle_bonhomme;
-
-
-    TexturedMeshRenderablePtr mesh;
-    TreePtr arbre;
+    std::vector<ParticlePtr> particle_arbre;
+    std::vector<ParticlePtr> particle_bonhomme;
 
     bool fin_explo = true;
+    std::vector<glm::vec3> posMesh;
     ExplosionPtr explo;
 };
 

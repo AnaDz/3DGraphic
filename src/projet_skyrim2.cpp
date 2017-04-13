@@ -306,7 +306,7 @@ void initialize_project_skyrim_2(Viewer& viewer) {
     // Forces exercées sur la boule de neige : gravitée et frottements
  	  ConstantForceFieldPtr gravityForceField = std::make_shared<ConstantForceField>(system->getParticles(), glm::vec3{0,0,-10} );
  	  system->addForceField(gravityForceField);
-    float dampingCoefficient = 3.0;
+    float dampingCoefficient = 5.0;
     DampingForceFieldPtr dampingForceField = std::make_shared<DampingForceField>(system->getParticles(), dampingCoefficient);
     system->addForceField(dampingForceField);
     system->setCollisionsDetection(true);
