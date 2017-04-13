@@ -169,25 +169,46 @@ void BonhommeDeNeige::do_draw() {
 
 void BonhommeDeNeige::do_animate(float time) {
   //Assign the interpolated transformations from the keyframes to the local/parent transformations.
+  if(falling){
+    generateAnimation(time);
+  }
   if (!m_localKeyframes.empty()) {
       setLocalTransform(m_localKeyframes.interpolateTransformation(time));
   }
   if (!m_parentKeyframes.empty()) {
       setParentTransform(m_parentKeyframes.interpolateTransformation(time));
+      glm::vec3 translation = m_parentKeyframes.interpolateTranslation(time);
+      this->position = translation;
+
+      if(!falled && particle_liee!=nullptr){
+        particle_liee->setPosition(translation);
+      }
+
+
   }
 }
 
-void BonhommeDeNeige::generateAnimation(float temps, glm::vec3 depart) {
+void BonhommeDeNeige::generateAnimation(float temps) {
   // Animation du bonhomme de neige : il saute droit devant depuis la position depart indiquée en paramètre
-  int nb_sauts = 4; // Nombre de sauts que fait le bonhomme de neige en ligne droite
-  for (int t=0; t < nb_sauts; t++) {
-    this->addParentTransformKeyframe(temps+t+0.0, GeometricTransformation(glm::vec3(depart.x+(1.0*t)+0.0, depart.y+0.0, depart.z+0.0), glm::angleAxis(0.0f, glm::vec3(0.0, 0.0, 1.0))));
-    this->addParentTransformKeyframe(temps+t+0.2, GeometricTransformation(glm::vec3(depart.x+(1.0*t)+0.2, depart.y+0.0, depart.z+0.3), glm::angleAxis(0.0f, glm::vec3(0.0, 1.0, 0.0))));
-    this->addParentTransformKeyframe(temps+t+0.4, GeometricTransformation(glm::vec3(depart.x+(1.0*t)+0.4, depart.y+0.0, depart.z+0.7), glm::angleAxis(0.0f, glm::vec3(0.0, 1.0, 0.0))));
-    this->addParentTransformKeyframe(temps+t+0.5, GeometricTransformation(glm::vec3(depart.x+(1.0*t)+0.5, depart.y+0.0, depart.z+0.8), glm::angleAxis(0.0f, glm::vec3(0.0, 1.0, 0.0))));
-    this->addParentTransformKeyframe(temps+t+0.6, GeometricTransformation(glm::vec3(depart.x+(1.0*t)+0.6, depart.y+0.0, depart.z+0.7), glm::angleAxis(0.0f, glm::vec3(0.0, 1.0, 0.0))));
-    this->addParentTransformKeyframe(temps+t+0.8, GeometricTransformation(glm::vec3(depart.x+(1.0*t)+0.8, depart.y+0.0, depart.z+0.3), glm::angleAxis(0.0f, glm::vec3(0.0, 1.0, 0.0))));
-    this->addParentTransformKeyframe(temps+t+1.0, GeometricTransformation(glm::vec3(depart.x+(1.0*t)+1.0, depart.y+0.0, depart.z+0.0), glm::angleAxis(0.0f, glm::vec3(0.0, 1.0, 0.0))));
+  if(!falling){
+    int nb_sauts = 4; // Nombre de sauts que fait le bonhomme de neige en ligne droite
+    for (int t=0; t < nb_sauts; t++) {
+      this->addParentTransformKeyframe(temps+t+0.0, GeometricTransformation(position + glm::vec3((1.0*t)+0.0, 0.0, 0.0), glm::angleAxis(0.0f, glm::vec3(0.0, 0.0, 1.0))));
+      this->addParentTransformKeyframe(temps+t+0.2, GeometricTransformation(position + glm::vec3((1.0*t)+0.2, 0.0, 0.3), glm::angleAxis(0.0f, glm::vec3(0.0, 1.0, 0.0))));
+      this->addParentTransformKeyframe(temps+t+0.4, GeometricTransformation(position + glm::vec3((1.0*t)+0.4, 0.0, 0.7), glm::angleAxis(0.0f, glm::vec3(0.0, 1.0, 0.0))));
+      this->addParentTransformKeyframe(temps+t+0.5, GeometricTransformation(position + glm::vec3((1.0*t)+0.5, 0.0, 0.8), glm::angleAxis(0.0f, glm::vec3(0.0, 1.0, 0.0))));
+      this->addParentTransformKeyframe(temps+t+0.6, GeometricTransformation(position + glm::vec3((1.0*t)+0.6, 0.0, 0.7), glm::angleAxis(0.0f, glm::vec3(0.0, 1.0, 0.0))));
+      this->addParentTransformKeyframe(temps+t+0.8, GeometricTransformation(position + glm::vec3((1.0*t)+0.8, 0.0, 0.3), glm::angleAxis(0.0f, glm::vec3(0.0, 1.0, 0.0))));
+      this->addParentTransformKeyframe(temps+t+1.0, GeometricTransformation(position + glm::vec3((1.0*t)+1.0, 0.0, 0.0), glm::angleAxis(0.0f, glm::vec3(0.0, 1.0, 0.0))));
+    }
+  } else {
+    m_parentKeyframes.clear();
+    this->addParentTransformKeyframe(temps+0.0, GeometricTransformation(position + glm::vec3(0, 0, 0.0), glm::angleAxis(0.0f, glm::vec3(-1.0, 0.0, 0.0))));
+    this->addParentTransformKeyframe(temps+0.5, GeometricTransformation(position + glm::vec3(0, 0, -1.0), glm::angleAxis(1.0f, glm::vec3(-1.0, 0.0, 0.0))));
+    this->addParentTransformKeyframe(temps+1.2, GeometricTransformation(position + glm::vec3(0, 0, -1.5), glm::angleAxis(1.5f, glm::vec3(-1.0, 0.0, 0.0))));
+    this->addParentTransformKeyframe(temps+1.5, GeometricTransformation(position + glm::vec3(0, 0, -2), glm::angleAxis(2.0f, glm::vec3(-1.0, 0.0, 0.0))));
+    falled = true;
+    falling = false;
   }
 }
 
@@ -195,4 +216,16 @@ void BonhommeDeNeige::supprimer() {
   if (!existe) {
     base->supprimer();
   }
+}
+void BonhommeDeNeige::setPosition(glm::vec3 pos){
+  position = pos;
+}
+
+
+void BonhommeDeNeige::addParticle(ParticlePtr part){
+  particle_liee = part;
+}
+
+void BonhommeDeNeige::setFalled(bool fal){
+  falled = fal;
 }

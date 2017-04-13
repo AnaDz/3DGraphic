@@ -63,19 +63,36 @@ SnowballRenderable::SnowballRenderable(ShaderProgramPtr flatShader,  ShaderProgr
 			 viewer->addRenderable(groundR[x][y]);
 		 }
 	 }
-
+	 glm::vec3 px,pv;
+	 float pm, pr;
 	 // Création du bonhomme de neige
 	 bonhomme = std::make_shared<BonhommeDeNeige>(phongShader, texShader);
 	 HierarchicalRenderable::addChild(bonhomme, bonhomme->base);
-	 bonhomme->generateAnimation(0.0, glm::vec3(0,5*cos(angle),5*sin(angle))) ;
+
+	 bonhomme->setParentTransform(glm::translate(glm::mat4(1.0), glm::vec3(0,5*cos(angle),5*sin(angle))));
+	 bonhomme->setPosition(glm::vec3(0,5*cos(angle),5*sin(angle)));
+
+
+	 px = glm::vec3(0,5*cos(angle),5*sin(angle));
+	 pv = glm::vec3(0,0,0);
+	 pr = 0.49;
+	 pm = 1.0;
+	 particle_bonhomme = std::make_shared<Particle>(px, pv, pm, pr);
+	 particle_bonhomme->setSpecialAnimation(true);
+	 particle_bonhomme->setLink(bonhomme);
+	 particle_bonhomme->setFixed(true);
+	 system->addParticle(particle_bonhomme);
+	 bonhomme->addParticle(particle_bonhomme);
+	//  ParticleRenderablePtr part = std::make_shared<ParticleRenderable>(flatShader, particle_bonhomme);
+	//  viewer->addRenderable(part);
+	 bonhomme->generateAnimation(0.0) ;
 	 viewer->addRenderable(bonhomme);
 
 	 // Création de l'arbre
 	 std::string filename = "../textures/bark.jpg";
 	 std::string filename2 = "../textures/needle.jpg";
 	 arbre = std::make_shared<Tree>(texShader, filename, filename2);
-	 glm::vec3 px,pv;
-	 float pm, pr;
+
 	//px = glm::vec3(0,0,0.5);
 	 px = glm::vec3(5,5*cos(angle),5*sin(angle));
 	 pv = glm::vec3(0,0,0);
@@ -98,7 +115,7 @@ SnowballRenderable::SnowballRenderable(ShaderProgramPtr flatShader,  ShaderProgr
  	 mesh=std::make_shared<TexturedMeshRenderable>(
 	 texShader, "../meshes/Maison.obj", "../textures/Cottage Texture.jpg");
 	 glm::mat4 trans, scaleM;
-	 trans = glm::translate(glm::mat4(1.0), glm::vec3(1,5*cos(angle),5*sin(angle)));
+	 trans = glm::translate(glm::mat4(1.0), glm::vec3(5,5*cos(angle),5*sin(angle)));
 	 scaleM = glm::scale(trans, glm::vec3(0.02,0.02,0.02));
 	 mesh->setParentTransform(scaleM);
 	 mesh->setMaterial(Material::Maison());
@@ -184,11 +201,17 @@ void SnowballRenderable::do_draw()
 		mesh->setParentTransform(scaleM);
 
 		// Déplacement du bonhomme de neige
-		bonhomme->generateAnimation(viewer->getTime(), glm::vec3(rand()%8,(k*40+aleaB)*cos(angle),(k*40+aleaB)*sin(angle)));
+		glm::vec3 translation = glm::vec3(rand()%8,(k*40+aleaB)*cos(angle),(k*40+aleaB)*sin(angle));
+		bonhomme->setFalled(false);
+		bonhomme->setPosition(translation);
+		trans = glm::translate(glm::mat4(1.0), translation);
+		scaleM = glm::scale(trans, glm::vec3(1,1,1));
+		bonhomme->setParentTransform(trans);
+		particle_bonhomme->setPosition(translation);
 
+		bonhomme->generateAnimation(viewer->getTime());
 		// Déplacement de l'arbre
-		int random = rand();
-		glm::vec3 translation = glm::vec3(random%12,(k*40+aleaA)*cos(angle),(k*40+aleaA)*sin(angle));
+		translation = glm::vec3(rand()%12,(k*40+aleaA)*cos(angle),(k*40+aleaA)*sin(angle));
 		particle_arbre->setPosition(translation);
 		arbre->setPosition(translation);
 		trans = glm::translate(glm::mat4(1.0), translation);
