@@ -47,10 +47,9 @@ private:
     ShaderProgramPtr texShader;
     ShaderProgramPtr phongShader;
     DynamicSystemPtr system;
-    BonhommeDeNeigePtr bonhomme;
-    TexturedMeshRenderablePtr mesh;
-    
-    TreePtr arbre;
+    std::vector<BonhommeDeNeigePtr> bonshommes;
+    std::vector<TexturedMeshRenderablePtr> meshes;
+    std::vector<TreePtr> arbres;
 
 };
 

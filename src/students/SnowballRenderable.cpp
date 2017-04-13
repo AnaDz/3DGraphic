@@ -26,15 +26,14 @@ int nx = 12;
 int ny = 120;
 int n = 10;
 float angle = -(float)3.14/12;
-
+int terrain = 0; // Le terrain que la boule vient de parcourir
 
 SnowballRenderable::SnowballRenderable(ShaderProgramPtr flatShader,  ShaderProgramPtr phongShader, ShaderProgramPtr texShader, Viewer* v, ParticlePtr particle, std::shared_ptr<SphereRenderable> sky, DynamicSystemPtr system)
 	: ParticleRenderableStudent(texShader, particle)
 {
 
-	//init générateur aléatoire
+	// Initialisation du générateur aléatoire
 		 srand(time(NULL));
-
 
 	 // Initialisation des attributs
 	 viewer = v;
@@ -64,42 +63,55 @@ SnowballRenderable::SnowballRenderable(ShaderProgramPtr flatShader,  ShaderProgr
 		 }
 	 }
 
-	 // Création du bonhomme de neige
-	 bonhomme = std::make_shared<BonhommeDeNeige>(phongShader, texShader);
-	 HierarchicalRenderable::addChild(bonhomme, bonhomme->base);
-	 bonhomme->generateAnimation(0.0, glm::vec3(0,5*cos(angle),5*sin(angle))) ;
-	 viewer->addRenderable(bonhomme);
+	 // "Fréquence" d'apparition des objets
+   int nb_bonhommes = 6;
+	 int nb_maisons = 6;
+	 int nb_arbres = 6;
+	 bonshommes.resize(nb_bonhommes);
+	 meshes.resize(nb_maisons);
+	 arbres.resize(nb_arbres);
 
-	 // Création de l'arbre
+	 // Création des bonshommes de neige
+	 for (int i = 0; i < nb_bonhommes; i++) {
+		 bonshommes[i] = std::make_shared<BonhommeDeNeige>(phongShader, texShader);
+		 HierarchicalRenderable::addChild(bonshommes[i], bonshommes[i]->base);
+		 viewer->addRenderable(bonshommes[i]);
+ 	 }
+
+	 // Création des arbres
 	 std::string filename = "../textures/bark.jpg";
 	 std::string filename2 = "../textures/needle.jpg";
-	 arbre = std::make_shared<Tree>(texShader, filename, filename2);
 	 glm::vec3 px,pv;
 	 float pm, pr;
 	 px = glm::vec3(0,0,0.5);
 	 pv = glm::vec3(0,0,0);
 	 pr = 0.5;
 	 pm = 1.0;
-	 ParticlePtr particle_arbre = std::make_shared<Particle>(px, pv, pm, pr);
-	 arbre->setParentTransform(glm::scale(glm::mat4(1.0), glm::vec3(0.25,0.25,0.25)));
-	 particle_arbre->setSpecialAnimation(true);
-	 particle_arbre->setLink(arbre);
-	 system->addParticle(particle_arbre);
-	 HierarchicalRenderable::addChild(arbre, arbre->tronc);
-	 viewer->addRenderable(arbre);
-	 //Explosion(system, systemRenderable, phongShader);
+	 for (int i = 0; i < nb_arbres; i++) {
+		 arbres[i] = std::make_shared<Tree>(texShader, filename, filename2);
+		 ParticlePtr particle_arbre = std::make_shared<Particle>(px, pv, pm, pr);
+		 arbres[i]->setParentTransform(glm::scale(glm::translate(glm::mat4(1.0), glm::vec3(1,-5*cos(angle),-5*sin(angle))), glm::vec3(0.25,0.25,0.25)));
+		 particle_arbre->setSpecialAnimation(true);
+		 particle_arbre->setLink(arbres[i]);
+		 system->addParticle(particle_arbre);
+		 HierarchicalRenderable::addChild(arbres[i], arbres[i]->tronc);
+		 viewer->addRenderable(arbres[i]);
+		 //Explosion(system, systemRenderable, phongShader);
+ 	 }
 
-	 // Création du mesh : la petite maison dans la prairie enneigée
- 	 mesh=std::make_shared<TexturedMeshRenderable>(
-	 texShader, "../meshes/Maison.obj", "../textures/Cottage Texture.jpg");
+	 // Création des meshes : la petite maison dans la prairie enneigée version Camping Paradis
 	 glm::mat4 trans, scaleM;
-	 trans = glm::translate(glm::mat4(1.0), glm::vec3(1,5*cos(angle),5*sin(angle)));
-	 scaleM = glm::scale(trans, glm::vec3(0.02,0.02,0.02));
-	 mesh->setParentTransform(scaleM);
-	 mesh->setMaterial(Material::Maison());
-	 glm::mat4 rotationM = glm::rotate(glm::rotate(glm::rotate(glm::mat4(1.0), (float)(M_PI/2.0), glm::vec3(1,0,0)), (float)(M_PI/2.0), glm::vec3(0,1,0)), angle, glm::vec3(0,0,1));
-	 mesh->setLocalTransform(rotationM);
-	 viewer->addRenderable(mesh);
+	 for (int i = 0; i < nb_maisons; i++) {
+	 	 meshes[i]=std::make_shared<TexturedMeshRenderable>(
+		 		texShader, "../meshes/Maison.obj", "../textures/Cottage Texture.jpg");
+		 trans = glm::translate(glm::mat4(1.0), glm::vec3(1.0,-5*cos(angle),-5*sin(angle)));
+		 scaleM = glm::scale(trans, glm::vec3(0.02,0.02,0.02));
+		 meshes[i]->setParentTransform(scaleM);
+		 meshes[i]->setMaterial(Material::Maison());
+		 glm::mat4 rotationM = glm::rotate(glm::rotate(glm::rotate(glm::mat4(1.0), (float)(M_PI/2.0), glm::vec3(1,0,0)), (float)(M_PI/2.0), glm::vec3(0,1,0)), angle, glm::vec3(0,0,1));
+		 meshes[i]->setLocalTransform(rotationM);
+		 viewer->addRenderable(meshes[i]);
+   }
 
 
 
@@ -164,73 +176,55 @@ void SnowballRenderable::do_draw()
 
 	// Dessin de la boule de neige
 	ParticleRenderableStudent::do_draw();
+
 	int aleaM;
 	int aleaA;
 	int aleaB;
+	// Distance entre la position et le bord du terrain précédent
+	double distance = sqrt(m_particle->getPosition().y*m_particle->getPosition().y+m_particle->getPosition().z*m_particle->getPosition().z);
 	// Déplacement du terrain et des objets s'y trouvant au fur et à mesure que la boule avance
-	if (m_particle->getPosition().y >= k*40){
-		// Déplacement de la maison
-		aleaM = rand()%(40-30)+30;
-		aleaA = rand()%(40-30)+30;
-		aleaB = rand()%(40-30)+30;
+	if (distance-5 >= k*40){
 
-		glm::mat4 trans = glm::translate(glm::mat4(1.0), glm::vec3(rand()%(12-2)+2,(k*40+aleaM)*cos(angle),(k*40+aleaM)*sin(angle)));
-		glm::mat4 scaleM = glm::scale(trans, glm::vec3(0.02,0.02,0.02));
-		mesh->setParentTransform(scaleM);
+		// Déplacement des maisons
+		for (int i = terrain*2; i <= terrain*2+1; i++) {
+			aleaM = rand()%40;
+			glm::mat4 trans = glm::translate(glm::mat4(1.0), glm::vec3(rand()%(nx-2)+1,((k+2)*40+aleaM)*cos(angle),((k+2)*40+aleaM)*sin(angle)));
+			glm::mat4 scaleM = glm::scale(trans, glm::vec3(0.02,0.02,0.02));
+			meshes[i]->setParentTransform(scaleM);
+		}
 
-		// Déplacement du bonhomme de neige
-		bonhomme->generateAnimation(viewer->getTime(), glm::vec3(rand()%8,(k*40+aleaB)*cos(angle),(k*40+aleaB)*sin(angle)));
+		// Déplacement des bonshommes de neige
+		for (int i = terrain*2; i < terrain*2+1; i++) {
+			aleaB = rand()%40;
+			bonshommes[i]->generateAnimation(viewer->getTime(), glm::vec3(rand()%(nx/2)-8,((k+2)*40+aleaB)*cos(angle),((k+2)*40+aleaB)*sin(angle)));
+		}
 
 		// Déplacement de l'arbre
-		trans = glm::translate(glm::mat4(1.0), glm::vec3(rand()%12,(k*40+aleaA)*cos(angle),(k*40+aleaA)*sin(angle)));
-		scaleM = glm::scale(trans, glm::vec3(0.25,0.25,0.25));
-		arbre->setParentTransform(scaleM);
+		for (int i = terrain*2; i < terrain*2+1; i++) {
+			aleaA = rand()%40;
+			glm::mat4 trans = glm::translate(glm::mat4(1.0), glm::vec3(rand()%(nx-2)+1,((k+2)*40+aleaA)*cos(angle),((k+2)*40+aleaA)*sin(angle)));
+			glm::mat4 scaleM = glm::scale(trans, glm::vec3(0.25,0.25,0.25));
+			arbres[i]->setParentTransform(scaleM);
+	  }
 
 		// Déplacement du terrain
 		glm::mat4 parentTransformation, localTransformation;
 		GroundRenderablePtr tmp;
 			for (int x=0; x<nx; x++){
 				for (int y=0; y<40; y++){
-				// 	if (k%3==1){
-				// 	tmp = std::make_shared<GroundRenderable>(flatShader,x,(k+2)*25+y,n, viewer);
-				// 	viewer->addRenderable(tmp);
-				//
-				// } else {
 					tmp = groundR[x][y];
 					parentTransformation=glm::translate(glm::rotate(glm::mat4(1.0), angle, glm::vec3(1,0,0)), glm::vec3(x,(k+2)*40+y,0));
 					tmp->setParentTransform(parentTransformation);
 					localTransformation = glm::mat4(1.0);
 					tmp->setLocalTransform(localTransformation);
-				// }
 				groundR[x][y]= groundR[x][y+40];
 				groundR[x][y+40]=groundR[x][y+80];
 				groundR[x][y+80]=tmp;
 			}
 		}
-		//version2
-	// 	for (int x=0; x<nx; x++){
-	// 		for (int y=k*25; y<(k+1)*25; y++){
-	// 		// 	if (k%3==1){
-	// 		// 	tmp = std::make_shared<GroundRenderable>(flatShader,x,(k+2)*25+y,n, viewer);
-	// 		// 	viewer->addRenderable(tmp);
-	// 		//
-	// 		// } else {
-	// 			//tmp = groundR[x][y];
-	// 			tmp= std::make_shared<GroundRenderable>(flatShader,x,y,n, viewer);
-	// 			parentTransformation=glm::rotate(glm::mat4(1.0), angle, glm::vec3(1,0,0));
-	// 			tmp->setParentTransform(parentTransformation);
-	// 			localTransformation = glm::mat4(1.0);
-	// 			tmp->setLocalTransform(localTransformation);
-	// 		// }
-	// 		printf("y=%i, ymod25 = %i, ymod25+25=%i,ymod25+50=%i\n ", y, y%25, y%25+25, y%25+50);
-	// 		groundR[x][y%25]= groundR[x][y%25+25];
-	// 		groundR[x][y%25+25]=groundR[x][y%25+50];
-	// 		groundR[x][y%25+50]=tmp;
-	//
-	// 	}
-	// }
 		k++;
-		//ajouterObstacles();
+		distance = sqrt(m_particle->getPosition().y*m_particle->getPosition().y+m_particle->getPosition().z*m_particle->getPosition().z);
+		terrain = (terrain + 1)%3;
 	}
 }
 
