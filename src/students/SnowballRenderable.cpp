@@ -101,7 +101,7 @@ SnowballRenderable::SnowballRenderable(ShaderProgramPtr flatShader,  ShaderProgr
 	//px = glm::vec3(0,0,0.5);
 	 px = glm::vec3(5,5*cos(angle),5*sin(angle));
 	 pv = glm::vec3(0,0,0);
-	 pr = 1;
+	 pr = 0.5;
 	 pm = 1.0;
 	 particle_arbre = std::make_shared<Particle>(px, pv, pm, pr);
 	 arbre->setParentTransform(glm::translate(glm::mat4(1.0), glm::vec3(5,5*cos(angle),5*sin(angle))));
@@ -110,10 +110,11 @@ SnowballRenderable::SnowballRenderable(ShaderProgramPtr flatShader,  ShaderProgr
 	 particle_arbre->setLink(arbre);
 	 particle_arbre->setFixed(true);
 	 system->addParticle(particle_arbre);
+
 	 //ParticleRenderablePtr part = std::make_shared<ParticleRenderable>(flatShader,particle_arbre);
 	 HierarchicalRenderable::addChild(arbre, arbre->tronc);
 	 viewer->addRenderable(arbre);
-	 //viewer->addRenderable(part);
+	// viewer->addRenderable(part);
 	 //Explosion(system, systemRenderable, phongShader);
 
 	 // Création du mesh : la petite maison dans la prairie enneigée
