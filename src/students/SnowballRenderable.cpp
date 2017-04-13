@@ -115,6 +115,13 @@ SnowballRenderable::SnowballRenderable(ShaderProgramPtr flatShader,  ShaderProgr
 	 explo = std::make_shared<Explosion>(system, systemRenderable, phongShader, glm::vec3(-10,-10,-10), m_particle->getRadius());
 	 std::cout << explo->listePart[0][0] << "\n";
 
+
+	 //création mesh fences
+	 //TexturedMeshRenderablePtr fence = std::make_shared<TexturedMeshRenderable>(texShader, "../meshes/fence.obj", "../textures/Cottage Texture.jpg");
+	 TexturedMeshRenderablePtr fence= std::make_shared<TexturedMeshRenderable>(flatShader, "../meshes/fence.obj", "../textures/Cottage Texture.jpg");
+	 fence->setMaterial(Material::Fence());
+	 fence->setParentTransform(glm::scale(glm::mat4(1.0), glm::vec3(0.1,0.1,0.1)));
+	 viewer->addRenderable(fence);
 }
 
 void SnowballRenderable::do_animate(float time)
