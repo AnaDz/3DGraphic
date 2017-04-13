@@ -28,7 +28,7 @@ int ny = 120;
 int n = 10;
 float angle = -(float)3.14/12;
 int terrain = 0; // Le terrain que la boule vient de parcourir
-glm::vec3 posMesh(0.0);
+
 // "Fréquence" d'apparition des objets
 int nb_bonhommes = 3*3;
 int nb_maisons = 3*3;
@@ -75,9 +75,9 @@ SnowballRenderable::SnowballRenderable(ShaderProgramPtr flatShader,  ShaderProgr
 	 bonshommes.resize(nb_bonhommes);
 	 particle_bonhomme.resize(nb_bonhommes);
 	 meshes.resize(nb_maisons);
+	 posMesh.resize(nb_maisons);
 	 arbres.resize(nb_arbres);
 	 particle_arbre.resize(nb_arbres);
-
 
 	 // Création des bonshommes de neige
 	 px = glm::vec3(0,5*cos(angle),5*sin(angle));
@@ -132,7 +132,7 @@ SnowballRenderable::SnowballRenderable(ShaderProgramPtr flatShader,  ShaderProgr
 		 glm::mat4 rotationM = glm::rotate(glm::rotate(glm::rotate(glm::mat4(1.0), (float)(M_PI/2.0), glm::vec3(1,0,0)), (float)(M_PI/2.0), glm::vec3(0,1,0)), angle, glm::vec3(0,0,1));
 		 meshes[i]->setLocalTransform(rotationM);
 		 viewer->addRenderable(meshes[i]);
-		 posMesh=glm::vec3(1.0,-5*cos(angle), -5*sin(angle));
+		 posMesh[i]=glm::vec3(1.0,-5*cos(angle), -5*sin(angle));
    }
 
 	 explo = std::make_shared<Explosion>(system, systemRenderable, phongShader, glm::vec3(-10,-10,-10), m_particle->getRadius());
@@ -206,8 +206,10 @@ void SnowballRenderable::do_draw()
 	}
 
 	// détection collision Mesh
-	if (m_particle->getPosition().x < posMesh.x+1.5 && m_particle->getPosition().x > posMesh.x-1.5 && m_particle->getPosition().y< posMesh.y+1 && m_particle->getPosition().y > posMesh.y-1){
-		detectionObjetFin=true;
+	for (int i=0; i < nb_maisons; i++){
+		if (m_particle->getPosition().x < posMesh[i].x+2 && m_particle->getPosition().x > posMesh[i].x-2 && m_particle->getPosition().y< posMesh[i].y+1 && m_particle->getPosition().y > posMesh[i].y-1){
+			detectionObjetFin=true;
+		}
 	}
 
 	if (detectionObjetFin && fin_explo){
@@ -247,9 +249,11 @@ void SnowballRenderable::do_draw()
 		// Déplacement des maisons
 		for (int i = terrain*(nb_maisons/3); i <= terrain*(nb_maisons/3)+(nb_maisons/3)-1; i++) {
 			aleaM = rand()%40;
-			glm::mat4 trans = glm::translate(glm::mat4(1.0), glm::vec3(rand()%(nx-2)+1,((k+2)*40+aleaM)*cos(angle),((k+2)*40+aleaM)*sin(angle)));
+			glm::vec3 translation = glm::vec3(rand()%(nx-2)+1,((k+2)*40+aleaM)*cos(angle),((k+2)*40+aleaM)*sin(angle));
+			glm::mat4 trans = glm::translate(glm::mat4(1.0), translation);
 			glm::mat4 scaleM = glm::scale(trans, glm::vec3(0.02,0.02,0.02));
 			meshes[i]->setParentTransform(scaleM);
+			posMesh[i]= translation;
 		}
 
 		// Déplacement des bonshommes de neige

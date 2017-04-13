@@ -49,7 +49,9 @@ private:
     DynamicSystemRenderablePtr systemRenderable;
     std::vector<ParticlePtr> particle_arbre;
     std::vector<ParticlePtr> particle_bonhomme;
+
     bool fin_explo = true;
+    std::vector<glm::vec3> posMesh;
     ExplosionPtr explo;
 };
 
