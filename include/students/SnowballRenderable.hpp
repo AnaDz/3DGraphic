@@ -20,7 +20,7 @@
 #include "../../include/students/Tree.hpp"
 #include "../../include/students/BonhommeDeNeige.hpp"
 #include "../../include/texturing/TexturedMeshRenderable.hpp"
-
+#include "../../include/students/Explosion.hpp"
 #include <vector>
 
 class SnowballRenderable : public ParticleRenderableStudent
@@ -53,7 +53,7 @@ private:
     TreePtr arbre;
 
     bool fin_explo = true;
-
+    ExplosionPtr explo;
 };
 
 typedef std::shared_ptr<SnowballRenderable> SnowballRenderablePtr;

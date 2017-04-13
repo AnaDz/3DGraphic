@@ -30,6 +30,8 @@ float angle = -(float)3.14/12;
 
 glm::vec3 posMesh(0.0);
 
+
+
 SnowballRenderable::SnowballRenderable(ShaderProgramPtr flatShader,  ShaderProgramPtr phongShader, ShaderProgramPtr texShader, Viewer* v, ParticlePtr particle, std::shared_ptr<SphereRenderable> sky, DynamicSystemPtr system, DynamicSystemRenderablePtr systemRenderable)
 	: ParticleRenderableStudent(texShader, particle)
 {
@@ -105,7 +107,8 @@ SnowballRenderable::SnowballRenderable(ShaderProgramPtr flatShader,  ShaderProgr
 	 viewer->addRenderable(mesh);
 	 posMesh=glm::vec3(2,5*cos(angle), 5*sin(angle) );
 
-
+	 explo = std::make_shared<Explosion>(system, systemRenderable, phongShader, glm::vec3(-10,-10,-10), m_particle->getRadius());
+	 std::cout << explo->listePart[0][0] << "\n";
 
 }
 
@@ -177,8 +180,29 @@ void SnowballRenderable::do_draw()
 	}
 
 	if (detectionObjetFin && fin_explo){
-		printf("salut yolo \n");
- 	 Explosion(system, systemRenderable, phongShader, m_particle->getPosition());
+		//printf("salut yolo \n");
+ 	 //Explosion(system, systemRenderable, phongShader, m_particle->getPosition(), m_particle->getRadius());
+	 glm::vec3 px,pv;
+	 double radius = m_particle->getRadius();
+	 int slices = 7;
+	 int strips = 7;
+	 for(int i=0; i<slices; ++i)
+	 {
+		 for(int j=0; j<strips; ++j)
+		 {
+			 double curr_theta = i*(2.0*M_PI/(double)slices);
+			 double curr_phi = j*(M_PI/(double)strips);
+			 int v = 40;
+			 px = m_particle->getPosition() + glm::vec3(0,0,radius) + glm::vec3(radius*cos(curr_theta)*sin(curr_phi), radius*sin(curr_theta)*sin(curr_phi), radius*cos(curr_phi));
+			 pv = glm::vec3(v*radius*cos(curr_theta)*sin(curr_phi), v*radius*sin(curr_theta)*sin(curr_phi), v*radius*cos(curr_phi));
+			 //ParticlePtr particle = std::make_shared<Particle>(px, pv, pm, pr);
+			 explo->listePart[i][j]->setPosition(px);
+			 explo->listePart[i][j]->setVelocity(pv);
+
+		 }
+	 }
+
+	 m_particle->setFixed(true);
 	 this->fin_explo=false;
 
 	}
