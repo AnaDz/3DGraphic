@@ -145,7 +145,7 @@ MaterialPtr Material::Bronze()
 MaterialPtr Material::Neige()
 {
     float openGLFactor=128.0;
-    glm::vec3 ambient(0.7, 0.7, 0.7);
+    glm::vec3 ambient(0.9, 0.9, 0.9);
     glm::vec3 diffuse(0.3, 0.3, 0.3);
     glm::vec3 specular(0.3, 0.3, 0.3);
     float shininess = openGLFactor*0.7;
