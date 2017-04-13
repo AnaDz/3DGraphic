@@ -27,6 +27,7 @@ int ny = 75;
 int n = 10;
 float angle = -(float)3.14/12;
 
+
 SnowballRenderable::SnowballRenderable(ShaderProgramPtr flatShader,  ShaderProgramPtr phongShader, ShaderProgramPtr texShader, Viewer* v, ParticlePtr particle, std::shared_ptr<SphereRenderable> sky, DynamicSystemPtr system)
 	: ParticleRenderableStudent(texShader, particle)
 {
@@ -234,6 +235,7 @@ SnowballRenderable::~SnowballRenderable()
 
 }
 
+
 void SnowballRenderable::do_keyPressedEvent(sf::Event& e){
 	if (e.key.code == sf::Keyboard::Left) {
 	        gauche=true;
@@ -244,6 +246,11 @@ void SnowballRenderable::do_keyPressedEvent(sf::Event& e){
 	        droite=true;
 	        toutDroit=false;
 	}
+	if (e.key.code == sf::Keyboard::F5){
+		printf("coucou \n");
+	}
+
+
 }
 
 void SnowballRenderable::do_keyReleasedEvent(sf::Event& e){
