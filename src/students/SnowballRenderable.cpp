@@ -76,17 +76,22 @@ SnowballRenderable::SnowballRenderable(ShaderProgramPtr flatShader,  ShaderProgr
 	 arbre = std::make_shared<Tree>(texShader, filename, filename2);
 	 glm::vec3 px,pv;
 	 float pm, pr;
-	 px = glm::vec3(0,0,0.5);
+	//px = glm::vec3(0,0,0.5);
+	 px = glm::vec3(5,5*cos(angle),5*sin(angle));
 	 pv = glm::vec3(0,0,0);
-	 pr = 0.5;
+	 pr = 1;
 	 pm = 1.0;
-	 ParticlePtr particle_arbre = std::make_shared<Particle>(px, pv, pm, pr);
-	 arbre->setParentTransform(glm::scale(glm::mat4(1.0), glm::vec3(0.25,0.25,0.25)));
+	 particle_arbre = std::make_shared<Particle>(px, pv, pm, pr);
+	 arbre->setParentTransform(glm::translate(glm::mat4(1.0), glm::vec3(5,5*cos(angle),5*sin(angle))));
+	 arbre->setPosition(glm::vec3(5,5*cos(angle),5*sin(angle)));
 	 particle_arbre->setSpecialAnimation(true);
 	 particle_arbre->setLink(arbre);
+	 particle_arbre->setFixed(true);
 	 system->addParticle(particle_arbre);
+	 //ParticleRenderablePtr part = std::make_shared<ParticleRenderable>(flatShader,particle_arbre);
 	 HierarchicalRenderable::addChild(arbre, arbre->tronc);
 	 viewer->addRenderable(arbre);
+	 //viewer->addRenderable(part);
 	 //Explosion(system, systemRenderable, phongShader);
 
 	 // Création du mesh : la petite maison dans la prairie enneigée
@@ -182,10 +187,14 @@ void SnowballRenderable::do_draw()
 		bonhomme->generateAnimation(viewer->getTime(), glm::vec3(rand()%8,(k*40+aleaB)*cos(angle),(k*40+aleaB)*sin(angle)));
 
 		// Déplacement de l'arbre
-		trans = glm::translate(glm::mat4(1.0), glm::vec3(rand()%12,(k*40+aleaA)*cos(angle),(k*40+aleaA)*sin(angle)));
-		scaleM = glm::scale(trans, glm::vec3(0.25,0.25,0.25));
-		arbre->setParentTransform(scaleM);
-
+		int random = rand();
+		glm::vec3 translation = glm::vec3(random%12,(k*40+aleaA)*cos(angle),(k*40+aleaA)*sin(angle));
+		particle_arbre->setPosition(translation);
+		arbre->setPosition(translation);
+		trans = glm::translate(glm::mat4(1.0), translation);
+		scaleM = glm::scale(trans, glm::vec3(1,1,1));
+		arbre->setParentTransform(trans);
+		arbre->generateAnimation(viewer->getTime());
 		// Déplacement du terrain
 		glm::mat4 parentTransformation, localTransformation;
 		GroundRenderablePtr tmp;

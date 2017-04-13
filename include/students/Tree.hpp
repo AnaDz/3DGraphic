@@ -23,6 +23,7 @@ public:
   void addLocalTransformKeyframe(float time, const GeometricTransformation& transformation);
   void generateAnimation(float time);
   void supprimer();
+  void setPosition(glm::vec3 pos);
 
 private:
   void do_draw();
@@ -30,6 +31,7 @@ private:
   KeyframeCollection m_localKeyframes; /*!< A collection of keyframes for the local transformation of renderable. */
   KeyframeCollection m_parentKeyframes; /*!< A collection of keyframes for the parent transformation of renderable. */
   bool existe;
+  glm::vec3 position = glm::vec3(0,0,0);
 
   MaterialPtr m_material = Material::Neige();
 

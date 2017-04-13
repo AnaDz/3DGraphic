@@ -48,8 +48,11 @@ private:
     ShaderProgramPtr phongShader;
     DynamicSystemPtr system;
     BonhommeDeNeigePtr bonhomme;
+    ParticlePtr particle_arbre;
+
+
     TexturedMeshRenderablePtr mesh;
-    
+
     TreePtr arbre;
 
 };
