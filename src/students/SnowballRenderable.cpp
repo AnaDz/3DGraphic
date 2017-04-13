@@ -18,14 +18,24 @@
 #include "../../include/dynamics/DynamicSystem.hpp"
 #include <cmath>
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <ctime>
+
 int nx = 12;
 int ny = 75;
 int n = 10;
 float angle = -(float)3.14/12;
 
+
 SnowballRenderable::SnowballRenderable(ShaderProgramPtr flatShader,  ShaderProgramPtr phongShader, ShaderProgramPtr texShader, Viewer* v, ParticlePtr particle, std::shared_ptr<SphereRenderable> sky, DynamicSystemPtr system)
 	: ParticleRenderableStudent(texShader, particle)
 {
+
+	//init générateur aléatoire
+		 srand(time(NULL));
+
+
 	 // Initialisation des attributs
 	 viewer = v;
 	 flatShader=flatShader;
@@ -91,6 +101,9 @@ SnowballRenderable::SnowballRenderable(ShaderProgramPtr flatShader,  ShaderProgr
 	 glm::mat4 rotationM = glm::rotate(glm::rotate(glm::rotate(glm::mat4(1.0), (float)(M_PI/2.0), glm::vec3(1,0,0)), (float)(M_PI/2.0), glm::vec3(0,1,0)), angle, glm::vec3(0,0,1));
 	 mesh->setLocalTransform(rotationM);
 	 viewer->addRenderable(mesh);
+
+
+
 }
 
 void SnowballRenderable::do_animate(float time)
@@ -113,16 +126,16 @@ void SnowballRenderable::do_draw()
 
 	// Positionnement de la caméra et de la skybox pour suivre le mouvement de la boule de neige
 	viewer->getCamera().setMouseBehavior(Camera::SPACESHIP_BEHAVIOR);
-	viewer->getCamera().setPosition(glm::vec3(3,-2+ParticleRenderableStudent::m_particle->getPosition().y, 2+ParticleRenderableStudent::m_particle->getPosition().z));
+	viewer->getCamera().setPosition(glm::vec3(m_particle->getPosition().x,-3+ParticleRenderableStudent::m_particle->getPosition().y, 3+ParticleRenderableStudent::m_particle->getPosition().z));
 	glm::mat4 translation_skybox = glm::translate(glm::mat4(1.0), glm::vec3(3,prevY,prevZ));
 	skybox->setParentTransform(translation_skybox);
 	prevY = -2+ParticleRenderableStudent::m_particle->getPosition().y;
 	prevZ = 2+ParticleRenderableStudent::m_particle->getPosition().z;
 
-	// Déplacement de la boule de neige
+	// Rotation boule de neige
 	setLocalTransform(glm::rotate(glm::mat4(1.0), -(float)(ParticleRenderableStudent::m_particle->getPosition().y), glm::vec3(1,0,0)));
 
-	// Déplacement de la particule devant et sur les côtés : ajustement de la vitesse
+	// Déplacement de la boule de neige latéralement : ajustement de la vitesse
 	float vitesse = m_particle->getVelocity().y;
 	if (gauche){
 		m_particle->setVelocity(m_particle->getVelocity() + glm::vec3(-.05, 0,0));
@@ -156,15 +169,16 @@ void SnowballRenderable::do_draw()
 	// Déplacement du terrain et des objets s'y trouvant au fur et à mesure que la boule avance
 	if (m_particle->getPosition().y >= k*25){
 		// Déplacement de la maison
-		glm::mat4 trans = glm::translate(glm::mat4(1.0), glm::vec3(1,(k*25+24)*cos(angle),(k*25+24)*sin(angle)));
+		int alea = rand()%24;
+		glm::mat4 trans = glm::translate(glm::mat4(1.0), glm::vec3(rand()%(12-1)+1,(k*25+24+alea)*cos(angle),(k*25+24+alea)*sin(angle)));
 		glm::mat4 scaleM = glm::scale(trans, glm::vec3(0.02,0.02,0.02));
 		mesh->setParentTransform(scaleM);
 
 		// Déplacement du bonhomme de neige
-		bonhomme->generateAnimation(viewer->getTime(), glm::vec3(1,(k*25+24)*cos(angle),(k*25+24)*sin(angle)));
+		bonhomme->generateAnimation(viewer->getTime(), glm::vec3(rand()%11,(k*25+24)*cos(angle),(k*25+24)*sin(angle)));
 
 		// Déplacement de l'arbre
-		trans = glm::translate(glm::mat4(1.0), glm::vec3(1,(k*25+22)*cos(angle),(k*25+22)*sin(angle)));
+		trans = glm::translate(glm::mat4(1.0), glm::vec3(rand()%12,(k*25+22)*cos(angle),(k*25+22)*sin(angle)));
 		scaleM = glm::scale(trans, glm::vec3(0.25,0.25,0.25));
 		arbre->setParentTransform(scaleM);
 
@@ -221,6 +235,7 @@ SnowballRenderable::~SnowballRenderable()
 
 }
 
+
 void SnowballRenderable::do_keyPressedEvent(sf::Event& e){
 	if (e.key.code == sf::Keyboard::Left) {
 	        gauche=true;
@@ -231,6 +246,11 @@ void SnowballRenderable::do_keyPressedEvent(sf::Event& e){
 	        droite=true;
 	        toutDroit=false;
 	}
+	if (e.key.code == sf::Keyboard::F5){
+		printf("coucou \n");
+	}
+
+
 }
 
 void SnowballRenderable::do_keyReleasedEvent(sf::Event& e){
