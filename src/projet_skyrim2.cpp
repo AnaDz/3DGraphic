@@ -54,6 +54,8 @@
 #include "../include/students/ParticleExplosion.hpp"
 #include "../include/students/SnowballRenderable.hpp"
 #include "../include/students/Explosion.hpp"
+#include "../include/students/Score.hpp"
+
 void initialize_project_skyrim_2(Viewer& viewer) {
 
   /*******************************************************************************
@@ -91,10 +93,12 @@ void initialize_project_skyrim_2(Viewer& viewer) {
    viewer.addRenderable(systemRenderable);
 
 
-  glm::mat4 parentTransformation(1.0), localTransformation(1.0);
-  std::string filename;
-  std::string filename2;
+   glm::mat4 parentTransformation(1.0), localTransformation(1.0);
+   std::string filename;
+   std::string filename2;
 
+   // Initialisation du score
+   Score score = Score(&viewer);
 
   /*******************************************************************************
    * FIN INITIALISATION *

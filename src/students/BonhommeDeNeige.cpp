@@ -179,15 +179,15 @@ void BonhommeDeNeige::do_animate(float time) {
 
 void BonhommeDeNeige::generateAnimation(float temps, glm::vec3 depart) {
   // Animation du bonhomme de neige : il saute droit devant depuis la position depart indiquée en paramètre
-  int nb_sauts = 3; // Nombre de sauts que fait le bonhomme de neige en ligne droite
+  int nb_sauts = 4; // Nombre de sauts que fait le bonhomme de neige en ligne droite
   for (int t=0; t < nb_sauts; t++) {
-    this->addParentTransformKeyframe(temps+t+0.0, GeometricTransformation(glm::vec3(depart.x+(2.0*t)+0.0, depart.y+0.0, depart.z+0.0), glm::angleAxis(0.0f, glm::vec3(0.0, 0.0, 1.0))));
-    this->addParentTransformKeyframe(temps+t+0.2, GeometricTransformation(glm::vec3(depart.x+(2.0*t)+0.35, depart.y+0.0, depart.z+0.7), glm::angleAxis(0.0f, glm::vec3(0.0, 1.0, 0.0))));
-    this->addParentTransformKeyframe(temps+t+0.4, GeometricTransformation(glm::vec3(depart.x+(2.0*t)+0.7, depart.y+0.0, depart.z+1.3), glm::angleAxis(0.0f, glm::vec3(0.0, 1.0, 0.0))));
-    this->addParentTransformKeyframe(temps+t+0.5, GeometricTransformation(glm::vec3(depart.x+(2.0*t)+1.0, depart.y+0.0, depart.z+1.5), glm::angleAxis(0.0f, glm::vec3(0.0, 1.0, 0.0))));
-    this->addParentTransformKeyframe(temps+t+0.6, GeometricTransformation(glm::vec3(depart.x+(2.0*t)+1.3, depart.y+0.0, depart.z+1.3), glm::angleAxis(0.0f, glm::vec3(0.0, 1.0, 0.0))));
-    this->addParentTransformKeyframe(temps+t+0.8, GeometricTransformation(glm::vec3(depart.x+(2.0*t)+1.65, depart.y+0.0, depart.z+0.7), glm::angleAxis(0.0f, glm::vec3(0.0, 1.0, 0.0))));
-    this->addParentTransformKeyframe(temps+t+1.0, GeometricTransformation(glm::vec3(depart.x+(2.0*t)+2.0, depart.y+0.0, depart.z+0.0), glm::angleAxis(0.0f, glm::vec3(0.0, 1.0, 0.0))));
+    this->addParentTransformKeyframe(temps+t+0.0, GeometricTransformation(glm::vec3(depart.x+(1.0*t)+0.0, depart.y+0.0, depart.z+0.0), glm::angleAxis(0.0f, glm::vec3(0.0, 0.0, 1.0))));
+    this->addParentTransformKeyframe(temps+t+0.2, GeometricTransformation(glm::vec3(depart.x+(1.0*t)+0.2, depart.y+0.0, depart.z+0.3), glm::angleAxis(0.0f, glm::vec3(0.0, 1.0, 0.0))));
+    this->addParentTransformKeyframe(temps+t+0.4, GeometricTransformation(glm::vec3(depart.x+(1.0*t)+0.4, depart.y+0.0, depart.z+0.7), glm::angleAxis(0.0f, glm::vec3(0.0, 1.0, 0.0))));
+    this->addParentTransformKeyframe(temps+t+0.5, GeometricTransformation(glm::vec3(depart.x+(1.0*t)+0.5, depart.y+0.0, depart.z+0.8), glm::angleAxis(0.0f, glm::vec3(0.0, 1.0, 0.0))));
+    this->addParentTransformKeyframe(temps+t+0.6, GeometricTransformation(glm::vec3(depart.x+(1.0*t)+0.6, depart.y+0.0, depart.z+0.7), glm::angleAxis(0.0f, glm::vec3(0.0, 1.0, 0.0))));
+    this->addParentTransformKeyframe(temps+t+0.8, GeometricTransformation(glm::vec3(depart.x+(1.0*t)+0.8, depart.y+0.0, depart.z+0.3), glm::angleAxis(0.0f, glm::vec3(0.0, 1.0, 0.0))));
+    this->addParentTransformKeyframe(temps+t+1.0, GeometricTransformation(glm::vec3(depart.x+(1.0*t)+1.0, depart.y+0.0, depart.z+0.0), glm::angleAxis(0.0f, glm::vec3(0.0, 1.0, 0.0))));
   }
 }
 
