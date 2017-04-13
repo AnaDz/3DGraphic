@@ -55,6 +55,7 @@ SnowballRenderable::SnowballRenderable(ShaderProgramPtr flatShader,  ShaderProgr
 
 	 // Initialisation du sol
 	 groundR.resize(nx, std::vector<GroundRenderablePtr>(ny));
+	 barrieres.resize(3);
 
 	 glm::mat4 parentTransformation, localTransformation;
 
@@ -241,7 +242,7 @@ void SnowballRenderable::do_draw()
 		for (int i = terrain*(nb_maisons/3); i <= terrain*(nb_maisons/3)+(nb_maisons/3)-1; i++) {
 			aleaM = rand()%40;
 			glm::mat4 trans = glm::translate(glm::mat4(1.0), glm::vec3(rand()%(nx-2)+1,((k+2)*40+aleaM)*cos(angle),((k+2)*40+aleaM)*sin(angle)));
-			glm::mat4 scaleM = glm::scale(trans, glm::vec3(0.02,0.02,0.02));
+			glm::mat4 scaleM = glm::scale(trans, glm::vec3(0.03,0.03,0.03));
 			meshes[i]->setParentTransform(scaleM);
 		}
 

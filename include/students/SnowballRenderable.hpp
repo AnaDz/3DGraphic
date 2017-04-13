@@ -21,6 +21,7 @@
 #include "../../include/students/BonhommeDeNeige.hpp"
 #include "../../include/texturing/TexturedMeshRenderable.hpp"
 #include "../../include/students/Explosion.hpp"
+#include "../../teachers/MeshRenderable.hpp"
 #include <vector>
 
 class SnowballRenderable : public ParticleRenderableStudent
