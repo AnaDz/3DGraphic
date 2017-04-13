@@ -117,7 +117,7 @@ void initialize_project_skyrim_2(Viewer& viewer) {
    // Skybox
    std::shared_ptr<SphereRenderable> skybox =
        std::make_shared<SphereRenderable>(texShader, Material::Ciel(), "../textures/sky.png");
-   glm::mat4 scale_skybox = glm::scale(glm::mat4(1.0), glm::vec3(50, 50, 50));
+   glm::mat4 scale_skybox = glm::scale(glm::mat4(1.0), glm::vec3(25, 25, 25));
    glm::mat4 rotation_skybox = glm::rotate(glm::mat4(1.0), -(float)(M_PI/2.0), glm::vec3(1,0,0));
    rotation_skybox *= glm::rotate(glm::mat4(1.0), -(float)(M_PI/2.0), glm::vec3(0,1,0));
    skybox->setLocalTransform(rotation_skybox*scale_skybox);
