@@ -29,8 +29,10 @@ int n = 10;
 float angle = -(float)3.14/12;
 int terrain = 0; // Le terrain que la boule vient de parcourir
 glm::vec3 posMesh(0.0);
-
-
+// "Fréquence" d'apparition des objets
+int nb_bonhommes = 3*3;
+int nb_maisons = 3*3;
+int nb_arbres = 3*3;
 
 SnowballRenderable::SnowballRenderable(ShaderProgramPtr flatShader,  ShaderProgramPtr phongShader, ShaderProgramPtr texShader, Viewer* v, ParticlePtr particle, std::shared_ptr<SphereRenderable> sky, DynamicSystemPtr system, DynamicSystemRenderablePtr systemRenderable)
 	: ParticleRenderableStudent(texShader, particle)
@@ -68,46 +70,54 @@ SnowballRenderable::SnowballRenderable(ShaderProgramPtr flatShader,  ShaderProgr
 		 }
 	 }
 
-	 // "Fréquence" d'apparition des objets
-   int nb_bonhommes = 6;
-	 int nb_maisons = 6;
-	 int nb_arbres = 6;
+ 	 glm::vec3 px,pv;
+	 float pm, pr;
 	 bonshommes.resize(nb_bonhommes);
+	 particle_bonhomme.resize(nb_bonhommes);
 	 meshes.resize(nb_maisons);
 	 arbres.resize(nb_arbres);
 	 particle_arbre.resize(nb_arbres);
 
+
 	 // Création des bonshommes de neige
+	 px = glm::vec3(0,5*cos(angle),5*sin(angle));
+	 pv = glm::vec3(0,0,0);
+	 pr = 0.49;
+	 pm = 1.0;
 	 for (int i = 0; i < nb_bonhommes; i++) {
 		 bonshommes[i] = std::make_shared<BonhommeDeNeige>(phongShader, texShader);
 		 HierarchicalRenderable::addChild(bonshommes[i], bonshommes[i]->base);
+		 bonshommes[i]->setParentTransform(glm::translate(glm::mat4(1.0), glm::vec3(0,-5*cos(angle),-5*sin(angle))));
+		 bonshommes[i]->setPosition(glm::vec3(0,-5*cos(angle),-5*sin(angle)));
+
+		 particle_bonhomme[i] = std::make_shared<Particle>(px, pv, pm, pr);
+		 particle_bonhomme[i]->setSpecialAnimation(true);
+		 particle_bonhomme[i]->setLink(bonshommes[i]);
+		 particle_bonhomme[i]->setFixed(true);
+		 system->addParticle(particle_bonhomme[i]);
+		 bonshommes[i]->addParticle(particle_bonhomme[i]);
+		 bonshommes[i]->generateAnimation(0.0);
 		 viewer->addRenderable(bonshommes[i]);
  	 }
 
 	 // Création des arbres
 	 std::string filename = "../textures/bark.jpg";
 	 std::string filename2 = "../textures/needle.jpg";
-	 glm::vec3 px,pv;
-	 float pm, pr;
-	//px = glm::vec3(0,0,0.5);
 	 px = glm::vec3(5,5*cos(angle),5*sin(angle));
 	 pv = glm::vec3(0,0,0);
-	 pr = 1;
+	 pr = 0.5;
 	 pm = 1.0;
-
 	 for (int i = 0; i < nb_arbres; i++) {
 		 arbres[i] = std::make_shared<Tree>(texShader, filename, filename2);
 		 particle_arbre[i] = std::make_shared<Particle>(px, pv, pm, pr);
 		 arbres[i]->setParentTransform(glm::scale(glm::translate(glm::mat4(1.0), glm::vec3(1,-5*cos(angle),-5*sin(angle))), glm::vec3(0.25,0.25,0.25)));
 		 arbres[i]->setPosition(glm::vec3(1,-5*cos(angle),-5*sin(angle)));
-		 //arbre->setParentTransform(glm::translate(glm::mat4(1.0), glm::vec3(5,5*cos(angle),5*sin(angle))));
 		 particle_arbre[i]->setSpecialAnimation(true);
 		 particle_arbre[i]->setLink(arbres[i]);
 		 particle_arbre[i]->setFixed(true);
 		 system->addParticle(particle_arbre[i]);
 		 HierarchicalRenderable::addChild(arbres[i], arbres[i]->tronc);
 		 viewer->addRenderable(arbres[i]);
-		 //Explosion(system, systemRenderable, phongShader);
  	 }
 
 	 // Création des meshes : la petite maison dans la prairie enneigée version Camping Paradis
@@ -228,7 +238,7 @@ void SnowballRenderable::do_draw()
 	if (distance-5 >= k*40){
 
 		// Déplacement des maisons
-		for (int i = terrain*2; i <= terrain*2+1; i++) {
+		for (int i = terrain*(nb_maisons/3); i <= terrain*(nb_maisons/3)+(nb_maisons/3)-1; i++) {
 			aleaM = rand()%40;
 			glm::mat4 trans = glm::translate(glm::mat4(1.0), glm::vec3(rand()%(nx-2)+1,((k+2)*40+aleaM)*cos(angle),((k+2)*40+aleaM)*sin(angle)));
 			glm::mat4 scaleM = glm::scale(trans, glm::vec3(0.02,0.02,0.02));
@@ -236,13 +246,19 @@ void SnowballRenderable::do_draw()
 		}
 
 		// Déplacement des bonshommes de neige
-		for (int i = terrain*2; i < terrain*2+1; i++) {
+		for (int i = terrain*(nb_bonhommes/3); i <= terrain*(nb_bonhommes/3)+(nb_bonhommes/3)-1; i++) {
 			aleaB = rand()%40;
-			bonshommes[i]->generateAnimation(viewer->getTime()+10, glm::vec3(rand()%(nx/2)-8,((k+2)*40+aleaB)*cos(angle),((k+2)*40+aleaB)*sin(angle)));
+			glm::vec3 translation = glm::vec3(rand()%(nx/2)-8,((k+2)*40+aleaB)*cos(angle),((k+2)*40+aleaB)*sin(angle));
+			bonshommes[i]->setFalled(false);
+			bonshommes[i]->setPosition(translation);
+			glm::mat4 trans = glm::translate(glm::mat4(1.0), translation);
+			bonshommes[i]->setParentTransform(trans);
+			particle_bonhomme[i]->setPosition(translation);
+			bonshommes[i]->generateAnimation(viewer->getTime());
 		}
 
 		// Déplacement de l'arbre
-		for (int i = terrain*2; i < terrain*2+1; i++) {
+		for (int i = terrain*(nb_arbres/3); i <= terrain*(nb_arbres/3)+(nb_arbres/3)-1; i++) {
 			aleaA = rand()%40;
 			glm::vec3 translation = glm::vec3(rand()%(nx-2)+1,((k+2)*40+aleaA)*cos(angle),((k+2)*40+aleaA)*sin(angle));
 			particle_arbre[i]->setPosition(translation);

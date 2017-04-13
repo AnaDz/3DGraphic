@@ -34,15 +34,11 @@ public:
 private:
     void do_draw();
     void do_animate(float time);
-
     Viewer* viewer;
-
     bool gauche;
     bool droite;
     bool toutDroit;
-
     std::vector<std::vector<GroundRenderablePtr>> groundR;
-
     ShaderProgramPtr flatShader;
     ShaderProgramPtr texShader;
     ShaderProgramPtr phongShader;
@@ -52,7 +48,7 @@ private:
     std::vector<TreePtr> arbres;
     DynamicSystemRenderablePtr systemRenderable;
     std::vector<ParticlePtr> particle_arbre;
-
+    std::vector<ParticlePtr> particle_bonhomme;
     bool fin_explo = true;
     ExplosionPtr explo;
 };

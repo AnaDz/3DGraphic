@@ -14,7 +14,7 @@
  * You can either extend this class to add other attributes to interpolate,
  * such as colors, or to create another class similar to this one.
  */
- 
+
 class KeyframeCollection
 {
 public:
@@ -27,6 +27,7 @@ public:
      */
     void add(float time, const GeometricTransformation& transformation);
 
+    void clear();
     /**
      * \brief Interpolate a transformation at a given time.
      *
@@ -43,7 +44,7 @@ public:
      * \return The interpolated geometric transformation.
      */
     glm::mat4 interpolateTransformation(float time) const;
-
+    glm::vec3 interpolateTranslation(float time) const;
     /**
      * @brief Check if the collection is empty.
      * @return True if the collection is empty, false otherwise.
