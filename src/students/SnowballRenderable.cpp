@@ -23,7 +23,7 @@
 #include <ctime>
 
 int nx = 12;
-int ny = 75;
+int ny = 120;
 int n = 10;
 float angle = -(float)3.14/12;
 
@@ -86,7 +86,6 @@ SnowballRenderable::SnowballRenderable(ShaderProgramPtr flatShader,  ShaderProgr
 	 particle_arbre->setLink(arbre);
 	 system->addParticle(particle_arbre);
 	 HierarchicalRenderable::addChild(arbre, arbre->tronc);
-	 //arbre->setFalling(true);
 	 viewer->addRenderable(arbre);
 	 //Explosion(system, systemRenderable, phongShader);
 
@@ -165,20 +164,25 @@ void SnowballRenderable::do_draw()
 
 	// Dessin de la boule de neige
 	ParticleRenderableStudent::do_draw();
-
+	int aleaM;
+	int aleaA;
+	int aleaB;
 	// Déplacement du terrain et des objets s'y trouvant au fur et à mesure que la boule avance
-	if (m_particle->getPosition().y >= k*25){
+	if (m_particle->getPosition().y >= k*40){
 		// Déplacement de la maison
-		int alea = rand()%24;
-		glm::mat4 trans = glm::translate(glm::mat4(1.0), glm::vec3(rand()%(12-1)+1,(k*25+24+alea)*cos(angle),(k*25+24+alea)*sin(angle)));
+		aleaM = rand()%(40-30)+30;
+		aleaA = rand()%(40-30)+30;
+		aleaB = rand()%(40-30)+30;
+
+		glm::mat4 trans = glm::translate(glm::mat4(1.0), glm::vec3(rand()%(12-2)+2,(k*40+aleaM)*cos(angle),(k*40+aleaM)*sin(angle)));
 		glm::mat4 scaleM = glm::scale(trans, glm::vec3(0.02,0.02,0.02));
 		mesh->setParentTransform(scaleM);
 
 		// Déplacement du bonhomme de neige
-		bonhomme->generateAnimation(viewer->getTime(), glm::vec3(rand()%11,(k*25+24)*cos(angle),(k*25+24)*sin(angle)));
+		bonhomme->generateAnimation(viewer->getTime(), glm::vec3(rand()%8,(k*40+aleaB)*cos(angle),(k*40+aleaB)*sin(angle)));
 
 		// Déplacement de l'arbre
-		trans = glm::translate(glm::mat4(1.0), glm::vec3(rand()%12,(k*25+22)*cos(angle),(k*25+22)*sin(angle)));
+		trans = glm::translate(glm::mat4(1.0), glm::vec3(rand()%12,(k*40+aleaA)*cos(angle),(k*40+aleaA)*sin(angle)));
 		scaleM = glm::scale(trans, glm::vec3(0.25,0.25,0.25));
 		arbre->setParentTransform(scaleM);
 
@@ -186,21 +190,21 @@ void SnowballRenderable::do_draw()
 		glm::mat4 parentTransformation, localTransformation;
 		GroundRenderablePtr tmp;
 			for (int x=0; x<nx; x++){
-				for (int y=0; y<25; y++){
+				for (int y=0; y<40; y++){
 				// 	if (k%3==1){
 				// 	tmp = std::make_shared<GroundRenderable>(flatShader,x,(k+2)*25+y,n, viewer);
 				// 	viewer->addRenderable(tmp);
 				//
 				// } else {
 					tmp = groundR[x][y];
-					parentTransformation=glm::translate(glm::rotate(glm::mat4(1.0), angle, glm::vec3(1,0,0)), glm::vec3(x,(k+2)*25+y,0));
+					parentTransformation=glm::translate(glm::rotate(glm::mat4(1.0), angle, glm::vec3(1,0,0)), glm::vec3(x,(k+2)*40+y,0));
 					tmp->setParentTransform(parentTransformation);
 					localTransformation = glm::mat4(1.0);
 					tmp->setLocalTransform(localTransformation);
 				// }
-				groundR[x][y]= groundR[x][y+25];
-				groundR[x][y+25]=groundR[x][y+50];
-				groundR[x][y+50]=tmp;
+				groundR[x][y]= groundR[x][y+40];
+				groundR[x][y+40]=groundR[x][y+80];
+				groundR[x][y+80]=tmp;
 			}
 		}
 		//version2
