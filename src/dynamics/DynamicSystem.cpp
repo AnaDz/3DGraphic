@@ -111,15 +111,22 @@ void DynamicSystem::detectCollisions()
             ParticlePtr p1 = m_particles[i];
             ParticlePtr p2 = m_particles[j];
             if (testParticleParticle(p1,p2)) {
-                if(p1->needSpecialAnimation){
+              if(p1->needSpecialAnimation || p2->needSpecialAnimation){
+                if(p1->needSpecialAnimation ){
                   p1->linked->setFalling(true);
+                  p1->setPosition(p1->getPosition()+ glm::vec3(0,0,10));
+
                 }
                 if (p2->needSpecialAnimation){
                   p2->linked->setFalling(true);
+                  p2->setPosition(p2->getPosition()+ glm::vec3(0,0,20));
+
                 }
+              } else {
                 ParticleParticleCollisionPtr c =
                     std::make_shared<ParticleParticleCollision>(p1,p2,m_restitution);
                 m_collisions.push_back(c);
+              }
             }
         }
     }
