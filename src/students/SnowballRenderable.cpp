@@ -207,7 +207,7 @@ void SnowballRenderable::do_draw()
 
 	// détection collision Mesh
 	for (int i=0; i < nb_maisons; i++){
-		if (m_particle->getPosition().x < posMesh[i].x+2 && m_particle->getPosition().x > posMesh[i].x-2 && m_particle->getPosition().y< posMesh[i].y+1 && m_particle->getPosition().y > posMesh[i].y-1){
+		if (m_particle->getPosition().x < posMesh[i].x+1.75 && m_particle->getPosition().x > posMesh[i].x-1.75 && m_particle->getPosition().y< posMesh[i].y+1 && m_particle->getPosition().y > posMesh[i].y-1){
 			detectionObjetFin=true;
 		}
 	}
