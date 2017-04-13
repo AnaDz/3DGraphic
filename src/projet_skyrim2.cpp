@@ -152,11 +152,11 @@ void initialize_project_skyrim_2(Viewer& viewer) {
     PlaneRenderablePtr planeRenderable = std::make_shared<QuadRenderable>(flatShader, p1,p2,p3,p4);
     HierarchicalRenderable::addChild( systemRenderable, planeRenderable );
 
-    TreePtr tree = std::make_shared<Tree>(texShader, filename, filename2);
-    tree->setParentTransform(glm::mat4(1.0));
+    /*TreePtr tree = std::make_shared<Tree>(texShader, filename, filename2);
+    tree->setParentTransform(glm::mat4(1.0));*/
 
 
-    glm::vec3 px,pv;
+  /*  glm::vec3 px,pv;
     float pm, pr;
     px = glm::vec3(0,0,0.5);
     pv = glm::vec3(0,0,0);
@@ -171,21 +171,34 @@ void initialize_project_skyrim_2(Viewer& viewer) {
     HierarchicalRenderable::addChild(tree, tree->tronc);
     //tree->setFalling(true);
     viewer.addRenderable(tree);
-    //Explosion(system, systemRenderable, phongShader);
+  //  Explosion(system, systemRenderable, phongShader);*/
 
-  /*  TexturedMeshRenderablePtr mesh =
+    TexturedMeshRenderablePtr mesh =
         std::make_shared<TexturedMeshRenderable>(
             texShader, "../meshes/Maison.obj", "../textures/Cottage Texture.jpg");
     scaleM = glm::scale(glm::mat4(1.0), glm::vec3(0.2,0.2,0.2));
     mesh->setParentTransform(scaleM);
-     mesh->setMaterial(Material::Maison());
-    /*rotationM = glm::rotate(glm::mat4(1.0), (float)(M_PI/2.0), glm::vec3(1,0,0));
-    head->setLocalTransform(rotationM)*/
-    //viewer.addRenderable(mesh);
+    mesh->setMaterial(Material::Maison());
+    rotationM = glm::rotate(glm::mat4(1.0), (float)(M_PI/2.0), glm::vec3(1,0,0));
+    mesh->setLocalTransform(rotationM);
+    viewer.addRenderable(mesh);
+
+    glm::vec3 px,pv;
+    float pm, pr;
+    px = glm::vec3(10,0,20);
+    pv = glm::vec3(0,0,0);
+    pr = 20;
+    pm = 1.0;
+    ParticlePtr particle = std::make_shared<Particle>(px, pv, pm, pr);
+    //  particle->setSpecialAnimation(true);
+  //  particle->setLink(mesh);
+    system->addParticle(particle);
+    ParticleRenderablePtr mobileRenderable = std::make_shared<ParticleRenderable>(flatShader, particle);
+    HierarchicalRenderable::addChild(systemRenderable, mobileRenderable);
 
     //Activate collision and set the restitution coefficient to 1.0
     //Initialize two particles with position, velocity, mass and radius and add it to the system
-    pv =glm::vec3(0.0, 0.0, 0.0);
+/*  pv =glm::vec3(0.0, 0.0, 0.0);
     pm = 1.0;
     pr = 1.0;
     px = glm::vec3(10.0,0.0,0.0);
@@ -205,9 +218,9 @@ void initialize_project_skyrim_2(Viewer& viewer) {
     ControlledForceFieldRenderablePtr forceRenderable = std::make_shared<ControlledForceFieldRenderable>(flatShader, force);
     HierarchicalRenderable::addChild(systemRenderable, forceRenderable);
     system->setCollisionsDetection(true);
-    system->setRestitution(0.1f);
+    system->setRestitution(0.1f);*/
 
-    tree->supprimer();
+  //  tree->supprimer();
   }
 
   bool Matthieu = false;
