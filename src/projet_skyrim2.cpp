@@ -54,6 +54,8 @@
 #include "../include/students/ParticleExplosion.hpp"
 #include "../include/students/SnowballRenderable.hpp"
 #include "../include/students/Explosion.hpp"
+#include "../include/students/Score.hpp"
+
 void initialize_project_skyrim_2(Viewer& viewer) {
 
   /*******************************************************************************
@@ -91,10 +93,12 @@ void initialize_project_skyrim_2(Viewer& viewer) {
    viewer.addRenderable(systemRenderable);
 
 
-  glm::mat4 parentTransformation(1.0), localTransformation(1.0);
-  std::string filename;
-  std::string filename2;
+   glm::mat4 parentTransformation(1.0), localTransformation(1.0);
+   std::string filename;
+   std::string filename2;
 
+   // Initialisation du score
+   Score score = Score(&viewer);
 
   /*******************************************************************************
    * FIN INITIALISATION *
@@ -120,7 +124,7 @@ void initialize_project_skyrim_2(Viewer& viewer) {
    glm::mat4 scale_skybox = glm::scale(glm::mat4(1.0), glm::vec3(25, 25, 25));
    glm::mat4 rotation_skybox = glm::rotate(glm::mat4(1.0), -(float)(M_PI/2.0), glm::vec3(1,0,0));
    rotation_skybox *= glm::rotate(glm::mat4(1.0), -(float)(M_PI/2.0), glm::vec3(0,1,0));
-   skybox->setLocalTransform(rotation_skybox*scale_skybox);
+   skybox->setLocalTransform(scale_skybox*rotation_skybox);
    viewer.addRenderable(skybox);
 
   bool Ana = false;

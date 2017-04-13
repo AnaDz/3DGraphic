@@ -49,6 +49,7 @@ private:
     DynamicSystemPtr system;
     BonhommeDeNeigePtr bonhomme;
     TexturedMeshRenderablePtr mesh;
+    
     TreePtr arbre;
 
 };
