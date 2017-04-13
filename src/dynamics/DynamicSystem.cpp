@@ -115,12 +115,14 @@ void DynamicSystem::detectCollisions()
                 if(p1->needSpecialAnimation ){
                   p1->linked->setFalling(true);
                   p1->setPosition(p1->getPosition()+ glm::vec3(0,0,10));
-
                 }
                 if (p2->needSpecialAnimation){
                   p2->linked->setFalling(true);
                   p2->setPosition(p2->getPosition()+ glm::vec3(0,0,20));
 
+                }
+                if(p1->isScorable() || p2->isScorable()){
+                  score->modifierScore(p1->getScore()+p2->getScore());
                 }
               } else {
                 ParticleParticleCollisionPtr c =
@@ -179,4 +181,8 @@ std::ostream& operator<<(std::ostream& os, const DynamicSystemPtr& system)
     for (ParticlePtr p : particles)
         os << p << std::endl;
     return os;
+}
+
+void DynamicSystem::setScore(ScorePtr sc){
+  score = sc;
 }

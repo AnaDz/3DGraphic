@@ -8,7 +8,7 @@
 #include "Particle.hpp"
 #include "Plane.hpp"
 #include "Solver.hpp"
-
+#include "../students/Score.hpp"
 /**@brief A dynamic system.
  *
  * This class represents a dynamic system made of particles, force fields and
@@ -78,9 +78,13 @@ private:
      */
     float m_restitution;
 
+    ScorePtr score = nullptr;
+
 public:
     DynamicSystem();
     virtual ~DynamicSystem();
+
+    void setScore(ScorePtr sc);
 
     /**@brief Add a particle to the system.
      *

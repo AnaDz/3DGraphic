@@ -84,6 +84,7 @@ SnowballRenderable::SnowballRenderable(ShaderProgramPtr flatShader,  ShaderProgr
 	 pv = glm::vec3(0,0,0);
 	 pr = 0.49;
 	 pm = 1.0;
+
 	 for (int i = 0; i < nb_bonhommes; i++) {
 		 bonshommes[i] = std::make_shared<BonhommeDeNeige>(phongShader, texShader);
 		 HierarchicalRenderable::addChild(bonshommes[i], bonshommes[i]->base);
@@ -94,19 +95,21 @@ SnowballRenderable::SnowballRenderable(ShaderProgramPtr flatShader,  ShaderProgr
 		 particle_bonhomme[i]->setSpecialAnimation(true);
 		 particle_bonhomme[i]->setLink(bonshommes[i]);
 		 particle_bonhomme[i]->setFixed(true);
+		 particle_bonhomme[i]->setScore(5);
+
 		 system->addParticle(particle_bonhomme[i]);
 		 bonshommes[i]->addParticle(particle_bonhomme[i]);
 		 bonshommes[i]->generateAnimation(0.0);
 		 viewer->addRenderable(bonshommes[i]);
  	 }
 
-	 // Création des arbres
 	 std::string filename = "../textures/bark.jpg";
 	 std::string filename2 = "../textures/needle.jpg";
 	 px = glm::vec3(5,5*cos(angle),5*sin(angle));
 	 pv = glm::vec3(0,0,0);
 	 pr = 0.5;
 	 pm = 1.0;
+
 	 for (int i = 0; i < nb_arbres; i++) {
 		 arbres[i] = std::make_shared<Tree>(texShader, filename, filename2);
 		 particle_arbre[i] = std::make_shared<Particle>(px, pv, pm, pr);
@@ -115,6 +118,7 @@ SnowballRenderable::SnowballRenderable(ShaderProgramPtr flatShader,  ShaderProgr
 		 particle_arbre[i]->setSpecialAnimation(true);
 		 particle_arbre[i]->setLink(arbres[i]);
 		 particle_arbre[i]->setFixed(true);
+		 particle_arbre[i]->setScore(1);
 		 system->addParticle(particle_arbre[i]);
 		 HierarchicalRenderable::addChild(arbres[i], arbres[i]->tronc);
 		 viewer->addRenderable(arbres[i]);
@@ -137,13 +141,6 @@ SnowballRenderable::SnowballRenderable(ShaderProgramPtr flatShader,  ShaderProgr
 
 	 explo = std::make_shared<Explosion>(system, systemRenderable, phongShader, glm::vec3(-10,-10,-10), m_particle->getRadius());
 
-
-	 //création mesh fences
-	 //TexturedMeshRenderablePtr fence = std::make_shared<TexturedMeshRenderable>(texShader, "../meshes/fence.obj", "../textures/Cottage Texture.jpg");
-	 TexturedMeshRenderablePtr fence= std::make_shared<TexturedMeshRenderable>(flatShader, "../meshes/fence.obj", "../textures/Cottage Texture.jpg");
-	 fence->setMaterial(Material::Fence());
-	 fence->setParentTransform(glm::scale(glm::mat4(1.0), glm::vec3(0.1,0.1,0.1)));
-	 viewer->addRenderable(fence);
 }
 
 void SnowballRenderable::do_animate(float time)
@@ -180,11 +177,11 @@ void SnowballRenderable::do_draw()
 	// Déplacement de la boule de neige latéralement : ajustement de la vitesse
 	float vitesse = m_particle->getVelocity().y;
 	if (gauche){
-		m_particle->setVelocity(m_particle->getVelocity() + glm::vec3(-.05, 0,0));
+		m_particle->setVelocity(m_particle->getVelocity() + glm::vec3(-.1, 0,0));
 		ancien[0]=true;
 	}
 	if (droite){
-		m_particle->setVelocity(m_particle->getVelocity() + glm::vec3(0.05, 0,0));
+		m_particle->setVelocity(m_particle->getVelocity() + glm::vec3(0.1, 0,0));
 		ancien[2]=true;
 	}
 	if (toutDroit){
