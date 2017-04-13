@@ -14,7 +14,7 @@ class Explosion
 {
 public:
     ~Explosion();
-    Explosion(DynamicSystemPtr system, DynamicSystemRenderablePtr systemRenderable, ShaderProgramPtr phongShader);
+    Explosion(DynamicSystemPtr system, DynamicSystemRenderablePtr systemRenderable, ShaderProgramPtr phongShader, glm::vec3 position = glm::vec3(0,0,0));
 
 };
 
