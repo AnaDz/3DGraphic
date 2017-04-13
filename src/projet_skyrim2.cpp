@@ -296,7 +296,7 @@ void initialize_project_skyrim_2(Viewer& viewer) {
 	  system->addParticle(particle);
 
     // Renderable visible de la boule de neige, du terrain et des objets s'y trouvant
- 	  SnowballRenderablePtr sb = std::make_shared<SnowballRenderable>(flatShader, phongShader, texShader, &viewer, particle, skybox, system);
+ 	  SnowballRenderablePtr sb = std::make_shared<SnowballRenderable>(flatShader, phongShader, texShader, &viewer, particle, skybox, system, systemRenderable);
  	  parentTransformation=glm::translate(glm::mat4(1.0), glm::vec3(3,1,0));
  	  sb->setParentTransform(parentTransformation);
  	  HierarchicalRenderable::addChild(systemRenderable, sb);

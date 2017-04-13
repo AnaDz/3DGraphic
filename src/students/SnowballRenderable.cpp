@@ -16,6 +16,7 @@
 #include"../../include/dynamics/Particle.hpp"
 #include "../../include/students/GroundRenderable.hpp"
 #include "../../include/dynamics/DynamicSystem.hpp"
+#include "../../include/students/Explosion.hpp"
 #include <cmath>
 
 #include <stdio.h>
@@ -27,8 +28,11 @@ int ny = 120;
 int n = 10;
 float angle = -(float)3.14/12;
 
+glm::vec3 posMesh(0.0);
 
-SnowballRenderable::SnowballRenderable(ShaderProgramPtr flatShader,  ShaderProgramPtr phongShader, ShaderProgramPtr texShader, Viewer* v, ParticlePtr particle, std::shared_ptr<SphereRenderable> sky, DynamicSystemPtr system)
+
+
+SnowballRenderable::SnowballRenderable(ShaderProgramPtr flatShader,  ShaderProgramPtr phongShader, ShaderProgramPtr texShader, Viewer* v, ParticlePtr particle, std::shared_ptr<SphereRenderable> sky, DynamicSystemPtr system, DynamicSystemRenderablePtr systemRenderable)
 	: ParticleRenderableStudent(texShader, particle)
 {
 
@@ -38,10 +42,11 @@ SnowballRenderable::SnowballRenderable(ShaderProgramPtr flatShader,  ShaderProgr
 
 	 // Initialisation des attributs
 	 viewer = v;
-	 flatShader=flatShader;
-	 texShader=texShader;
-	 phongShader=phongShader;
-	 system=system;
+	 this->flatShader=flatShader;
+	 this->texShader=texShader;
+	 this->phongShader=phongShader;
+	 this->systemRenderable=systemRenderable;
+	 this->system=system;
 	 gauche = false;
 	 droite = false;
 	 toutDroit = true;
@@ -115,15 +120,18 @@ SnowballRenderable::SnowballRenderable(ShaderProgramPtr flatShader,  ShaderProgr
  	 mesh=std::make_shared<TexturedMeshRenderable>(
 	 texShader, "../meshes/Maison.obj", "../textures/Cottage Texture.jpg");
 	 glm::mat4 trans, scaleM;
-	 trans = glm::translate(glm::mat4(1.0), glm::vec3(5,5*cos(angle),5*sin(angle)));
-	 scaleM = glm::scale(trans, glm::vec3(0.02,0.02,0.02));
+
+	 trans = glm::translate(glm::mat4(1.0), glm::vec3(2,5*cos(angle),5*sin(angle)));
+	 scaleM = glm::scale(trans, glm::vec3(0.03,0.03,0.03));
 	 mesh->setParentTransform(scaleM);
 	 mesh->setMaterial(Material::Maison());
 	 glm::mat4 rotationM = glm::rotate(glm::rotate(glm::rotate(glm::mat4(1.0), (float)(M_PI/2.0), glm::vec3(1,0,0)), (float)(M_PI/2.0), glm::vec3(0,1,0)), angle, glm::vec3(0,0,1));
 	 mesh->setLocalTransform(rotationM);
 	 viewer->addRenderable(mesh);
+	 posMesh=glm::vec3(2,5*cos(angle), 5*sin(angle) );
 
-
+	 explo = std::make_shared<Explosion>(system, systemRenderable, phongShader, glm::vec3(-10,-10,-10), m_particle->getRadius());
+	 std::cout << explo->listePart[0][0] << "\n";
 
 }
 
@@ -136,6 +144,8 @@ bool ancien[3]={false, false, false};
 int k=1;
 double prevY = 0;
 double prevZ = 0;
+
+bool detectionObjetFin = false;
 
 void SnowballRenderable::do_draw()
 {
@@ -184,8 +194,46 @@ void SnowballRenderable::do_draw()
 		m_particle->setVelocity(tmp);
 	}
 
-	// Dessin de la boule de neige
-	ParticleRenderableStudent::do_draw();
+
+	// détection collision Mesh
+	if (m_particle->getPosition().x < posMesh.x+1.5 && m_particle->getPosition().x > posMesh.x-1.5 && m_particle->getPosition().y< posMesh.y+1 && m_particle->getPosition().y > posMesh.y-1){
+
+		detectionObjetFin=true;
+
+	}
+
+	if (detectionObjetFin && fin_explo){
+		//printf("salut yolo \n");
+ 	 //Explosion(system, systemRenderable, phongShader, m_particle->getPosition(), m_particle->getRadius());
+	 glm::vec3 px,pv;
+	 double radius = m_particle->getRadius();
+	 int slices = 7;
+	 int strips = 7;
+	 for(int i=0; i<slices; ++i)
+	 {
+		 for(int j=0; j<strips; ++j)
+		 {
+			 double curr_theta = i*(2.0*M_PI/(double)slices);
+			 double curr_phi = j*(M_PI/(double)strips);
+			 int v = 40;
+			 px = m_particle->getPosition() + glm::vec3(0,0,radius) + glm::vec3(radius*cos(curr_theta)*sin(curr_phi), radius*sin(curr_theta)*sin(curr_phi), radius*cos(curr_phi));
+			 pv = glm::vec3(v*radius*cos(curr_theta)*sin(curr_phi), v*radius*sin(curr_theta)*sin(curr_phi), v*radius*cos(curr_phi));
+			 //ParticlePtr particle = std::make_shared<Particle>(px, pv, pm, pr);
+			 explo->listePart[i][j]->setPosition(px);
+			 explo->listePart[i][j]->setVelocity(pv);
+
+		 }
+	 }
+
+	 m_particle->setFixed(true);
+	 this->fin_explo=false;
+
+	}
+	else if (fin_explo){
+		//dessin boule de neige
+		ParticleRenderableStudent::do_draw();
+	}
+
 	int aleaM;
 	int aleaA;
 	int aleaB;
@@ -196,8 +244,9 @@ void SnowballRenderable::do_draw()
 		aleaA = rand()%(40-30)+30;
 		aleaB = rand()%(40-30)+30;
 
-		glm::mat4 trans = glm::translate(glm::mat4(1.0), glm::vec3(rand()%(12-2)+2,(k*40+aleaM)*cos(angle),(k*40+aleaM)*sin(angle)));
-		glm::mat4 scaleM = glm::scale(trans, glm::vec3(0.02,0.02,0.02));
+		posMesh = glm::vec3(rand()%(12-2)+2,(k*40+aleaM)*cos(angle),(k*40+aleaM)*sin(angle));
+		glm::mat4 trans = glm::translate(glm::mat4(1.0), posMesh );
+		glm::mat4 scaleM = glm::scale(trans, glm::vec3(0.04,0.04,0.04));
 		mesh->setParentTransform(scaleM);
 
 		// Déplacement du bonhomme de neige
@@ -283,7 +332,7 @@ void SnowballRenderable::do_keyPressedEvent(sf::Event& e){
 	        toutDroit=false;
 	}
 	if (e.key.code == sf::Keyboard::F5){
-		printf("coucou \n");
+		printf("coucou on recommence :)  \n");
 	}
 
 

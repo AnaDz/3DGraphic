@@ -20,14 +20,14 @@
 #include "../../include/students/Tree.hpp"
 #include "../../include/students/BonhommeDeNeige.hpp"
 #include "../../include/texturing/TexturedMeshRenderable.hpp"
-
+#include "../../include/students/Explosion.hpp"
 #include <vector>
 
 class SnowballRenderable : public ParticleRenderableStudent
 {
 public:
     ~SnowballRenderable();
-    SnowballRenderable(ShaderProgramPtr flatShader, ShaderProgramPtr phongShader, ShaderProgramPtr texShader, Viewer* v, ParticlePtr particle, std::shared_ptr<SphereRenderable> sky, DynamicSystemPtr system);
+    SnowballRenderable(ShaderProgramPtr flatShader, ShaderProgramPtr phongShader, ShaderProgramPtr texShader, Viewer* v, ParticlePtr particle, std::shared_ptr<SphereRenderable> sky, DynamicSystemPtr system, DynamicSystemRenderablePtr systemRenderable);
     void do_keyPressedEvent(sf::Event& e);
     void do_keyReleasedEvent(sf::Event& e);
     std::shared_ptr<SphereRenderable> skybox;
@@ -47,15 +47,17 @@ private:
     ShaderProgramPtr texShader;
     ShaderProgramPtr phongShader;
     DynamicSystemPtr system;
+    DynamicSystemRenderablePtr systemRenderable;
     BonhommeDeNeigePtr bonhomme;
     ParticlePtr particle_arbre;
     ParticlePtr particle_bonhomme;
 
 
     TexturedMeshRenderablePtr mesh;
-
     TreePtr arbre;
 
+    bool fin_explo = true;
+    ExplosionPtr explo;
 };
 
 typedef std::shared_ptr<SnowballRenderable> SnowballRenderablePtr;
