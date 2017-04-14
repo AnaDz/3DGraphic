@@ -205,9 +205,9 @@ MaterialPtr Material::Ciel()
 MaterialPtr Material::Fence()
 {
   float openGLFactor=128.0;
-  glm::vec3 ambient(1.0, 1.0, 1.0);
-  glm::vec3 diffuse(0.0, 0.0, 0.0);
+  glm::vec3 ambient(150.0/255.0, 131.0/255.0, 236.3/255.0); //glm::vec4((double) 150/255, (double) 131/255, (double) 236/255,0);
+  glm::vec3 diffuse(0.2, 0.2, 0.2);
   glm::vec3 specular(0.0, 0.0, 0.0);
-  float shininess = openGLFactor*1.0;
+  float shininess = openGLFactor*0.3;
   return std::make_shared<Material>(ambient, diffuse, specular, shininess);
 }

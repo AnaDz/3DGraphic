@@ -18,7 +18,7 @@ public:
 private:
   void do_draw();
   void do_animate(float time);
-  MaterialPtr m_material = Material::Neige();
+  MaterialPtr m_material = Material::Fence();
 
 };
 
