@@ -126,9 +126,9 @@ void initialize_project_skyrim_2(Viewer& viewer) {
    glm::mat4 rotation_skybox = glm::rotate(glm::mat4(1.0), -(float)(M_PI/2.0), glm::vec3(1,0,0));
    rotation_skybox *= glm::rotate(glm::mat4(1.0), -(float)(M_PI/2.0), glm::vec3(0,1,0));
    skybox->setLocalTransform(scale_skybox*rotation_skybox);
-   //viewer.addRenderable(skybox);
+   viewer.addRenderable(skybox);
 
-  bool Ana = true;
+  bool Ana = false;
   if(Ana){
     //Position the camera
     viewer.getCamera().setViewMatrix(
@@ -154,7 +154,7 @@ void initialize_project_skyrim_2(Viewer& viewer) {
     viewer.addRenderable(bonhomme);
   }
 
-  bool Olivier = false;
+  bool Olivier = true;
   if (Olivier){
 
     // Lumière globale

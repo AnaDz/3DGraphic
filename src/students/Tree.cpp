@@ -38,6 +38,8 @@ void Tree::generateAnimation(float time){
     this->addParentTransformKeyframe(time + 1, GeometricTransformation(position + glm::vec3(0.0, 12.0, 2.5), glm::angleAxis(2.0f, glm::vec3(1.0, 0.0, 0.0))));
     this->addParentTransformKeyframe(time + 1.2, GeometricTransformation(position + glm::vec3(0.0, 13, 3), glm::angleAxis(2.0f, glm::vec3(1.0, 0.0, 0.0))));
     this->addParentTransformKeyframe(time + 1.4, GeometricTransformation(position + glm::vec3(0.0, 15, 4), glm::angleAxis(2.0f, glm::vec3(1.0, 0.0, 0.0))));
+    this->addParentTransformKeyframe(time + 2, GeometricTransformation(position + glm::vec3(0.0, 15, 25), glm::angleAxis(2.0f, glm::vec3(1.0, 0.0, 0.0))));
+
   }
 }
 

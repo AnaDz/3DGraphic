@@ -56,6 +56,7 @@ SnowballRenderable::SnowballRenderable(ShaderProgramPtr flatShader,  ShaderProgr
 	 // Initialisation du sol
 	 groundR.resize(nx, std::vector<GroundRenderablePtr>(ny));
 
+
 	 glm::mat4 parentTransformation, localTransformation;
 
 	 // Création du terrain
@@ -78,6 +79,7 @@ SnowballRenderable::SnowballRenderable(ShaderProgramPtr flatShader,  ShaderProgr
 	 posMesh.resize(nb_maisons);
 	 arbres.resize(nb_arbres);
 	 particle_arbre.resize(nb_arbres);
+
 
 	 // Création des bonshommes de neige
 	 px = glm::vec3(0,5*cos(angle),5*sin(angle));
@@ -129,18 +131,26 @@ SnowballRenderable::SnowballRenderable(ShaderProgramPtr flatShader,  ShaderProgr
 	 for (int i = 0; i < nb_maisons; i++) {
 	 	 meshes[i]=std::make_shared<TexturedMeshRenderable>(
 		 		texShader, "../meshes/Maison.obj", "../textures/Cottage Texture.jpg");
-		 trans = glm::translate(glm::mat4(1.0), glm::vec3(1.0,-5*cos(angle),-5*sin(angle)));
+		 trans = glm::translate(glm::mat4(1.0), glm::vec3(5.0,-10*cos(angle),-10*sin(angle)));
 		 scaleM = glm::scale(trans, glm::vec3(0.03,0.03,0.03));
 		 meshes[i]->setParentTransform(scaleM);
 		 meshes[i]->setMaterial(Material::Maison());
 		 glm::mat4 rotationM = glm::rotate(glm::rotate(glm::rotate(glm::mat4(1.0), (float)(M_PI/2.0), glm::vec3(1,0,0)), (float)(M_PI/2.0), glm::vec3(0,1,0)), angle, glm::vec3(0,0,1));
 		 meshes[i]->setLocalTransform(rotationM);
 		 viewer->addRenderable(meshes[i]);
-		 posMesh[i]=glm::vec3(1.0,-5*cos(angle), -5*sin(angle));
+		 posMesh[i]=glm::vec3(5.0,-10*cos(angle), -10*sin(angle));
    }
 
 	 explo = std::make_shared<Explosion>(system, systemRenderable, phongShader, glm::vec3(-10,-10,-10), m_particle->getRadius());
 
+	 fences.resize(6);
+	 for (int i=0; i<fences.size(); i++){
+		 fences[i] = std::make_shared<Fence>(texShader, "../textures/candy.jpg");
+		 //fences[i]->setParentTransform(glm::scale(glm::mat4(1.0), glm::vec3(0.5,1,0.2)));
+		 HierarchicalRenderable::addChild(groundR[i%2*(nx-1)][i%3*(ny/3-1)], fences[i]);
+		 HierarchicalRenderable::addChild(fences[i], fences[i]->origin);
+		 viewer->addRenderable(fences[i]);
+	 }
 }
 
 void SnowballRenderable::do_animate(float time)
@@ -203,8 +213,9 @@ void SnowballRenderable::do_draw()
 	}
 
 	// détection collision Mesh
+	//2.1 gauche, 0.85*cos(angle) haut 1.4 droite, 1.2*sin(angle) bas
 	for (int i=0; i < nb_maisons; i++){
-		if (m_particle->getPosition().x < posMesh[i].x+1.75 && m_particle->getPosition().x > posMesh[i].x-1.75 && m_particle->getPosition().y< posMesh[i].y+1 && m_particle->getPosition().y > posMesh[i].y-1){
+		if ((m_particle->getPosition().x  + m_particle->getRadius())< posMesh[i].x+1.8 && (m_particle->getPosition().x +m_particle->getRadius()) > posMesh[i].x-2.1 && (m_particle->getPosition().y + m_particle->getRadius())< posMesh[i].y+1.2*cos(angle) && (m_particle->getPosition().y + m_particle->getRadius()) > posMesh[i].y-0.85*cos(angle)){
 			detectionObjetFin=true;
 		}
 	}
@@ -248,7 +259,7 @@ void SnowballRenderable::do_draw()
 			aleaM = rand()%40;
 			glm::vec3 translation = glm::vec3(rand()%(nx-2)+1,((k+2)*40+aleaM)*cos(angle),((k+2)*40+aleaM)*sin(angle));
 			glm::mat4 trans = glm::translate(glm::mat4(1.0), translation);
-			glm::mat4 scaleM = glm::scale(trans, glm::vec3(0.02,0.02,0.02));
+			glm::mat4 scaleM = glm::scale(trans, glm::vec3(0.04,0.04,0.04));
 			meshes[i]->setParentTransform(scaleM);
 			posMesh[i]= translation;
 		}
