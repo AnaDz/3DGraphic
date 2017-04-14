@@ -55,7 +55,7 @@
 #include "../include/students/SnowballRenderable.hpp"
 #include "../include/students/Explosion.hpp"
 #include "../include/students/Score.hpp"
-
+#include "../include/students/Fence.hpp"
 void initialize_project_skyrim_2(Viewer& viewer) {
 
   /*******************************************************************************
@@ -105,221 +105,84 @@ void initialize_project_skyrim_2(Viewer& viewer) {
    * FIN INITIALISATION *
    ******************************************************************************/
 
-   //Define a directional light for the whole scene
-   glm::vec3 d_direction = glm::normalize(glm::vec3(0.0,0.0,-1.0));
-   glm::vec3 d_ambient(1.0,1.0,1.0), d_diffuse(1.0,1.0,0.8), d_specular(1.0,1.0,1.0);
-   glm::vec3 ghostWhite(248.0/255, 248.0/255, 248.0/255);
-   DirectionalLightPtr directionalLight = std::make_shared<DirectionalLight>(d_direction, ghostWhite, ghostWhite, ghostWhite);
-   //Add a renderable to display the light and control it via mouse/key event
-   glm::vec3 lightPosition(0,0.0,7.0);
-   DirectionalLightRenderablePtr directionalLightRenderable = std::make_shared<DirectionalLightRenderable>(flatShader, directionalLight, lightPosition);
-   localTransformation = glm::scale(glm::mat4(1.0), glm::vec3(0.5,0.5,0.5));
-   directionalLightRenderable->setLocalTransform(localTransformation);
-   viewer.setDirectionalLight(directionalLight);
-   viewer.addRenderable(directionalLightRenderable);
-
-
    // Skybox
    std::shared_ptr<SphereRenderable> skybox =
-       std::make_shared<SphereRenderable>(texShader, Material::Ciel(), "../textures/sky.png");
+   std::make_shared<SphereRenderable>(texShader, Material::Ciel(), "../textures/sky.png");
    glm::mat4 scale_skybox = glm::scale(glm::mat4(1.0), glm::vec3(25, 25, 25));
    glm::mat4 rotation_skybox = glm::rotate(glm::mat4(1.0), -(float)(M_PI/2.0), glm::vec3(1,0,0));
    rotation_skybox *= glm::rotate(glm::mat4(1.0), -(float)(M_PI/2.0), glm::vec3(0,1,0));
    skybox->setLocalTransform(scale_skybox*rotation_skybox);
    viewer.addRenderable(skybox);
 
-  bool Ana = false;
-  if(Ana){
-    //Position the camera
-    viewer.getCamera().setViewMatrix(
-      glm::lookAt(
-      glm::vec3(0, -8, 8 ),
-        glm::vec3(0, 0, 0),
-        glm::vec3( 0, 0, 1 ) ) );
+   // Lumière globale
+   glm::vec3 lightDirection = glm::normalize(glm::vec3(0.0, -1.0, -1.0));
+   glm::vec3 ghostWhite(248.0/255, 248.0/255, 248.0/255);
+   DirectionalLightPtr directionalLight = std::make_shared<DirectionalLight>(lightDirection, ghostWhite, ghostWhite, ghostWhite);
+   viewer.setDirectionalLight(directionalLight);
 
-    // Temporary variables to use to define transformation
-    filename = "../textures/bark.jpg";
-    filename2 = "../textures/needle.jpg";
-    glm::mat4 rotationM(1.0), rot1(1.0), rot2(1.0);
-    glm::mat4 scaleM(1.0);
-    glm::mat4 translationM(1.0);
+   // Initialisation
+   GroundRenderablePtr groundR ;
+   int nx = 6;
+   int ny = 100;
+   int n = 10; //nb de points par dalle
+   float angle = -(float)3.14/12;
 
-    glm::vec3 p1(-50.0, -50.0, 0.0);
-    glm::vec3 p2(50.0, -50.0, 0.0);
-    glm::vec3 p3(50.0, 50.0, 0.0);
-    glm::vec3 p4(-50.0, 50.0, 0.0);
-    PlanePtr plane = std::make_shared<Plane>(p1, p2, p3);
-    system->addPlaneObstacle(plane);
+   // Pente invisible
+   glm::vec3 p1(0.0, 0.0, 0.0);
+   glm::vec3 p2(nx, 0.0, 0.0);
+   glm::vec3 p3(nx, ny*cos(angle), ny*sin(angle) );
+   glm::vec3 p4(0, ny*cos(angle), ny*sin(angle));
+   PlanePtr plane = std::make_shared<Plane>(p1, p2, p3);
+   system->addPlaneObstacle(plane);
 
+   // Mur invisible droit
+   glm::vec3 p5(0.0, 0.0, 0.0);
+   glm::vec3 p6(0, 1, 0.0);
+   glm::vec3 p7(0, 0, 1);
+   PlanePtr plane2 = std::make_shared<Plane>(p5, p6, p7);
+   system->addPlaneObstacle(plane2);
 
+   // Mur invisible gauche
+   glm::vec3 p8(12, 0.0, 0.0);
+   glm::vec3 p9(12, 10, 0.0);
+   glm::vec3 p10( 12,10,-10);
+   glm::vec3 p11(12,0,-10);
+   PlanePtr plane3 = std::make_shared<Plane>(p8, p9, p10);
+   system->addPlaneObstacle(plane3);
 
-    //Create a plane renderable to display the obstacle
-    PlaneRenderablePtr planeRenderable = std::make_shared<QuadRenderable>(flatShader, p1,p2,p3,p4);
-    HierarchicalRenderable::addChild( systemRenderable, planeRenderable );
+   // Particule physique de la boule de neige
+   glm::vec3 px,pv;
+   float pm, pr;
+   px = glm::vec3(3, 1,0 );
+   pv = glm::vec3(0.0, 1.0, 0.0);
+   pr = 0.2;
+   pm = 10;
+   system->setRestitution(0.3f);
+   ParticlePtr particle = std::make_shared<Particle>(px, pv, pm, pr);
+   system->addParticle(particle);
+   particle->setIsScorable(true);
 
-    /*TreePtr tree = std::make_shared<Tree>(texShader, filename, filename2);
-    tree->setParentTransform(glm::mat4(1.0));*/
+   // Renderable visible de la boule de neige, du terrain et des objets s'y trouvant
+   SnowballRenderablePtr sb = std::make_shared<SnowballRenderable>(flatShader, phongShader, texShader, &viewer, particle, skybox, system, systemRenderable);
+   parentTransformation=glm::translate(glm::mat4(1.0), glm::vec3(3,1,0));
+   sb->setParentTransform(parentTransformation);
+   HierarchicalRenderable::addChild(systemRenderable, sb);
 
+   // Forces exercées sur la boule de neige : gravitée et frottements
+   ConstantForceFieldPtr gravityForceField = std::make_shared<ConstantForceField>(system->getParticles(), glm::vec3{0,0,-10} );
+   system->addForceField(gravityForceField);
+   float dampingCoefficient = 5.0;
+   DampingForceFieldPtr dampingForceField = std::make_shared<DampingForceField>(system->getParticles(), dampingCoefficient);
+   system->addForceField(dampingForceField);
+   system->setCollisionsDetection(true);
 
-  /*  glm::vec3 px,pv;
-    float pm, pr;
-    px = glm::vec3(0,0,0.5);
-    pv = glm::vec3(0,0,0);
-    pr = 0.5;
-    pm = 1.0;
-    ParticlePtr particle = std::make_shared<Particle>(px, pv, pm, pr);
-    particle->setSpecialAnimation(true);
-    particle->setLink(tree);
-    system->addParticle(particle);
+   // Initialisation de l'emplacement de la caméra
+   viewer.getCamera().setViewMatrix(
+     glm::lookAt(
+       glm::vec3(5, -2, 2),
+       glm::vec3(5, 0, 0),
+       glm::vec3(0, 1, 0)));
 
-
-    HierarchicalRenderable::addChild(tree, tree->tronc);
-    //tree->setFalling(true);
-    viewer.addRenderable(tree);
-  //  Explosion(system, systemRenderable, phongShader);*/
-
-    TexturedMeshRenderablePtr mesh =
-        std::make_shared<TexturedMeshRenderable>(
-            texShader, "../meshes/Maison.obj", "../textures/Cottage Texture.jpg");
-    scaleM = glm::scale(glm::mat4(1.0), glm::vec3(0.2,0.2,0.2));
-    mesh->setParentTransform(scaleM);
-    mesh->setMaterial(Material::Maison());
-    rotationM = glm::rotate(glm::mat4(1.0), (float)(M_PI/2.0), glm::vec3(1,0,0));
-    mesh->setLocalTransform(rotationM);
-    viewer.addRenderable(mesh);
-
-    glm::vec3 px,pv;
-    float pm, pr;
-    px = glm::vec3(10,0,20);
-    pv = glm::vec3(0,0,0);
-    pr = 20;
-    pm = 1.0;
-    ParticlePtr particle = std::make_shared<Particle>(px, pv, pm, pr);
-    //  particle->setSpecialAnimation(true);
-  //  particle->setLink(mesh);
-    system->addParticle(particle);
-    ParticleRenderablePtr mobileRenderable = std::make_shared<ParticleRenderable>(flatShader, particle);
-    HierarchicalRenderable::addChild(systemRenderable, mobileRenderable);
-
-    //Activate collision and set the restitution coefficient to 1.0
-    //Initialize two particles with position, velocity, mass and radius and add it to the system
-/*  pv =glm::vec3(0.0, 0.0, 0.0);
-    pm = 1.0;
-    pr = 1.0;
-    px = glm::vec3(10.0,0.0,0.0);
-    ParticlePtr mobile = std::make_shared<Particle>( px, pv, pm, pr);
-    system->addParticle( mobile );
-    ParticleRenderablePtr mobileRenderable = std::make_shared<ParticleRenderable>(flatShader, mobile);
-    HierarchicalRenderable::addChild(systemRenderable, mobileRenderable);
-    //Initialize a renderable for the force field applied on the mobile particle.
-    //This renderable allows to modify the attribute of the force by key/mouse events
-    //Add this renderable to the systemRenderable.
-    //Initialize a force field that apply only to the mobile particle
-    glm::vec3 nullForce(0.0, 0.0, 0.0);
-    std::vector<ParticlePtr> vParticle;
-    vParticle.push_back(mobile);
-    ConstantForceFieldPtr force = std::make_shared<ConstantForceField>(vParticle, nullForce);
-    system->addForceField(force);
-    ControlledForceFieldRenderablePtr forceRenderable = std::make_shared<ControlledForceFieldRenderable>(flatShader, force);
-    HierarchicalRenderable::addChild(systemRenderable, forceRenderable);
-    system->setCollisionsDetection(true);
-    system->setRestitution(0.1f);*/
-
-  //  tree->supprimer();
-  }
-
-  bool Matthieu = false;
-  if (Matthieu) {
-    /* Création d'un bonhomme de neige */
-    BonhommeDeNeigePtr bonhomme = std::make_shared<BonhommeDeNeige>(phongShader, texShader);
-    bonhomme->setParentTransform(glm::mat4(1.0));
-    HierarchicalRenderable::addChild(bonhomme, bonhomme->base);
-    viewer.addRenderable(bonhomme);
-  }
-
-  bool Olivier = true;
-  if (Olivier){
-
-    // Lumière globale
- 	  glm::vec3 lightDirection = glm::normalize(glm::vec3(0.0, -1.0, -1.0));
- 	  glm::vec3 ghostWhite(248.0/255, 248.0/255, 248.0/255);
- 	  DirectionalLightPtr directionalLight = std::make_shared<DirectionalLight>(lightDirection, ghostWhite, ghostWhite, ghostWhite);
- 	  viewer.setDirectionalLight(directionalLight);
-
-    // Initialisation
- 	  glm::mat4 parentTransformation, localTransformation;
- 	  GroundRenderablePtr groundR ;
- 	  int nx = 6;
- 	  int ny = 100;
- 	  int n = 10; //nb de points par dalle
- 	  float angle = -(float)3.14/12;
-
- 	  // Pente invisible
- 	  glm::vec3 p1(0.0, 0.0, 0.0);
- 	  glm::vec3 p2(nx, 0.0, 0.0);
- 	  glm::vec3 p3(nx, ny*cos(angle), ny*sin(angle) );
- 	  glm::vec3 p4(0, ny*cos(angle), ny*sin(angle));
- 	  PlanePtr plane = std::make_shared<Plane>(p1, p2, p3);
- 	  system->addPlaneObstacle(plane);
-
-    // Mur invisible droit
-    glm::vec3 p5(0.0, 0.0, 0.0);
- 	  glm::vec3 p6(0, 1, 0.0);
- 	  glm::vec3 p7(0, 0, 1);
- 	  PlanePtr plane2 = std::make_shared<Plane>(p5, p6, p7);
- 	  system->addPlaneObstacle(plane2);
-
-    // Mur invisible gauche
-    glm::vec3 p8(12, 0.0, 0.0);
- 	  glm::vec3 p9(12, 10, 0.0);
- 	  glm::vec3 p10( 12,10,-10);
-    glm::vec3 p11(12,0,-10);
- 	  PlanePtr plane3 = std::make_shared<Plane>(p8, p9, p10);
- 	  system->addPlaneObstacle(plane3);
-
- 	  // Terrain blanc en-dessous du terrain cabossé pour ne pas voir les défauts de déplacement
-    /*glm::vec3 p12(0.0, 0.0, -1);
-    glm::vec3 p13(nx, 0.0, -1);
-    glm::vec3 p14(nx, ny*cos(angle), ny*sin(angle)-1 );
-    glm::vec3 p15(0, ny*cos(angle), ny*sin(angle)-1);
-    PlaneRenderablePtr planeRenderable = std::make_shared<QuadRenderable>(flatShader, p12,p13,p14,p15, glm::vec4(1,1,1,1));
- 	  HierarchicalRenderable::addChild( systemRenderable, planeRenderable );*/
-
-    // Particule physique de la boule de neige
- 	  glm::vec3 px,pv;
- 	  float pm, pr;
- 	  px = glm::vec3(3, 1,0 );
- 	  pv = glm::vec3(0.0, 1.0, 0.0);
- 	  pr = 0.2;
- 	  pm = 10;
-    system->setRestitution(0.3f);
- 	  ParticlePtr particle = std::make_shared<Particle>(px, pv, pm, pr);
-	  system->addParticle(particle);
-    particle->setIsScorable(true);
-
-    // Renderable visible de la boule de neige, du terrain et des objets s'y trouvant
- 	  SnowballRenderablePtr sb = std::make_shared<SnowballRenderable>(flatShader, phongShader, texShader, &viewer, particle, skybox, system, systemRenderable);
- 	  parentTransformation=glm::translate(glm::mat4(1.0), glm::vec3(3,1,0));
- 	  sb->setParentTransform(parentTransformation);
- 	  HierarchicalRenderable::addChild(systemRenderable, sb);
-
-    // Forces exercées sur la boule de neige : gravitée et frottements
- 	  ConstantForceFieldPtr gravityForceField = std::make_shared<ConstantForceField>(system->getParticles(), glm::vec3{0,0,-10} );
- 	  system->addForceField(gravityForceField);
-    float dampingCoefficient = 5.0;
-    DampingForceFieldPtr dampingForceField = std::make_shared<DampingForceField>(system->getParticles(), dampingCoefficient);
-    system->addForceField(dampingForceField);
-    system->setCollisionsDetection(true);
-
-    // Initialisation de l'emplacement de la caméra
-     viewer.getCamera().setViewMatrix(
- 	      glm::lookAt(
- 	        glm::vec3(5, -2, 2),
- 	        glm::vec3(5, 0, 0),
- 	        glm::vec3(0, 1, 0)));
-  }
-
-  // Run the animation
-  //viewer.setAnimationLoop(true, 1000); PAS DE LOOP ICI !
-  viewer.startAnimation();
-}
+       // Run the animation
+       viewer.startAnimation();
+     }

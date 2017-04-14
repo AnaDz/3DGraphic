@@ -20,7 +20,6 @@ GroundRenderable::GroundRenderable(ShaderProgramPtr shaderProgram, int x, int y,
 
 	for (int i=0; i<=n; i++){
 		for (int j=0; j<=n; j++){
-			//temporary (?) fix : on trace un peu plus (sinon c'est /n et pas /(n-1))
 			m_positions.push_back(glm::vec3((float)i/(n-1),(float)j/(n-1), 0.3*Get2DPerlinNoiseValue((i+x*n),(j+y*n), 10.0)));
 		}
 	}

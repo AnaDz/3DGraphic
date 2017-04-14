@@ -191,7 +191,7 @@ void BonhommeDeNeige::do_animate(float time) {
 void BonhommeDeNeige::generateAnimation(float temps) {
   // Animation du bonhomme de neige : il saute droit devant depuis la position depart indiquée en paramètre
   if(!falling){
-    int nb_sauts = 21; // Nombre de sauts que fait le bonhomme de neige en ligne droite
+    int nb_sauts = 23; // Nombre de sauts que fait le bonhomme de neige en ligne droite
     m_parentKeyframes.clear();
     for (int t=0; t < nb_sauts; t++) {
       this->addParentTransformKeyframe(temps+t+0.0, GeometricTransformation(position + glm::vec3((1.0*t)+0.0, 0.0, 0.0), glm::angleAxis(0.0f, glm::vec3(0.0, 0.0, 1.0))));
@@ -205,9 +205,10 @@ void BonhommeDeNeige::generateAnimation(float temps) {
   } else {
     m_parentKeyframes.clear();
     this->addParentTransformKeyframe(temps+0.0, GeometricTransformation(position + glm::vec3(0, 0, 0.0), glm::angleAxis(0.0f, glm::vec3(-1.0, 0.0, 0.0))));
-    this->addParentTransformKeyframe(temps+0.5, GeometricTransformation(position + glm::vec3(0, 0, -1.0), glm::angleAxis(1.0f, glm::vec3(-1.0, 0.0, 0.0))));
-    this->addParentTransformKeyframe(temps+1.2, GeometricTransformation(position + glm::vec3(0, 0, -1.5), glm::angleAxis(1.5f, glm::vec3(-1.0, 0.0, 0.0))));
-    this->addParentTransformKeyframe(temps+1.5, GeometricTransformation(position + glm::vec3(0, 0, -2), glm::angleAxis(2.0f, glm::vec3(-1.0, 0.0, 0.0))));
+    this->addParentTransformKeyframe(temps+0.3, GeometricTransformation(position + glm::vec3(0, 3, 0.0), glm::angleAxis(0.0f, glm::vec3(-1.0, 0.0, 0.0))));
+    this->addParentTransformKeyframe(temps+0.5, GeometricTransformation(position + glm::vec3(0, 3, -1.0), glm::angleAxis(1.0f, glm::vec3(-1.0, 0.0, 0.0))));
+    this->addParentTransformKeyframe(temps+0.7, GeometricTransformation(position + glm::vec3(0, 3, -1.5), glm::angleAxis(1.5f, glm::vec3(-1.0, 0.0, 0.0))));
+    this->addParentTransformKeyframe(temps+1.0, GeometricTransformation(position + glm::vec3(0, 3, -2), glm::angleAxis(2.0f, glm::vec3(-1.0, 0.0, 0.0))));
     falled = true;
     falling = false;
   }

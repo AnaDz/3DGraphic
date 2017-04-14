@@ -21,7 +21,7 @@
 #include "../../include/students/BonhommeDeNeige.hpp"
 #include "../../include/texturing/TexturedMeshRenderable.hpp"
 #include "../../include/students/Explosion.hpp"
-#include "../../teachers/MeshRenderable.hpp"
+#include "../../include/students/Fence.hpp"
 #include <vector>
 
 class SnowballRenderable : public ParticleRenderableStudent
@@ -51,6 +51,7 @@ private:
     std::vector<ParticlePtr> particle_arbre;
     std::vector<ParticlePtr> particle_bonhomme;
 
+    std::vector<FencePtr> fences;
     bool fin_explo = true;
     std::vector<glm::vec3> posMesh;
     ExplosionPtr explo;
