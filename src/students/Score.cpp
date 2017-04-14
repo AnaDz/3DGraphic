@@ -15,7 +15,17 @@ void Score::modifierScore(int points) {
   if (score >= 10) {
     texte.pop_back();
   }
+  if (score >= 100) {
+    texte.pop_back();
+  }
+  if (score >= 1000) {
+    texte.pop_back();
+  }
   score += points;
   texte.append(std::to_string(score));
   viewer->displayText(texte, std::chrono::seconds(1000000));
+}
+
+int Score::getScore(){
+  return score;
 }

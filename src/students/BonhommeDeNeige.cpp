@@ -191,7 +191,8 @@ void BonhommeDeNeige::do_animate(float time) {
 void BonhommeDeNeige::generateAnimation(float temps) {
   // Animation du bonhomme de neige : il saute droit devant depuis la position depart indiquée en paramètre
   if(!falling){
-    int nb_sauts = 12; // Nombre de sauts que fait le bonhomme de neige en ligne droite
+    int nb_sauts = 21; // Nombre de sauts que fait le bonhomme de neige en ligne droite
+    m_parentKeyframes.clear();
     for (int t=0; t < nb_sauts; t++) {
       this->addParentTransformKeyframe(temps+t+0.0, GeometricTransformation(position + glm::vec3((1.0*t)+0.0, 0.0, 0.0), glm::angleAxis(0.0f, glm::vec3(0.0, 0.0, 1.0))));
       this->addParentTransformKeyframe(temps+t+0.2, GeometricTransformation(position + glm::vec3((1.0*t)+0.2, 0.0, 0.3), glm::angleAxis(0.0f, glm::vec3(0.0, 1.0, 0.0))));

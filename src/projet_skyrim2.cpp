@@ -98,7 +98,8 @@ void initialize_project_skyrim_2(Viewer& viewer) {
    std::string filename2;
 
    // Initialisation du score
-   Score score = Score(&viewer);
+   ScorePtr score = std::make_shared<Score>(&viewer);
+   system->setScore(score);
 
   /*******************************************************************************
    * FIN INITIALISATION *
@@ -294,6 +295,7 @@ void initialize_project_skyrim_2(Viewer& viewer) {
     system->setRestitution(0.3f);
  	  ParticlePtr particle = std::make_shared<Particle>(px, pv, pm, pr);
 	  system->addParticle(particle);
+    particle->setIsScorable(true);
 
     // Renderable visible de la boule de neige, du terrain et des objets s'y trouvant
  	  SnowballRenderablePtr sb = std::make_shared<SnowballRenderable>(flatShader, phongShader, texShader, &viewer, particle, skybox, system, systemRenderable);

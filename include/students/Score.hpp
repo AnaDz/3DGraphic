@@ -8,6 +8,7 @@ class Score {
 public:
   Score(Viewer* v);
   ~Score();
+  int getScore();
   void modifierScore(int points);
 
 private:
@@ -15,5 +16,8 @@ private:
   int score;
   std::string texte;
 };
+
+typedef std::shared_ptr<Score> ScorePtr;
+
 
 #endif

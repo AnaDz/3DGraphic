@@ -28,7 +28,7 @@ int ny = 120;
 int n = 10;
 float angle = -(float)3.14/12;
 int terrain = 0; // Le terrain que la boule vient de parcourir
-glm::vec3 posMesh(0.0);
+
 // "Fréquence" d'apparition des objets
 int nb_bonhommes = 3*3;
 int nb_maisons = 3*3;
@@ -55,7 +55,6 @@ SnowballRenderable::SnowballRenderable(ShaderProgramPtr flatShader,  ShaderProgr
 
 	 // Initialisation du sol
 	 groundR.resize(nx, std::vector<GroundRenderablePtr>(ny));
-	 barrieres.resize(3);
 
 	 glm::mat4 parentTransformation, localTransformation;
 
@@ -76,25 +75,28 @@ SnowballRenderable::SnowballRenderable(ShaderProgramPtr flatShader,  ShaderProgr
 	 bonshommes.resize(nb_bonhommes);
 	 particle_bonhomme.resize(nb_bonhommes);
 	 meshes.resize(nb_maisons);
+	 posMesh.resize(nb_maisons);
 	 arbres.resize(nb_arbres);
 	 particle_arbre.resize(nb_arbres);
-
 
 	 // Création des bonshommes de neige
 	 px = glm::vec3(0,5*cos(angle),5*sin(angle));
 	 pv = glm::vec3(0,0,0);
 	 pr = 0.49;
 	 pm = 1.0;
+
 	 for (int i = 0; i < nb_bonhommes; i++) {
 		 bonshommes[i] = std::make_shared<BonhommeDeNeige>(phongShader, texShader);
 		 HierarchicalRenderable::addChild(bonshommes[i], bonshommes[i]->base);
-		 bonshommes[i]->setParentTransform(glm::translate(glm::mat4(1.0), glm::vec3(0,-5*cos(angle),-5*sin(angle))));
-		 bonshommes[i]->setPosition(glm::vec3(0,-5*cos(angle),-5*sin(angle)));
+		 bonshommes[i]->setParentTransform(glm::translate(glm::mat4(1.0), glm::vec3(-100,(-10-2*i)*cos(angle),(-10-2*i)*sin(angle))));
+		 bonshommes[i]->setPosition(glm::vec3(-100,(-10-2*i)*cos(angle),(-10-2*i)*sin(angle)));
 
 		 particle_bonhomme[i] = std::make_shared<Particle>(px, pv, pm, pr);
 		 particle_bonhomme[i]->setSpecialAnimation(true);
 		 particle_bonhomme[i]->setLink(bonshommes[i]);
 		 particle_bonhomme[i]->setFixed(true);
+		 particle_bonhomme[i]->setScore(5);
+
 		 system->addParticle(particle_bonhomme[i]);
 		 bonshommes[i]->addParticle(particle_bonhomme[i]);
 		 bonshommes[i]->generateAnimation(0.0);
@@ -108,14 +110,16 @@ SnowballRenderable::SnowballRenderable(ShaderProgramPtr flatShader,  ShaderProgr
 	 pv = glm::vec3(0,0,0);
 	 pr = 0.5;
 	 pm = 1.0;
+
 	 for (int i = 0; i < nb_arbres; i++) {
 		 arbres[i] = std::make_shared<Tree>(texShader, filename, filename2);
 		 particle_arbre[i] = std::make_shared<Particle>(px, pv, pm, pr);
-		 arbres[i]->setParentTransform(glm::scale(glm::translate(glm::mat4(1.0), glm::vec3(1,-5*cos(angle),-5*sin(angle))), glm::vec3(0.25,0.25,0.25)));
-		 arbres[i]->setPosition(glm::vec3(1,-5*cos(angle),-5*sin(angle)));
+		 arbres[i]->setParentTransform(glm::scale(glm::translate(glm::mat4(1.0), glm::vec3(-200,(-20-2*i)*cos(angle),(-20-2*i)*sin(angle))), glm::vec3(0.25,0.25,0.25)));
+		 arbres[i]->setPosition(glm::vec3(-200,(-10-2*i)*cos(angle),(-10-2*i)*sin(angle)));
 		 particle_arbre[i]->setSpecialAnimation(true);
 		 particle_arbre[i]->setLink(arbres[i]);
 		 particle_arbre[i]->setFixed(true);
+		 particle_arbre[i]->setScore(1);
 		 system->addParticle(particle_arbre[i]);
 		 HierarchicalRenderable::addChild(arbres[i], arbres[i]->tronc);
 		 viewer->addRenderable(arbres[i]);
@@ -126,14 +130,14 @@ SnowballRenderable::SnowballRenderable(ShaderProgramPtr flatShader,  ShaderProgr
 	 for (int i = 0; i < nb_maisons; i++) {
 	 	 meshes[i]=std::make_shared<TexturedMeshRenderable>(
 		 		texShader, "../meshes/Maison.obj", "../textures/Cottage Texture.jpg");
-		 trans = glm::translate(glm::mat4(1.0), glm::vec3(1.0,-5*cos(angle),-5*sin(angle)));
+		 trans = glm::translate(glm::mat4(1.0), glm::vec3(10.0,-5*cos(angle),-5*sin(angle)));
 		 scaleM = glm::scale(trans, glm::vec3(0.03,0.03,0.03));
 		 meshes[i]->setParentTransform(scaleM);
 		 meshes[i]->setMaterial(Material::Maison());
 		 glm::mat4 rotationM = glm::rotate(glm::rotate(glm::rotate(glm::mat4(1.0), (float)(M_PI/2.0), glm::vec3(1,0,0)), (float)(M_PI/2.0), glm::vec3(0,1,0)), angle, glm::vec3(0,0,1));
 		 meshes[i]->setLocalTransform(rotationM);
 		 viewer->addRenderable(meshes[i]);
-		 posMesh=glm::vec3(1.0,-5*cos(angle), -5*sin(angle));
+		 posMesh[i]=glm::vec3(1.0,-5*cos(angle), -5*sin(angle));
    }
 
 	 explo = std::make_shared<Explosion>(system, systemRenderable, phongShader, glm::vec3(-10,-10,-10), m_particle->getRadius());
@@ -149,7 +153,7 @@ bool ancien[3]={false, false, false};
 int k=1;
 double prevY = 0;
 double prevZ = 0;
-
+double acceleration = 0;
 bool detectionObjetFin = false;
 
 void SnowballRenderable::do_draw()
@@ -174,11 +178,11 @@ void SnowballRenderable::do_draw()
 	// Déplacement de la boule de neige latéralement : ajustement de la vitesse
 	float vitesse = m_particle->getVelocity().y;
 	if (gauche){
-		m_particle->setVelocity(m_particle->getVelocity() + glm::vec3(-.05, 0,0));
+		m_particle->setVelocity(m_particle->getVelocity() + glm::vec3(-.1, 0,0));
 		ancien[0]=true;
 	}
 	if (droite){
-		m_particle->setVelocity(m_particle->getVelocity() + glm::vec3(0.05, 0,0));
+		m_particle->setVelocity(m_particle->getVelocity() + glm::vec3(0.1, 0,0));
 		ancien[2]=true;
 	}
 	if (toutDroit){
@@ -193,19 +197,21 @@ void SnowballRenderable::do_draw()
 	}
 
 	// Vitesse maximale autorisée
-	if (m_particle->getVelocity().y > 25 ){
+	if (17 > m_particle->getVelocity().y > 10 ){
 		glm::vec3 tmp = m_particle->getVelocity();
-		tmp.y = 25;
+		tmp.y = 10+acceleration;
 		m_particle->setVelocity(tmp);
+		acceleration += 0.001;
 	}
 
-	// détection collision Mesh
-	if (m_particle->getPosition().x < posMesh.x+1.5 && m_particle->getPosition().x > posMesh.x-1.5 && m_particle->getPosition().y< posMesh.y+1 && m_particle->getPosition().y > posMesh.y-1){
-		detectionObjetFin=true;
+	// Détection collision Mesh
+	for (int i=0; i < nb_maisons; i++){
+		if (m_particle->getPosition().x < posMesh[i].x+1.75 && m_particle->getPosition().x > posMesh[i].x-1.75 && m_particle->getPosition().y< posMesh[i].y+1 && m_particle->getPosition().y > posMesh[i].y-1){
+			detectionObjetFin=true;
+		}
 	}
 
 	if (detectionObjetFin && fin_explo){
-		//printf("salut yolo \n");
  	 //Explosion(system, systemRenderable, phongShader, m_particle->getPosition(), m_particle->getRadius());
 	 glm::vec3 px,pv;
 	 double radius = m_particle->getRadius();
@@ -241,15 +247,18 @@ void SnowballRenderable::do_draw()
 		// Déplacement des maisons
 		for (int i = terrain*(nb_maisons/3); i <= terrain*(nb_maisons/3)+(nb_maisons/3)-1; i++) {
 			aleaM = rand()%40;
-			glm::mat4 trans = glm::translate(glm::mat4(1.0), glm::vec3(rand()%(nx-2)+1,((k+2)*40+aleaM)*cos(angle),((k+2)*40+aleaM)*sin(angle)));
+			glm::vec3 translation = glm::vec3(rand()%(nx-2)+2,((k+2)*40+aleaM)*cos(angle),((k+2)*40+aleaM)*sin(angle));
+			glm::mat4 trans = glm::translate(glm::mat4(1.0), translation);
 			glm::mat4 scaleM = glm::scale(trans, glm::vec3(0.03,0.03,0.03));
 			meshes[i]->setParentTransform(scaleM);
+			posMesh[i]= translation;
 		}
 
 		// Déplacement des bonshommes de neige
 		for (int i = terrain*(nb_bonhommes/3); i <= terrain*(nb_bonhommes/3)+(nb_bonhommes/3)-1; i++) {
+			particle_bonhomme[i]->setSpecialAnimation(true);
 			aleaB = rand()%40;
-			glm::vec3 translation = glm::vec3(rand()%(nx/2)-8,((k+2)*40+aleaB)*cos(angle),((k+2)*40+aleaB)*sin(angle));
+			glm::vec3 translation = glm::vec3(rand()%(nx/2)-12,((k+2)*40+aleaB)*cos(angle),((k+2)*40+aleaB)*sin(angle));
 			bonshommes[i]->setFalled(false);
 			bonshommes[i]->setPosition(translation);
 			glm::mat4 trans = glm::translate(glm::mat4(1.0), translation);
@@ -260,14 +269,19 @@ void SnowballRenderable::do_draw()
 
 		// Déplacement de l'arbre
 		for (int i = terrain*(nb_arbres/3); i <= terrain*(nb_arbres/3)+(nb_arbres/3)-1; i++) {
+			particle_arbre[i]->setSpecialAnimation(false);
 			aleaA = rand()%40;
 			glm::vec3 translation = glm::vec3(rand()%(nx-2)+1,((k+2)*40+aleaA)*cos(angle),((k+2)*40+aleaA)*sin(angle));
 			particle_arbre[i]->setPosition(translation);
 			glm::mat4 trans = glm::translate(glm::mat4(1.0), translation);
 			arbres[i]->setPosition(translation);
 			arbres[i]->setParentTransform(trans);
-			arbres[i]->generateAnimation(viewer->getTime());
 	  }
+		// Apparition des arbres lorsqu'ils sont suffisemment proches pour éviter les collisions trop tôt
+		for (int i = (terrain+2)%3*(nb_arbres/3); i <= (terrain+2)%3*(nb_arbres/3)+(nb_arbres/3)-1; i++) {
+			particle_arbre[i]->setSpecialAnimation(true);
+			arbres[i]->generateAnimation(viewer->getTime());
+		}
 
 		// Déplacement du terrain
 		glm::mat4 parentTransformation, localTransformation;
@@ -306,11 +320,6 @@ void SnowballRenderable::do_keyPressedEvent(sf::Event& e){
 	        droite=true;
 	        toutDroit=false;
 	}
-	if (e.key.code == sf::Keyboard::F5){
-		printf("coucou on recommence :)  \n");
-	}
-
-
 }
 
 void SnowballRenderable::do_keyReleasedEvent(sf::Event& e){
