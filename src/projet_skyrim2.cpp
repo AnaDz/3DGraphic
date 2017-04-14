@@ -137,7 +137,7 @@ void initialize_project_skyrim_2(Viewer& viewer) {
         glm::vec3(0, 0, 0),
         glm::vec3( 0, 0, 1 ) ) );
 
-    FencePtr fence = std::make_shared<Fence>(texShader, "../textures/candy.jpg");
+    FencePtr fence = std::make_shared<Fence>(flatShader, "");
     fence->setParentTransform(glm::mat4(1.0));
     HierarchicalRenderable::addChild(fence, fence->origin);
     viewer.addRenderable(fence);

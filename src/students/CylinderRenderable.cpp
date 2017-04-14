@@ -22,7 +22,10 @@ CylinderRenderable::CylinderRenderable(ShaderProgramPtr shaderProgram,
   teachers::getUnitCylinder(positions, normals, slices);
   m_positions.insert(m_positions.end(), positions.begin(), positions.end());
   m_normals.insert(m_normals.end(), normals.begin(), normals.end());
-
+  glm::vec4 mycolor = glm::vec4((double) 150/255, (double) 131/255, (double) 236/255,0);
+  for (size_t i = 0; i < m_positions.size(); i++) {
+    m_colors.push_back(mycolor);
+  }
   //Create buffers
   glGenBuffers(1, &m_pBuffer); //vertices
   glGenBuffers(1, &m_cBuffer); //colors
