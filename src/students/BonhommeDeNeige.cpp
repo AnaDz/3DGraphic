@@ -204,9 +204,10 @@ void BonhommeDeNeige::generateAnimation(float temps) {
   } else {
     m_parentKeyframes.clear();
     this->addParentTransformKeyframe(temps+0.0, GeometricTransformation(position + glm::vec3(0, 0, 0.0), glm::angleAxis(0.0f, glm::vec3(-1.0, 0.0, 0.0))));
-    this->addParentTransformKeyframe(temps+0.5, GeometricTransformation(position + glm::vec3(0, 0, -1.0), glm::angleAxis(1.0f, glm::vec3(-1.0, 0.0, 0.0))));
-    this->addParentTransformKeyframe(temps+1.2, GeometricTransformation(position + glm::vec3(0, 0, -1.5), glm::angleAxis(1.5f, glm::vec3(-1.0, 0.0, 0.0))));
-    this->addParentTransformKeyframe(temps+1.5, GeometricTransformation(position + glm::vec3(0, 0, -2), glm::angleAxis(2.0f, glm::vec3(-1.0, 0.0, 0.0))));
+    this->addParentTransformKeyframe(temps+0.3, GeometricTransformation(position + glm::vec3(0, 3, 0.0), glm::angleAxis(0.0f, glm::vec3(-1.0, 0.0, 0.0))));
+    this->addParentTransformKeyframe(temps+0.5, GeometricTransformation(position + glm::vec3(0, 3, -1.0), glm::angleAxis(1.0f, glm::vec3(-1.0, 0.0, 0.0))));
+    this->addParentTransformKeyframe(temps+0.7, GeometricTransformation(position + glm::vec3(0, 3, -1.5), glm::angleAxis(1.5f, glm::vec3(-1.0, 0.0, 0.0))));
+    this->addParentTransformKeyframe(temps+1.0, GeometricTransformation(position + glm::vec3(0, 3, -2), glm::angleAxis(2.0f, glm::vec3(-1.0, 0.0, 0.0))));
     falled = true;
     falling = false;
   }
