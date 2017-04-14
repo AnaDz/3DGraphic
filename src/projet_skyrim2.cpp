@@ -55,7 +55,7 @@
 #include "../include/students/SnowballRenderable.hpp"
 #include "../include/students/Explosion.hpp"
 #include "../include/students/Score.hpp"
-
+#include "../include/students/Fence.hpp"
 void initialize_project_skyrim_2(Viewer& viewer) {
 
   /*******************************************************************************
@@ -126,9 +126,9 @@ void initialize_project_skyrim_2(Viewer& viewer) {
    glm::mat4 rotation_skybox = glm::rotate(glm::mat4(1.0), -(float)(M_PI/2.0), glm::vec3(1,0,0));
    rotation_skybox *= glm::rotate(glm::mat4(1.0), -(float)(M_PI/2.0), glm::vec3(0,1,0));
    skybox->setLocalTransform(scale_skybox*rotation_skybox);
-   viewer.addRenderable(skybox);
+   //viewer.addRenderable(skybox);
 
-  bool Ana = false;
+  bool Ana = true;
   if(Ana){
     //Position the camera
     viewer.getCamera().setViewMatrix(
@@ -137,95 +137,12 @@ void initialize_project_skyrim_2(Viewer& viewer) {
         glm::vec3(0, 0, 0),
         glm::vec3( 0, 0, 1 ) ) );
 
-    // Temporary variables to use to define transformation
-    filename = "../textures/bark.jpg";
-    filename2 = "../textures/needle.jpg";
-    glm::mat4 rotationM(1.0), rot1(1.0), rot2(1.0);
-    glm::mat4 scaleM(1.0);
-    glm::mat4 translationM(1.0);
-
-    glm::vec3 p1(-50.0, -50.0, 0.0);
-    glm::vec3 p2(50.0, -50.0, 0.0);
-    glm::vec3 p3(50.0, 50.0, 0.0);
-    glm::vec3 p4(-50.0, 50.0, 0.0);
-    PlanePtr plane = std::make_shared<Plane>(p1, p2, p3);
-    system->addPlaneObstacle(plane);
+    FencePtr fence = std::make_shared<Fence>(texShader, "../textures/candy.jpg");
+    fence->setParentTransform(glm::mat4(1.0));
+    HierarchicalRenderable::addChild(fence, fence->origin);
+    viewer.addRenderable(fence);
 
 
-
-    //Create a plane renderable to display the obstacle
-    PlaneRenderablePtr planeRenderable = std::make_shared<QuadRenderable>(flatShader, p1,p2,p3,p4);
-    HierarchicalRenderable::addChild( systemRenderable, planeRenderable );
-
-    /*TreePtr tree = std::make_shared<Tree>(texShader, filename, filename2);
-    tree->setParentTransform(glm::mat4(1.0));*/
-
-
-  /*  glm::vec3 px,pv;
-    float pm, pr;
-    px = glm::vec3(0,0,0.5);
-    pv = glm::vec3(0,0,0);
-    pr = 0.5;
-    pm = 1.0;
-    ParticlePtr particle = std::make_shared<Particle>(px, pv, pm, pr);
-    particle->setSpecialAnimation(true);
-    particle->setLink(tree);
-    system->addParticle(particle);
-
-
-    HierarchicalRenderable::addChild(tree, tree->tronc);
-    //tree->setFalling(true);
-    viewer.addRenderable(tree);
-  //  Explosion(system, systemRenderable, phongShader);*/
-
-    TexturedMeshRenderablePtr mesh =
-        std::make_shared<TexturedMeshRenderable>(
-            texShader, "../meshes/Maison.obj", "../textures/Cottage Texture.jpg");
-    scaleM = glm::scale(glm::mat4(1.0), glm::vec3(0.2,0.2,0.2));
-    mesh->setParentTransform(scaleM);
-    mesh->setMaterial(Material::Maison());
-    rotationM = glm::rotate(glm::mat4(1.0), (float)(M_PI/2.0), glm::vec3(1,0,0));
-    mesh->setLocalTransform(rotationM);
-    viewer.addRenderable(mesh);
-
-    glm::vec3 px,pv;
-    float pm, pr;
-    px = glm::vec3(10,0,20);
-    pv = glm::vec3(0,0,0);
-    pr = 20;
-    pm = 1.0;
-    ParticlePtr particle = std::make_shared<Particle>(px, pv, pm, pr);
-    //  particle->setSpecialAnimation(true);
-  //  particle->setLink(mesh);
-    system->addParticle(particle);
-    ParticleRenderablePtr mobileRenderable = std::make_shared<ParticleRenderable>(flatShader, particle);
-    HierarchicalRenderable::addChild(systemRenderable, mobileRenderable);
-
-    //Activate collision and set the restitution coefficient to 1.0
-    //Initialize two particles with position, velocity, mass and radius and add it to the system
-/*  pv =glm::vec3(0.0, 0.0, 0.0);
-    pm = 1.0;
-    pr = 1.0;
-    px = glm::vec3(10.0,0.0,0.0);
-    ParticlePtr mobile = std::make_shared<Particle>( px, pv, pm, pr);
-    system->addParticle( mobile );
-    ParticleRenderablePtr mobileRenderable = std::make_shared<ParticleRenderable>(flatShader, mobile);
-    HierarchicalRenderable::addChild(systemRenderable, mobileRenderable);
-    //Initialize a renderable for the force field applied on the mobile particle.
-    //This renderable allows to modify the attribute of the force by key/mouse events
-    //Add this renderable to the systemRenderable.
-    //Initialize a force field that apply only to the mobile particle
-    glm::vec3 nullForce(0.0, 0.0, 0.0);
-    std::vector<ParticlePtr> vParticle;
-    vParticle.push_back(mobile);
-    ConstantForceFieldPtr force = std::make_shared<ConstantForceField>(vParticle, nullForce);
-    system->addForceField(force);
-    ControlledForceFieldRenderablePtr forceRenderable = std::make_shared<ControlledForceFieldRenderable>(flatShader, force);
-    HierarchicalRenderable::addChild(systemRenderable, forceRenderable);
-    system->setCollisionsDetection(true);
-    system->setRestitution(0.1f);*/
-
-  //  tree->supprimer();
   }
 
   bool Matthieu = false;
@@ -237,7 +154,7 @@ void initialize_project_skyrim_2(Viewer& viewer) {
     viewer.addRenderable(bonhomme);
   }
 
-  bool Olivier = true;
+  bool Olivier = false;
   if (Olivier){
 
     // Lumière globale
